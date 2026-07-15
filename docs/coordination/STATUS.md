@@ -1,28 +1,26 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-15 (Asia/Seoul)
-- 단계: 계획 수립 완료 / 구현 미착수
+- 마지막 동기화: 2026-07-16 (Asia/Seoul)
+- 단계: Wave 0 계약·검증 진행 / 기능 구현 미착수
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
-- 조정 책임자: Codex (구현 시작 시 확정)
-- 현재 활성 작업: 없음
+- 조정 책임자: Codex
+- 현재 활성 작업: SG-002 Phaser 버전 스파이크 (`docs/coordination/tasks/SG-002.yaml`)
 - 현재 차단: 없음
 
 ## 다음 관문
 
-`H0a 계획·스파이크 실행 승인` 후 Wave 0을 시작한다. H0a에서 사람이 확인할 항목은 다음과 같다.
+`H0a 계획·스파이크 실행 승인`은 2026-07-16(Asia/Seoul) 현재 작업의 사람 지시로 통과했다. 이 승인은 Wave 0 검증 실행만 열며 기술 선택, D-001~D-006 확정, Wave 1 기능 구현 또는 공개 배포를 승인하지 않는다. GitHub Pages Settings는 필요 시 사람이 수행한다는 운영 전제를 포함하며 실제 공개 권한은 H3a에서 다시 확인한다.
 
-- Phaser 4.2.1 우선 스파이크, Phaser 귀책 실패 판정, Phaser 3.90.0 재검증 조건
-- 느림/기본 2개 난이도를 포함한 MVP 범위
-- DOM UI + Phaser 캔버스의 하이브리드 구성
-- GitHub Issue/PR을 이용한 AI 간 실시간 공유 방식
-- GitHub Pages 저장소 설정을 사람이 수행할 수 있는지 여부
+다음 관문은 `H0b 계약·결정 승인`이다. SG-001~SG-004 증거와 D-001~D-006 제안을 사람이 검토해 모두 승인하기 전에는 Wave 1을 시작하지 않는다.
+
+현재 환경에는 인증된 GitHub CLI/API 도구가 없어 SG-002는 GitHub Issue/PR과 중복되지 않는 offline packet/handoff를 원본으로 사용한다. 2026-07-16 확인 시 열린 Issue와 PR은 각각 0건이었다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | pending | H0a 승인 필요 |
+| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-002 진행 중, SG-001은 지정 플랫폼 선점 대기 |
 | 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
