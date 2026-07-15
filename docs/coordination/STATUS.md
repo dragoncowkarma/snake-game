@@ -5,7 +5,7 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-002 Phaser 버전 스파이크 (`docs/coordination/tasks/SG-002.yaml`)
+- 현재 활성 작업: 없음 (SG-002는 `review` 상태로 독립 리뷰 대기)
 - 현재 차단: 없음
 
 ## 다음 관문
@@ -16,11 +16,13 @@
 
 현재 환경에는 인증된 GitHub CLI/API 도구가 없어 SG-002는 GitHub Issue/PR과 중복되지 않는 offline packet/handoff를 원본으로 사용한다. 2026-07-16 확인 시 열린 Issue와 PR은 각각 0건이었다.
 
+SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/WebKit production-preview 매트릭스를 통과해 `PASS_4_2_1`을 반환했다. 계획상 기준 모델이 현재 런타임에서 제공되지 않아 실행 모델 라우팅 편차도 독립 리뷰 대상이다. 이 결과는 기술 검증 증거이며 D-001의 `accepted` 변경이나 H0b 통과가 아니다. 상세 재현 증거와 제약은 `docs/coordination/handoffs/SG-002.md`에 있다.
+
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-002 진행 중, SG-001은 지정 플랫폼 선점 대기 |
+| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-002 `PASS_4_2_1` 독립 리뷰 대기, SG-001은 지정 플랫폼 선점 대기 |
 | 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
@@ -29,7 +31,7 @@
 
 ## 최근 기준안 (`proposed`, H0b 승인 전)
 
-- Phaser 4.2.1을 우선 검증한다. Phaser 귀책 실패일 때만 3.90.0을 동일 매트릭스로 검증하며, 하나가 통과하기 전에는 기능 개발을 시작하지 않는다.
+- Phaser 4.2.1은 SG-002 매트릭스를 통과했다. 독립 리뷰와 H0b 승인 전까지 D-001은 여전히 `proposed`이며 기능 개발을 시작하지 않는다.
 - 게임 코어는 순수 TypeScript 결정론적 상태 전이로 구성한다.
 - 게임 보드는 Phaser, 접근 가능한 인터페이스는 DOM으로 구성한다.
 - 실시간 협업 상태는 GitHub Issue/PR, 장기 기록은 저장소 문서에 둔다.

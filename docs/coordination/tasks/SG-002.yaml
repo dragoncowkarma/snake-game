@@ -1,7 +1,7 @@
 id: SG-002
 spec_version: "1.0"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_reason: >-
   Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
@@ -13,6 +13,13 @@ approved_at: "2026-07-15T18:47:25Z"
 owner: codex
 model: gpt-5-codex
 reasoning_or_workload: high
+assigned_model_baseline: codex-5.6-terra
+routing_deviation: >-
+  The assigned Codex 5.6 Terra runtime was not available in this execution
+  environment, so the provided GPT-5 Codex runtime performed the spike. No model
+  equivalence is inferred. The task cannot advance beyond review until the named
+  independent reviewers and the human accept this deviation or request a rerun
+  with the assigned baseline.
 reviewers:
   - platform: claude
     model: opus-4.8
@@ -97,6 +104,17 @@ state_history:
     from: ready
     to: in_progress
     reason: Codex claimed SG-002 on its dedicated branch.
-head_sha:
+  - at: "2026-07-15T19:25:01Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Phaser 4.2.1 passed strict typecheck, production build, and the Chromium
+      and WebKit production-preview matrix; independent review remains pending.
+head_sha: 6c2f8c59164380a47804f1771497fe1c58e99a2d
+head_sha_role: frozen_implementation_evidence
+coordination_commit_note: >-
+  The handoff and in_progress-to-review transition are recorded in a subsequent
+  coordination-only commit, so the branch HEAD is expected to differ from the
+  frozen implementation evidence SHA.
 handoff: docs/coordination/handoffs/SG-002.md
-gate_result:
+gate_result: PASS_4_2_1
