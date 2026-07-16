@@ -1,7 +1,7 @@
 id: SG-003
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_reason: >-
   Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
@@ -125,5 +125,17 @@ state_history:
     from: ready
     to: in_progress
     reason: Codex claimed the task on its dedicated branch.
-head_sha:
+  - at: "2026-07-16T06:23:28Z"
+    from: in_progress
+    to: review
+    reason: >-
+      The exact TypeScript shapes, command table, domain invariants, deterministic
+      RNG rules, and scheduler contract were documented and all scoped validation
+      commands passed; independent Claude review remains.
+head_sha: 993c70309c6eeeb0a537e0d0f4d1733d84c651f6
+head_sha_role: frozen_implementation_evidence
+coordination_commit_note: >-
+  The handoff and in_progress-to-review transition are recorded in a subsequent
+  coordination-only commit, so the branch HEAD is expected to differ from the frozen
+  implementation evidence SHA.
 handoff: docs/coordination/handoffs/SG-003.md
