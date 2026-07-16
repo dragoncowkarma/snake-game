@@ -5,126 +5,160 @@ This document outlines the QA strategy for the Snake Game MVP 1.0, derived from 
 
 ## coverage_summary
 Total ACs: 28 (AC-G: 10, AC-L: 3, AC-U: 9, AC-R: 6)
-Domain statement and branch coverage will be at least 90%, and 100% for named risk branches (collisions, input reversal, queue limits).
+Domain statement and branch coverage will be at least 90%, and 100% for named risk branches (collisions, input reversal, queue limits, full-board).
 
 ## master_ac_trace_matrix
 | AC | Level | Fixture/seed | Environment | Failure oracle | Owner/task | Evidence |
 |---|---|---|---|---|---|---|
-| AC-G01 | unit+e2e | seed-01 | Node+Chromium | Phase remains READY. Left rejected. Right starts PLAYING. | SG-011, SG-018 | unit_result.json |
-| AC-G02 | unit+contract | seed-01 | Node | Head advances exactly one cell per tick. | SG-011 | unit_result.json |
-| AC-G03 | unit+e2e | input-rev | Node+Chromium | Opposite direction rejected from queue. Max queue size is 2. | SG-011, SG-018 | e2e_result.json |
-| AC-G04 | unit+contract | time-120 | Node | States identical for 30/60/120Hz runs with same delta. | SG-011 | unit_result.json |
-| AC-G05 | unit | eat-1 | Node | Length increments by 1, score by 10 exactly. | SG-011 | unit_result.json |
-| AC-G06 | unit | tail-pass | Node | Head entering vacating tail cell proceeds normally. | SG-011 | unit_result.json |
-| AC-G07 | unit+e2e | wall-1 | Node+Chromium | gameEnded event contains exact attemptedCell. UI highlights it. | SG-011, SG-018 | e2e_result.json |
-| AC-G08 | unit | speed-5 | Node | tickMs explicit decrease applied only on next simulation tick. | SG-011 | unit_result.json |
-| AC-G09 | unit | full-board | Node | Phase becomes WON immediately upon eating last food. | SG-011 | unit_result.json |
-| AC-G10 | unit+e2e | restart-1 | Node+Chromium | Score/length/food/queue/accumulator reset. No dup events. | SG-011, SG-018 | e2e_result.json |
-| AC-L01 | e2e | N/A | Chromium | Phase transitions to PAUSED immediately on window blur/focus-loss, visibility hidden, or orientation change. | SG-018 | e2e_result.json |
-| AC-L02 | unit+e2e | pause-1 | Node+Chromium | Accumulator drops to 0, queue cleared, direction preserved. | SG-011, SG-018 | e2e_result.json |
-| AC-L03 | e2e | N/A | Chromium | Logical cells and phase remain identical after resize event. | SG-018 | e2e_result.json |
-| AC-U01 | manual | N/A | 320x568 | No horizontal scrollbar, canvas fully visible, buttons clear. | SG-020 | screenshot.png |
-| AC-U02 | manual | N/A | keyboard-only | Tab navigates Menu, Canvas, and Restart buttons successfully. | SG-020 | manual_log.txt |
-| AC-U03 | manual | N/A | Mobile | Buttons have aria-labels, CSS dimensions >= 44x44px. | SG-020 | manual_log.txt |
-| AC-U04 | manual | N/A | Chromium | Entities distinguishable by shape/border in grayscale mode. | SG-020 | manual_log.txt |
-| AC-U05 | e2e+manual | N/A | reduced motion, mute | HUD updates properly without CSS transitions or audio. | SG-018, SG-020 | manual_log.txt |
-| AC-U06 | e2e+manual | N/A | Chromium+Safari | Focus lands on correct control per phase. No Spacebar scroll. | SG-018, SG-020 | e2e_result.json |
-| AC-U07 | e2e | N/A | Chromium | aria-live polite region updates exactly once per phase. | SG-018 | e2e_result.json |
-| AC-U08 | manual | N/A | Chromium | Text contrast >= 4.5:1. UI boundary contrast >= 3:1. | SG-020 | manual_log.txt |
-| AC-U09 | manual | N/A | safe-area | touch-action:none only on board/dpad. Rest scrolls natively. | SG-020 | manual_log.txt |
-| AC-R01 | e2e | localStorage-fail | Chromium | Game initializes normally despite SecurityError in storage. | SG-018 | e2e_result.json |
-| AC-R02 | manual | N/A | Chrome | Game boots and responds despite AudioContext rejection. | SG-020 | manual_log.txt |
-| AC-R03 | deployed | N/A | /snake-game/ | HTML, JS, CSS, favicon return HTTP 200 on subpath. | SG-026 | deploy_smoke.txt |
-| AC-R04 | e2e | N/A | Node | Vite build code 0. TypeScript/ESLint return 0 errors. | SG-005 | build_log.txt |
-| AC-R05 | e2e | N/A | Chromium+Firefox+WebKit | Playwright reports 0 unhandled promise/runtime errors. | SG-018 | e2e_result.json |
-| AC-R06 | e2e | restart-20 | Chromium | After 20 cycles, tick timing matches baseline, no lag. | SG-018 | e2e_result.json |
+| AC-G01 | unit+e2e | seed-01 | Node+Chromium | Space/Enter ignored. Left rejected. Right/Up/Down starts PLAYING. No immediate movement on command. Time elapses normally. | SG-011 | unit_result.json |
+| AC-G02 | unit+contract | seed-01 | Node | Initial coordinates correct. Head advances exactly one cell per tick. | SG-011 | unit_result.json |
+| AC-G03 | unit+e2e | input-rev | Node+Chromium | Opposite direction rejected, same direction ignored. Queue max 2. Multiple inputs consume one per tick. | SG-011 | e2e_result.json |
+| AC-G04 | unit+contract | time-120 | Node | 30/60/120Hz runs with same delta yield identical snapshot. stepDuration subtracted before 5th food. | SG-011 | unit_result.json |
+| AC-G05 | unit | eat-1 | Node | Food/snake non-overlap. Length +1, score +10, exact 1 event, exact 1 RNG call for new food. | SG-011 | unit_result.json |
+| AC-G06 | unit | tail-pass | Node | DP-B05-A passes non-growth tail. DP-B05-B unbuildable (see SG-004-DN01). | SG-011 | unit_result.json |
+| AC-G07 | unit+e2e | wall-1 | Node+Chromium | Wall+self collision. Reason, exact headCell/attemptedCell in 1 event. Terminal re-step idempotence. UI highlights. | SG-011 | e2e_result.json |
+| AC-G08 | unit | speed-5 | Node | Slow/default formula and min limits. 5th food boundary. Tick decrease applied on next step. High score split. | SG-011 | unit_result.json |
+| AC-G09 | unit | full-board | Node | Eat last free cell -> 0 freeCells -> 0 RNG calls -> foodEaten then gameWon sequence. | SG-011 | unit_result.json |
+| AC-G10 | unit+e2e | restart-1 | Node+Chromium | Score/length/food/queue/accumulator reset. Exact listener/command/event count. No dup events. | SG-011 | e2e_result.json |
+| AC-L01 | e2e | pause-blur | Chromium | Phase transitions to PAUSED immediately on window blur/focus-loss, tab hidden, or actual orientation transition. No auto-resume. | SG-018 | e2e_result.json |
+| AC-L02 | unit+e2e | pause-1 | Node+Chromium | Accumulator 0, queue cleared, direction preserved. Direction/delta during pause ignored. Full tick resume. | SG-011 | e2e_result.json |
+| AC-L03 | e2e | resize-1 | Chromium | Logical cells and phase remain identical after resize. Relayout triggered. Normal resize is non-pause. | SG-018 | e2e_result.json |
+| AC-U01 | manual | N/A | 320x568 | 320px clipping/overlap none. Canvas fully visible. Focus visible. | SG-020 | screenshot.png |
+| AC-U02 | manual | N/A | keyboard-only | Full keyboard journey: Focus ring complete loop across Menu, Canvas, and Restart. | SG-020 | manual_log.txt |
+| AC-U03 | manual | N/A | Mobile | Buttons aria-labels, pointer 1:1, CSS >= 44x44px. | SG-020 | manual_log.txt |
+| AC-U04 | manual | N/A | Chromium | Canvas entities shape/border distinct. DOM score/best/phase/end reason exist. | SG-020 | manual_log.txt |
+| AC-U05 | e2e+manual | N/A | reduced motion, mute | Scale/movement Tween removed, outline/text feedback maintained. Audio muted. | SG-018 | manual_log.txt |
+| AC-U06 | e2e+manual | N/A | Chromium+Safari | ActiveElement correct. Scroll/preventDefault limited to board. Spacebar no scroll. | SG-018 | e2e_result.json |
+| AC-U07 | e2e | N/A | Chromium | aria-live polite region updates exactly once per phase. Tick live 0. | SG-018 | e2e_result.json |
+| AC-U08 | manual | N/A | Chromium | Text contrast >= 4.5:1. UI boundary contrast >= 3:1. Canvas visually distinct. | SG-020 | manual_log.txt |
+| AC-U09 | manual | N/A | safe-area | touch-action:none only on board. Native scroll elsewhere. | SG-020 | manual_log.txt |
+| AC-R01 | e2e | localStorage-fail | Chromium | Storage access exceptions + corrupted data handled with defaults. | SG-018 | e2e_result.json |
+| AC-R02 | manual | N/A | Chrome | Audio init/resume/autoplay failures handled. Game boots. | SG-020 | manual_log.txt |
+| AC-R03 | deployed | N/A | /snake-game/ | Deployed distinct from production preview. HTTP 200 HTML, JS, CSS, favicon. | SG-026 | deploy_smoke.txt |
+| AC-R04 | e2e | N/A | Node | Quality commands, Vite build 0, ESLint 0. | SG-005 | build_log.txt |
+| AC-R05 | e2e | N/A | Chromium+Firefox+WebKit | console/network/404 exact 0. | SG-018 | e2e_result.json |
+| AC-R06 | e2e | restart-20 | Chromium | After 20 restarts, exact listeners/inputs/timers/events. Baseline tick rate. | SG-018 | e2e_result.json |
 
 ## fixture_and_seed_catalog
-- seed-01: Standard predictable RNG seed
-- input-rev: Fast opposing direction key sequence
-- tail-pass: Snake head targets exact cell tail is vacating
-- time-120: Mocked time accumulation corresponding to 120Hz
-- full-board: Board initialized with length 399
-- localStorage-fail: Mocked DOM Exception for storage quota
-- restart-20: automated loop of die/restart 20회
+- seed-01: Standard predictable RNG seed, exact valid GameState coordinates, phase, direction, queue, food, score, tickMs. Command/delta sequence exact. scripted RandomSource returns predefined upper bound and value. evidence: `unit_result.json`.
+- input-rev: Fast opposing direction key sequence. Expected queue drops reverse.
+- tail-pass: Snake head targets exact cell tail is vacating.
+- eat-1: Food eaten. Exact RandomSource expectation (1 call).
+- wall-1: Wall collision attemptedCell out of bounds.
+- speed-5: 5th food eaten. Tick ms drop by 10ms.
+- pause-blur: Window focus/blur sequence delta list.
+- pause-1: Pause command injection sequence.
+- resize-1: Resize delta list, no pause state changes.
+- time-120: Mocked time accumulation corresponding to 120Hz (8.33ms deltas) yielding same snapshot as 30Hz.
+- full-board: Board initialized with length 399. RNG bounds 0. 0 calls.
+- localStorage-fail: Mocked DOM Exception for storage quota.
+- restart-20: automated loop of die/restart 20회.
 
 ## boundary_scenarios_DP-B01_through_DP-B15
 | Scenario | Setup | Action | Oracle | Evidence |
 |---|---|---|---|---|
-| DP-B01 | READY state | Press Space, then Left, then Right | Space/Left ignored, Right starts game | unit+e2e |
-| DP-B02 | PLAYING moving Right | Press Up then Left in 1 tick | Queue accepts both, processes over 2 ticks | unit+e2e |
-| DP-B03 | PLAYING moving Right | Press Left, or Up then Down | Left rejected, Down rejected | unit+e2e |
-| DP-B04 | PLAYING, food 1 cell away | Press multiple keys | Score/length increment exactly 1 | unit+e2e |
-| DP-B05 | PLAYING | Move head into tail | tail passing vs collision detected | unit |
-| DP-B06 | PLAYING collision | Head hits wall | event headCell/attemptedCell correct | unit+e2e |
-| DP-B07 | PLAYING, length 399 | Eat last food | Game transitions to WON immediately | unit |
-| DP-B08 | PLAYING | Run at 30Hz and 120Hz deltas | Final state is identical. stepDuration subtracted | unit+contract |
-| DP-B09 | PLAYING | visibility hidden for 5s | Game paused, queue empty, no tick overflow | e2e |
-| DP-B10 | PLAYING | portrait to landscape | Game paused, requires resume | manual |
-| DP-B11 | State transitions | Flow through UI | Document activeElement matches expected | e2e |
-| DP-B12 | READY | Pointer touch button | Exactly one command dispatched, scroll allowed | e2e+manual |
-| DP-B13 | BOOT | localStorage throws exception | Default config used, game boots | e2e |
-| DP-B14 | PLAYING | Event fires | DOM text updates, live region updates once | e2e |
-| DP-B15 | GAME_OVER | Restart 20 times | 1 tick per interval, no overlapping listeners | e2e |
+| DP-B01 | 1. State READY | 2. Space/Left, then Right/Up/Down | 3. Left rejected. Space ignored. Right/Up/Down accepted, starts PLAYING without immediate movement. | unit_result.json, e2e_result.json |
+| DP-B02 | 1. PLAYING moving Right | 2. Up then Left in < 1 tick | 3. Queue 2 items max. Processes over 2 ticks. | unit_result.json, e2e_result.json |
+| DP-B03 | 1. PLAYING moving Right | 2. Left, or Right, or Up then Down | 3. Left rejected. Right ignored. Down rejected (reverse of last accepted). | unit_result.json, e2e_result.json |
+| DP-B04 | 1. PLAYING, food 1 cell away | 2. Multi-input | 3. Score/length exactly 1. Event 1. | unit_result.json, e2e_result.json |
+| DP-B05 | 1. PLAYING | 2. Move to tail | 3. DP-B05-A: tail pass succeeds. DP-B05-B: growth+same-tail impossible. | unit_result.json |
+| DP-B06 | 1. PLAYING | 2. Hit wall, hit self | 3. gameEnded emitted. Wall reason/self reason. exact headCell/attemptedCell. | unit_result.json, e2e_result.json |
+| DP-B07 | 1. PLAYING length 399 | 2. Eat last food | 3. 0 RNG calls. foodEaten -> gameWon emitted. | unit_result.json |
+| DP-B08 | 1. PLAYING | 2. 30/60/120Hz | 3. Same snapshots. stepDuration used properly before 5th food. | unit_result.json |
+| DP-B09 | 1. PLAYING | 2. hidden 5s, resize | 3. hidden: paused, no tick overflow. resize: no pause. | e2e_result.json |
+| DP-B10 | 1. PLAYING | 2. portrait to landscape | 3. Paused, orientation change requires resume. | manual_log.txt |
+| DP-B11 | 1. Phase transitions | 2. UI flow | 3. expected activeElement, page scroll 0. | e2e_result.json |
+| DP-B12 | 1. READY | 2. Pointer tap | 3. 1 command per tap. Game area scroll disabled. | e2e_result.json, manual_touch_log.txt |
+| DP-B13 | 1. BOOT | 2. storage exception, corrupted | 3. default config used, boots. | e2e_result.json |
+| DP-B14 | 1. PLAYING | 2. state change | 3. DOM score/best/phase/reason update. live region max 1, 0 per tick. | e2e_result.json |
+| DP-B15 | 1. GAME_OVER | 2. 20 restarts | 3. 20 listener/input/timer/event processing counts exact. Baseline tick. | e2e_result.json |
 
 ## phase_command_policy_coverage
 | Scenario | Setup | Action | Oracle | Evidence |
 |---|---|---|---|---|
-| PC-01 | MENU phase | selectDifficulty | Difficulty setting updated | unit+e2e |
-| PC-02 | MENU phase | start | Transition to READY phase | unit+e2e |
-| PC-03 | MENU phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-04 | MENU phase | direction / pause / resume / restart / returnToMenu | Commands ignored, state unchanged | unit+e2e |
-| PC-05 | READY phase | direction (Right/Up/Down) | Game starts PLAYING, queue initialized | unit+e2e |
-| PC-06 | READY phase | direction (Left) | Command rejected, state unchanged | unit+e2e |
-| PC-07 | READY phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-08 | READY phase | selectDifficulty / start / pause / resume / restart / returnToMenu | Commands ignored, state unchanged | unit+e2e |
-| PC-09 | PLAYING phase | direction (Valid) | Added to queue (max 2) | unit+e2e |
-| PC-10 | PLAYING phase | direction (Opposite/Full) | Command rejected / ignored | unit+e2e |
-| PC-11 | PLAYING phase | pause | Transition to PAUSED | unit+e2e |
-| PC-12 | PLAYING phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-13 | PLAYING phase | selectDifficulty / start / resume / restart / returnToMenu | Commands ignored, state unchanged | unit+e2e |
-| PC-14 | PAUSED phase | resume | Transition to PLAYING, accumulator=0 | unit+e2e |
-| PC-15 | PAUSED phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-16 | PAUSED phase | selectDifficulty / start / direction / pause / restart / returnToMenu | Commands ignored, state unchanged | unit+e2e |
-| PC-17 | GAME_OVER phase | restart | Transition to READY, state reset | unit+e2e |
-| PC-18 | GAME_OVER phase | returnToMenu | Transition to MENU | unit+e2e |
-| PC-19 | GAME_OVER phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-20 | GAME_OVER phase | selectDifficulty / start / direction / pause / resume | Commands ignored, state unchanged | unit+e2e |
-| PC-21 | WON phase | restart | Transition to READY, state reset | unit+e2e |
-| PC-22 | WON phase | returnToMenu | Transition to MENU | unit+e2e |
-| PC-23 | WON phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
-| PC-24 | WON phase | selectDifficulty / start / direction / pause / resume | Commands ignored, state unchanged | unit+e2e |
-| PC-25 | PLAYING phase | Normal Tick (no food) | Queue consumed -> Wall collision (None) -> Food calc (False) -> Self collision (None) -> Add head -> Tail removed. RNG not called. No events generated. | unit |
-| PC-26 | PLAYING phase | Eat Food | Queue consumed -> Wall collision (None) -> Food calc (True) -> Self collision (None) -> Add head -> Tail preserved -> Score updated -> RNG called exactly once -> `foodEaten` emitted. | unit |
-| PC-27 | PLAYING phase | Eat Last Food (Full Board) | Queue consumed -> Wall collision (None) -> Food calc (True) -> Self collision (None) -> Add head -> Tail preserved -> Score updated -> freeCells empty -> RNG NOT called -> `foodEaten` emitted then `gameWon` emitted in exact order. | unit |
-| PC-28 | PLAYING phase | Collision | Queue consumed -> Wall collision (Yes) OR (Wall: None -> Food calc -> Self collision (Yes)) -> queue emptied -> `gameEnded` emitted exactly once. RNG not called. Terminal phase steps yield no additional events. | unit |
+| PC-01 | MENU phase | selectDifficulty | accept | unit_result.json |
+| PC-02 | MENU phase | start | accept | unit_result.json |
+| PC-03 | MENU phase | toggleMute | accept | unit_result.json |
+| PC-04 | MENU phase | direction / pause / resume / restart / returnToMenu | ignore | unit_result.json |
+| PC-05 | READY phase | direction | validateDirection (Right/Up/Down accepted, Left rejected) | unit_result.json |
+| PC-06 | READY phase | toggleMute | accept | unit_result.json |
+| PC-07 | READY phase | selectDifficulty / start / pause / resume / restart / returnToMenu | ignore | unit_result.json |
+| PC-08 | PLAYING phase | direction | validateDirection | unit_result.json |
+| PC-09 | PLAYING phase | pause | accept | unit_result.json |
+| PC-10 | PLAYING phase | toggleMute | accept | unit_result.json |
+| PC-11 | PLAYING phase | selectDifficulty / start / resume / restart / returnToMenu | ignore | unit_result.json |
+| PC-12 | PAUSED phase | resume | accept | unit_result.json |
+| PC-13 | PAUSED phase | toggleMute | accept | unit_result.json |
+| PC-14 | PAUSED phase | selectDifficulty / start / direction / pause / restart / returnToMenu | ignore | unit_result.json |
+| PC-15 | GAME_OVER phase | restart | accept (terminal idempotence) | unit_result.json |
+| PC-16 | GAME_OVER phase | returnToMenu | accept | unit_result.json |
+| PC-17 | GAME_OVER phase | toggleMute | accept | unit_result.json |
+| PC-18 | GAME_OVER phase | selectDifficulty / start / direction / pause / resume | ignore | unit_result.json |
+| PC-19 | WON phase | restart | accept | unit_result.json |
+| PC-20 | WON phase | returnToMenu | accept | unit_result.json |
+| PC-21 | WON phase | toggleMute | accept | unit_result.json |
+| PC-22 | WON phase | selectDifficulty / start / direction / pause / resume | ignore | unit_result.json |
+| PC-23 | EVENT | RNG/Event 1 | Queue consumed -> Wall collision -> Food calc -> Self collision -> Add head -> Tail removed. | unit_result.json |
+| PC-24 | EVENT | RNG/Event 2 | Score updated -> exact RNG -> events ordered (foodEaten then gameWon). | unit_result.json |
 
 ## viewport_browser_device_and_accessibility_matrix
-- **Viewports:** 320x568, 390x844, 768x1024, 1366x768, 1920x1080.
-- **Browsers:** Chromium, Firefox, WebKit, Chrome, Edge, Safari, iOS Safari, Android Chrome.
-- **Accessibility:** keyboard-only, VoiceOver, TalkBack, reduced motion, mute, safe-area, touch-action, aria-live.
-- **Stages:** PR, nightly, release, manual_pre_release, deployed_H3a. No public deploy required before H3a.
+| Stage | Viewport / Device | Browser / Engine | Responsible Task | Objective PASS | Evidence |
+|---|---|---|---|---|---|
+| PR | Desktop (N/A) | Chromium smoke | SG-005, SG-011 | format/lint/typecheck/unit/build OK | `pr_checks.txt` |
+| nightly/release | Desktop (N/A) | Chromium, Firefox, WebKit | SG-018 | Playwright 0 failures, 0 flakiness | `e2e_result.json` |
+| UI/release | 320x568, 1920x1080 | Chromium | SG-020 | Fixed seed visual regression passing | `visual_diff.png` |
+| manual pre-release | 390x844, 768x1024, 1366x768 | Chrome, Edge, Firefox, Safari | SG-020 | Manual tests complete. | `manual_log.txt` |
+| real device | Real iOS/Android | iOS Safari, Android Chrome | SG-020 | At least 1 run per OS passing. | `device_log.txt` |
+| deployed | Desktop (N/A) | Chromium | SG-026 | H3a deployment on /snake-game/ returns HTTP 200. No public deploy before H3a. | `deploy_smoke.txt` |
 
 ## automation_manual_and_deployed_staging
-| Category | Stage | Objective PASS Condition | Prerequisites & Ordered Steps | Evidence Filename Rule |
-|---|---|---|---|---|
-| Auto E2E | PR, nightly, release | 0 test failures, 0 flakiness | Prerequisites: production build ready. Steps: Run Playwright against local dist. | `e2e_result.json` |
-| Manual Real-Device (Orientation/Safe-area) | manual_pre_release | No UI hidden behind notch, pauses on orientation change | Prerequisites: Dist on local network. Steps: 1. Open on iOS/Android. 2. Rotate to landscape. 3. Verify pause and notch clearance. | `manual_orientation_log.txt` |
-| Manual Real-Device (Touch Scope) | manual_pre_release | native page scroll disabled on board/dpad, allowed elsewhere | Prerequisites: Touch device. Steps: 1. Swipe on board. 2. Swipe on empty background. 3. Verify only background scrolls. | `manual_touch_log.txt` |
-| Manual A11y (Screen Reader) | manual_pre_release | VoiceOver/TalkBack announces state changes exactly once | Prerequisites: Screen reader active. Steps: 1. Start game. 2. Pause game. 3. Verify announcements. | `manual_screenreader_log.txt` |
-| Manual A11y (Keyboard Nav) | manual_pre_release | Focus ring visible, all interactive elements reachable | Prerequisites: Desktop browser. Steps: 1. Use Tab to navigate Menu -> Start -> Canvas. 2. Verify focus lands correctly. | `manual_keyboard_log.txt` |
-| Manual A11y (Contrast/Motion/Mute) | manual_pre_release | Ratios >= 4.5:1/3:1, no CSS transitions, audio muted | Prerequisites: OS reduced motion/mute on. Steps: 1. Measure contrast. 2. Verify no animations. 3. Verify no sound. | `manual_contrast_log.txt` |
-| Deployed Smoke | deployed_H3a | 200 OK for all assets, game playable | Prerequisites: H3a approval, code pushed to Pages. Steps: 1. Open /snake-game/. 2. Verify console. | `deploy_smoke.txt` |
+| Category | Prerequisites & Ordered Steps | Objective PASS Condition | Evidence Filename |
+|---|---|---|---|
+| Manual Orientation | 1. Open on real device. 2. Rotate. | Game pauses. UI fits safe-area. | `SG-020_<AC>_<sha12>_<device>_<viewport>_<UTC>.txt` |
+| Manual Touch | 1. Touch device. 2. Swipe board. 3. Swipe background. | Board prevents scroll. Background scrolls natively. | `SG-020_<AC>_<sha12>_<device>_<viewport>_<UTC>.txt` |
+| Manual Screen Reader | 1. VoiceOver/TalkBack on. 2. State change. | Announces exactly once per phase. | `SG-020_<AC>_<sha12>_<device>_<viewport>_<UTC>.txt` |
+| Manual Keyboard | 1. Desktop. 2. Tab across UI. | Focus loop completes. Visible ring. | `SG-020_<AC>_<sha12>_<device>_<viewport>_<UTC>.txt` |
+| Manual Contrast/Motion/Mute | 1. OS settings active. 2. Check UI. | Contrast 4.5:1. Scale/movement Tween removed, outline kept. Muted. | `SG-020_<AC>_<sha12>_<device>_<viewport>_<UTC>.txt` |
 
 ## evidence_and_downstream_ownership
-Tests and verification steps are implemented by downstream tasks: SG-005, SG-008, SG-009, SG-011, SG-012, SG-015, SG-016, SG-018, SG-020, SG-023, SG-024, SG-026, and SG-028.
+| ID | Description |
+|---|---|
+| SG-005 | Root quality/build commands and PR scaffold. |
+| SG-008 | Deterministic fixture/seed helper and Playwright server. |
+| SG-009 | /snake-game/ production preview and artifact/404. |
+| SG-011 | Domain unit/contract and risk branch 100% coverage. |
+| SG-012 | Fixed-step scheduler, delta/frame cap, listener cleanup. |
+| SG-015 | Vertical QA, 320px, keyboard, multi-input, console, restart-20. |
+| SG-016 | Lifecycle, pause/resize, storage, audio failure. |
+| SG-018 | Production-dist E2E. |
+| SG-020 | 3-engine/viewport/a11y/visual/real-device/negative-control. |
+| SG-023 | Release-candidate whole regression. |
+| SG-024 | Release workflow, SHA pin, permissions, deploy gate. |
+| SG-026 | H3a Pages smoke. |
+| SG-028 | Final release SHA UX/a11y/docs independent review. |
 
 ## flakiness_and_negative_control_policy
-- No arbitrary timeout sleep(). Use condition wait.
-- negative control: Intentionally mutate product/test to verify tests actually catch failures (run in separate throwaway branch).
+- Injected/scripted RNG and exact delta/command sequences mandatory.
+- Contract snapshot/event oracles mandatory.
+- `sleep()` and `waitForTimeout()` arbitrary wait strictly forbidden. DOM/event/network condition wait only.
+- Failures must bundle seed, command trace, browser/version, viewport/device, SHA, screenshot, trace, console/network log.
+- Domain statement/branch coverage >= 90%. collision, food, reverse input, queue cap, full-board risk branches 100%.
+- SG-020 throwaway branch for mutation negative controls: intentionally mutate logic to verify tests catch it. Never merged. Evidence kept in SG-020 handoff.
 
 ## gaps_risks_and_decision_needed_register
-None currently.
+| ID | Severity | Affected AC | Gap/Contradiction | Disposition | Owner/Gate | Evidence Needed |
+|---|---|---|---|---|---|---|
+| SG-004-DN01 | blocker | AC-G06, AC03, AC08 | DEVELOPMENT_PLAN tail collision fixture contradicts CONTRACTS.md rules forbidding food on snake. | human decision at or before H0b | Human | Human approval note |
+
+Real device and VoiceOver/TalkBack evidence can only be generated in downstream tasks. Browser versions are recorded at execution. No public deploy prior to H3a. No live Issue/PR tracking due to lack of `gh`.
+
+## NFR Catalog
+| Area | Goal/Blocker | Oracle | Owner | Evidence |
+|---|---|---|---|---|
+| Performance | blocker | 400 cells 60fps, no >50ms long tasks, gzip <1MB, 0 external requests. | SG-018 | e2e trace |
+| Security/Privacy | blocker | 0 PII/analytics/cookie/server sends. Only allowed localStorage keys. 0 HTML injection. | SG-018 | source audit |
+| Supply Chain | blocker | Minimal Actions permissions. Full commit SHA pin. Dependabot/review on. clean npm ci. | SG-024 | workflow audit |
+| Maintenance | blocker | Contract change needs decision+test. Clear domain boundaries. No dist commits. | SG-028 | review log |
 
 ## H0b_readiness_summary
-QA plan complete and meets requirements. Ready for H0b.
+SG-004 provides QA "plan" only. No execution PASS claimed. Antigravity submits, Codex independent review follows. SG-004-DN01 must be human-decided at or before H0b. H0b is human approval of SG-001~004 & D-001~006. Wave 1 and SG-005 must not start before H0b.
