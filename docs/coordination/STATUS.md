@@ -18,7 +18,7 @@
 
 SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/WebKit production-preview 매트릭스를 통과해 `PASS_4_2_1`을 반환했고 Claude와 Antigravity의 독립 리뷰가 기록됐다. 2026-07-16 사람 지시로 SG-001과 SG-002를 SG-003의 완료된 선행 작업으로 인정했다. 이 인정은 D-001의 `accepted` 변경이나 H0b 통과가 아니다. 상세 재현 증거와 제약은 `docs/coordination/handoffs/SG-002.md`에 있다.
 
-SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고로 `docs/coordination/handoffs/SG-003.md`에 기록됐다. 리뷰의 비차단 발견 1건(pause/resume 도메인 진입점)은 revision 2에서 `CONTRACTS.md` §4에 명시로 해소했고, 새 제품 의미가 없어 새 ADR을 만들지 않았다. revision 2는 사람 지시로 리뷰어(Claude)가 작성했으므로 형식 재검토가 필요하면 non-Claude 또는 사람이 수행한다. H0b 사람 승인과 모델 라우팅 편차 처리가 남는다. 패킷 `status`는 SG-002 선례에 따라 머지 전까지 `review`로 유지한다.
+SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고로 `docs/coordination/handoffs/SG-003.md`에 기록됐다. 리뷰의 비차단 명확화 발견 3건(pause/resume 도메인 진입점, `start`/`restart` 난이도 출처, `accept` 의미)은 revision 2에서 `CONTRACTS.md` §3·§4에 명시로 해소했고, 새 제품 의미가 없어 새 ADR을 만들지 않았다. revision 2는 사람 지시로 리뷰어(Claude)가 작성했으므로 형식 재검토가 필요하면 non-Claude 또는 사람이 수행한다. H0b 사람 승인과 모델 라우팅 편차 처리가 남는다. 패킷 `status`는 SG-002 선례에 따라 머지 전까지 `review`로 유지한다.
 
 ## 작업 스냅샷
 

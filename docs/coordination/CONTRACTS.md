@@ -8,7 +8,7 @@
 ## 개정 이력
 
 - revision 1: 최초 계약안.
-- revision 2: 지정 Claude 리뷰가 지적한 `pause`/`resume` 도메인 진입점 미지정을 §4에 명시로 보강했다. 세 공개 함수와 상태 불변 조건, phase×command 정책, event payload, RNG·scheduler 규칙은 그대로이며 새 제품 의미가 없어 §10대로 새 ADR을 만들지 않는다.
+- revision 2: 지정 Claude 리뷰의 명확화 발견을 문서로 보강했다. (1) `pause`/`resume` 도메인 진입점을 §4에 명시했고, (2) §4에서 `start`/`restart`/`returnToMenu`의 `difficulty` 출처가 `state.difficulty`임을 고정했으며, (3) §3에서 `accept`의 의미(대부분 상태 전이, `toggleMute`만 셸 처리·`GameState` 불변)를 정의했다. 세 공개 함수와 상태 불변 조건, phase×command 정책 상수, event payload, RNG·scheduler 규칙은 그대로이며 새 제품 의미가 없어 §10대로 새 ADR을 만들지 않는다.
 
 이 문서는 SG-007이 구현할 공개 TypeScript 모양과 SG-010, SG-012, SG-013, SG-004가 공유할 동작 경계를 고정한다. 이 revision은 문서 계약만 만들며 소스 파일이나 실행 구현을 만들지 않는다. H0b 전에는 아래 계약이 `accepted` 기술 결정이나 Wave 1 구현 승인을 뜻하지 않는다.
 
@@ -141,7 +141,7 @@ export declare function step(
 
 ## 3. phase × command 정책
 
-아래 상수가 표의 기계 판독 가능한 기준 모양이다. `validateDirection`은 phase가 방향 명령을 라우팅하되 최종 결과가 `enqueueDirection` 규칙에 따라 `accepted`, `rejected`, `ignored` 중 하나라는 뜻이다.
+아래 상수가 표의 기계 판독 가능한 기준 모양이다. `validateDirection`은 phase가 방향 명령을 라우팅하되 최종 결과가 `enqueueDirection` 규칙에 따라 `accepted`, `rejected`, `ignored` 중 하나라는 뜻이다. `accept`는 라우터가 명령을 처리한다는 뜻으로 대부분 상태 전이(`reset` 또는 §4의 pause/resume 전이)를 만들지만, `toggleMute`의 `accept`만은 예외로 셸이 오디오 선호만 바꾸고 `GameState`는 그대로 둔다. `ignore`는 상태를 바꾸지 않고 event도 만들지 않는다.
 
 ```ts
 export const PHASE_COMMAND_POLICY = {
@@ -229,7 +229,7 @@ window blur, `document.hidden`, 실제 세로↔가로 orientation 전환은 어
 - 공통: 길이 3, head-first `[{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}]`, 방향 `right`, 빈 queue, 점수/섭취 수 0, 난이도 시작 `tickMs`, `endReason: null`, 빈 event 목록을 반환한다.
 - `phase: 'menu'`: `food: null`이며 RNG를 호출하지 않는다.
 - `phase: 'ready'`: 초기 snake를 제외한 free-cell 목록에서 음식 하나를 만들고 RNG를 정확히 한 번 호출한다.
-- Start와 Restart는 `reset({ phase: 'ready', difficulty }, rng)`, Menu 진입과 menu 난이도 선택은 `reset({ phase: 'menu', difficulty }, rng)`에 대응한다.
+- Start와 Restart는 `reset({ phase: 'ready', difficulty }, rng)`, Menu 진입과 menu 난이도 선택은 `reset({ phase: 'menu', difficulty }, rng)`에 대응한다. 여기서 `difficulty`는 `selectDifficulty` 명령이면 명령 payload의 값이고, payload가 없는 `start`/`restart`/`returnToMenu`는 라우터가 현재 `state.difficulty`(모든 phase가 보유)를 그대로 전달한다. 따라서 Restart는 진행 중이던 난이도를 유지한다.
 - scheduler를 소유한 호출자는 reset과 함께 `accumulator = 0`으로 만든다. accumulator는 반환 상태에 추가하지 않는다.
 
 ### `enqueueDirection`
