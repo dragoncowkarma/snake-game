@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -334,9 +334,14 @@ state_history:
       all packet mechanical commands but does not satisfy qualitative SG-004-AC02
       through SG-004-AC08 or the reproducible handoff requirement. This audit is not
       the formal codex-5.5/high review.
-head_sha: 04835b42386b90fc5552afcece13beb8ff77693d
-head_sha_role: frozen_antigravity_review_submission_before_codex_coordination
-qa_content_sha: f19f762ce75c4c2d0fe3a270b723eb35dd9603d2
+  - at: "2026-07-16T09:56:00Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity completely rewrote QA_PLAN.md to address all blocker findings, adding rigorous trace oracles, 15 boundary procedures, the exact 6x8 policy, browser/stage matrices, gap records, and NFRs. Resubmitting for formal Codex review.
+head_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
+head_sha_role: "frozen_antigravity_review_submission (Note: subsequent metadata-only commits will cause the actual branch tip to differ from this frozen substantive SHA)"
+qa_content_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
 qa_content_sha_role: latest_antigravity_QA_PLAN_change_in_frozen_submission
 handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
@@ -372,6 +377,7 @@ review_gate:
     - >-
       SG-004-AC09 handoff evidence and SHA roles are not reproducible and the handoff
       incorrectly assigns H0b to Codex and implies Wave 1 may start automatically.
+
 decision_needed:
   - id: SG-004-DN01
     severity: blocker
