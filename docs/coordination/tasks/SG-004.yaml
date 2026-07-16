@@ -313,6 +313,6 @@ state_history:
       H0a permits SG-004, the SG-001 plan output is present on the exact local base,
       no open GitHub Issue or PR owns the task, and the integrator fixed the docs-only
       scope and validation contract. No implementation claim or work has started.
-head_sha: 4a2c2f764a8b52a85cdca948a9955f7e27124eb2
+head_sha: f19f762ce75c4c2d0fe3a270b723eb35dd9603d2
 handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
