@@ -94,7 +94,10 @@ Domain statement and branch coverage will be at least 90%, and 100% for named ri
 | PC-22 | WON phase | returnToMenu | Transition to MENU | unit+e2e |
 | PC-23 | WON phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
 | PC-24 | WON phase | selectDifficulty / start / direction / pause / resume | Commands ignored, state unchanged | unit+e2e |
-| PC-25 | PLAYING phase | RNG sequence / Event Order | Queue consumed -> Wall collision -> Food calc -> Self collision -> Tail removed (if no food) -> Score updated -> State snapshot | unit |
+| PC-25 | PLAYING phase | Normal Tick (no food) | Queue consumed -> Wall/Self collision -> Tail removed. RNG not called. No events generated. | unit |
+| PC-26 | PLAYING phase | Eat Food | Food calc true -> Tail preserved -> Score updated -> RNG called exactly once -> `foodEaten` emitted. | unit |
+| PC-27 | PLAYING phase | Eat Last Food (Full Board) | Score updated -> freeCells empty -> RNG NOT called -> `foodEaten` emitted then `gameWon` emitted in exact order. | unit |
+| PC-28 | PLAYING phase | Collision | Wall/Self collision -> queue emptied -> `gameEnded` emitted exactly once. RNG not called. Terminal phase steps yield no additional events. | unit |
 
 ## viewport_browser_device_and_accessibility_matrix
 - **Viewports:** 320x568, 390x844, 768x1024, 1366x768, 1920x1080.
