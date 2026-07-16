@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 2
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -41,14 +41,14 @@ routing_deviation:
     The human directed the current Codex session to continue correcting SG-004 in
     place until the packet acceptance criteria pass. Existing history is preserved;
     no amend, force-push, product change, or contract assumption is authorized.
-claim_guard: >-
+revision_1_claim_guard: >-
   The assigned Antigravity Gemini 3.1 Pro high runtime should claim this task. Any
   alternate platform or model must disclose the routing deviation and obtain an
   approved packet revision before changing status to in_progress. Antigravity must
   not edit STATUS.md; the Codex integrator synchronizes it in a separate coordination
   commit. A Codex reviewer/model deviation also requires disclosure and an approved
   packet revision before formal review.
-claim_prerequisites:
+revision_1_claim_prerequisites:
   - >-
     Reconfirm that base_sha is an ancestor of the branch start. Between base_sha and
     branch start, only this approved preparation packet and STATUS summary may differ;
@@ -60,6 +60,12 @@ claim_prerequisites:
     gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / <UTC ISO-8601>" and
     transition ready to in_progress atomically before creating or editing QA_PLAN.md.
   - Restate allowed paths, forbidden paths, acceptance IDs, and required commands.
+correction_claim_guard: >-
+  Revision 2 is claimed by the human-authorized Codex integrator on the existing
+  task branch. The frozen content may enter review after all scoped content and
+  packet validators pass. Because Codex authored the correction, only a human or
+  non-Codex platform may supply the formal revision 2 verdict; Codex validation
+  cannot advance the task to verified.
 reviewers:
   - platform: codex
     model: codex-5.5
@@ -130,6 +136,7 @@ deliverable_contract:
     - evidence_and_downstream_ownership
     - flakiness_and_negative_control_policy
     - gaps_risks_and_decision_needed_register
+    - NFR_catalog
     - H0b_readiness_summary
 allowed_paths:
   - docs/coordination/QA_PLAN.md
@@ -294,13 +301,19 @@ required_commands:
     ruby -E UTF-8:UTF-8 -e 'require "yaml"; packet =
     YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
     "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
+    sha = "f94133fa776993e3f545be2c6bd1d246455a3b72";
     abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
-    packet["task_revision"] == 1 && packet["status"] == "review" &&
-    packet["claim"].is_a?(String) && packet["claim"].start_with?("CLAIM:
-    antigravity /") && packet["head_sha"].is_a?(String) &&
-    packet["head_sha"].match?(/\A[0-9a-f]{40}\z/) &&
-    File.file?("docs/coordination/handoffs/SG-004.md"); puts "SG-004 review
-    packet YAML: OK"'
+    packet["task_revision"] == 2 && packet["status"] == "review" &&
+    packet["correction_claim"].is_a?(String) &&
+    packet["correction_claim"].start_with?("CLAIM: codex /") &&
+    packet["head_sha"] == sha && packet["qa_content_sha"] == sha &&
+    packet.dig("correction_review_request", "review_scope_sha") == sha &&
+    packet.dig("correction_review_request", "formal_review_started") == false &&
+    packet.dig("correction_review_request", "verdict") == "pending" &&
+    packet.dig("correction_review_guard", "required_formal_reviewer") ==
+    "human_or_non_codex_platform" &&
+    File.file?("docs/coordination/handoffs/SG-004.md"); puts "SG-004 revision 2
+    review packet YAML: OK"'
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
@@ -375,13 +388,23 @@ state_history:
       frozen SHA b0fb73b5aa520986a810177e81e120df20e52dbd still fails qualitative
       SG-004-AC02 through SG-004-AC08. Merge is blocked and the task
       returns to Antigravity; SG-004-DN01 itself remains correctly classified.
-head_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
-head_sha_role: superseded_revision_1_antigravity_frozen_submission
-qa_content_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
-qa_content_sha_role: superseded_revision_1_QA_PLAN_content
+  - at: "2026-07-16T16:51:14Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Codex froze the revision 2 QA plan at content commit
+      f94133fa776993e3f545be2c6bd1d246455a3b72 after two read audits and the
+      structural validators found no remaining content blocker. The exact human or
+      non-Codex reviewer runtime must still be confirmed before formal review starts.
+head_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+head_sha_role: frozen_revision_2_codex_corrective_submission
+qa_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+qa_content_sha_role: frozen_revision_2_QA_PLAN_content
 handoff: docs/coordination/handoffs/SG-004.md
-prepared_on_branch: agent/codex/SG-004-preparation
-review_gate:
+revision_1_prepared_on_branch: agent/codex/SG-004-preparation
+revision_1_review_gate:
+  applies_to_revision: 1
+  historical_only: true
   round: 2
   audited_at: "2026-07-16T10:21:27Z"
   audited_by: external-formal-review
@@ -397,7 +420,9 @@ review_gate:
     No SG-004 review blockers remain. The QA plan, packet, handoff, and STATUS agree
     on the frozen substantive SHA, and all scoped validation passed. SG-004-DN01 is
     correctly retained for human resolution at H0b.
-integration_gate:
+revision_1_integration_gate:
+  applies_to_revision: 1
+  historical_only: true
   checked_at: "2026-07-16T10:25:44Z"
   checked_by: codex-integrator
   verdict: changes_requested
@@ -432,8 +457,19 @@ correction_pass:
   revision: 2
   started_at: "2026-07-16T15:34:02Z"
   started_by: codex-integrator
-  status: in_progress
+  completed_at: "2026-07-16T16:51:14Z"
+  submitted_at: "2026-07-16T16:51:14Z"
+  status: review
   authority: current human instruction
+  frozen_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+  author_validation:
+    checked_by: codex-integrator
+    independent: false
+    verdict: pass_for_independent_review_submission
+    summary: >-
+      Two read audits and the exact structure, trace, fixture, ownership, semantic,
+      placeholder, and whitespace validators found no remaining QA content blocker.
+      These Codex-family checks are implementation evidence, not formal review.
   target_acceptance: [SG-004-AC02, SG-004-AC03, SG-004-AC04, SG-004-AC05, SG-004-AC06, SG-004-AC07, SG-004-AC08, SG-004-AC09]
   constraints:
     - docs-only changes within existing allowed_paths
@@ -441,6 +477,37 @@ correction_pass:
     - no product, test, dependency, runtime, contract, decision, or deployment change
     - SG-004-DN01 remains decision-needed for human H0b
     - revision 1 review approval does not apply to new substantive content
+
+correction_review_request:
+  revision: 2
+  status: awaiting_reviewer_confirmation
+  submitted_at: "2026-07-16T16:51:14Z"
+  verdict: pending
+  review_scope_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+  required_reviewer: human_or_non_codex_platform
+  recommended_platform: claude
+  reviewer_platform: null
+  reviewer_runtime: null
+  reviewer_setting: null
+  reviewer_confirmed_by: null
+  reviewer_confirmed_at: null
+  formal_review_started: false
+  review_id: null
+  blocks_verify_and_merge: true
+  note: >-
+    Revision 2 is review-ready and all author-side content validators pass. No formal
+    verdict exists for this SHA; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00
+    remains historical revision 1 evidence only.
+correction_integration_gate:
+  checked_at: "2026-07-16T16:51:14Z"
+  checked_by: codex-integrator
+  verdict: content_validated_pending_independent_review
+  blocks_verify_and_merge: true
+  blocking_findings: []
+  reason: >-
+    The revision 1 qualitative findings are resolved in the frozen revision 2 QA
+    content. Verification and merge remain blocked only by the required independent
+    human or non-Codex formal review of that exact content SHA.
 
 decision_needed:
   - id: SG-004-DN01
