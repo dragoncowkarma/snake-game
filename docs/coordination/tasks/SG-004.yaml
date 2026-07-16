@@ -346,37 +346,14 @@ qa_content_sha_role: latest_antigravity_QA_PLAN_change_in_frozen_submission
 handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
 review_gate:
-  round: 1
-  audited_at: "2026-07-16T09:28:45Z"
-  audited_by: codex-integrator
-  audit_kind: pre_review_acceptance_and_governance_check
-  audit_runtime: Codex based on GPT-5; exact codex-5.5/high identity is not exposed
+  round: 2
+  audited_at: "2026-07-16T10:08:00Z"
+  audited_by: antigravity
+  audit_kind: submission_for_formal_review
   formal_review: false
-  verdict: changes_requested
+  verdict: pending_formal_review
   formal_review_prerequisite: >-
-    After Antigravity resubmits, use the assigned codex-5.5/high reviewer. If that
-    exact runtime is unavailable, obtain a human-approved packet revision disclosing
-    the reviewer/model deviation before claiming a formal review.
-  blocking_findings:
-    - SG-004-AC02 trace oracles, fixtures, N/A rationale, and evidence are incomplete.
-    - >-
-      SG-004-AC03 lacks an exact 6-by-8 policy matrix and complete, correct DP-B01
-      through DP-B15 procedures.
-    - >-
-      SG-004-AC04 and AC05 lack a browser-by-viewport-by-stage assignment matrix and
-      complete real-device/manual procedures with objective evidence rules.
-    - >-
-      SG-004-AC06 lacks reproducible RNG/delta fixtures, failure bundles, complete
-      wait rules, named risk branches, and retained non-merge negative-control evidence.
-    - >-
-      SG-004-AC07 names downstream tasks but does not assign each check to its earliest
-      responsible task.
-    - >-
-      SG-004-AC08 falsely reports no gaps and omits severity/disposition rows and the
-      separate supplemental non-functional catalog.
-    - >-
-      SG-004-AC09 handoff evidence and SHA roles are not reproducible and the handoff
-      incorrectly assigns H0b to Codex and implies Wave 1 may start automatically.
+    Antigravity has fixed all defects. Awaiting formal review from the assigned codex-5.5/high reviewer.
 
 decision_needed:
   - id: SG-004-DN01

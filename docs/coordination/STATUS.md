@@ -6,7 +6,7 @@
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
 - 현재 활성 작업: SG-004 (`review`, Antigravity 수정 완료 후 Codex 형식 리뷰 대기)
-- 현재 차단: SG-004-AC02~AC08 보완과 AC-G06 성장 tick/tail fixture 의미에 대한 사람 결정 필요
+- 현재 차단: SG-004-DN01 (AC-G06 성장 tick/tail fixture 의미에 대한 사람 결정 필요)
 
 ## 다음 관문
 
@@ -26,7 +26,7 @@ SG-004 revision 1은 Antigravity가 `agent/antigravity/SG-004-qa-plan`에서 작
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-003 완료, SG-004 changes requested·수정 대기, 사람 H0b 대기 |
+| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-003 완료, SG-004 review 대기, 사람 H0b 대기 |
 | 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
