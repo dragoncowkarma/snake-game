@@ -1,6 +1,6 @@
 id: SG-003
 spec_version: "1.0-plan"
-task_revision: 1
+task_revision: 2
 status: review
 source_of_truth: offline
 offline_reason: >-
@@ -132,6 +132,21 @@ state_history:
       The exact TypeScript shapes, command table, domain invariants, deterministic
       RNG rules, and scheduler contract were documented and all scoped validation
       commands passed; independent Claude review remains.
+  - at: "2026-07-16T06:49:19Z"
+    from: review
+    to: in_progress
+    reason: >-
+      The current human directed a revision 2 amendment to resolve the non-blocking
+      finding from the independent Claude review (pause/resume domain entry point).
+  - at: "2026-07-16T06:49:19Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Revision 2 clarifies in CONTRACTS.md §4 that pause/resume are router-owned pure
+      phase/queue/accumulator transitions outside the three core functions. No type,
+      invariant, policy, event, RNG, or scheduler rule changed. Authored by Claude
+      (the assigned reviewer) at human direction, so any required formal re-review of
+      revision 2 should be performed by a non-Claude platform or the human.
 head_sha: 993c70309c6eeeb0a537e0d0f4d1733d84c651f6
 head_sha_role: frozen_implementation_evidence
 coordination_commit_note: >-

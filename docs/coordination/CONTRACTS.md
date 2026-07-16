@@ -1,9 +1,14 @@
 # SG-003 공용 게임 계약
 
 - 명세: `1.0-plan`
-- task: `SG-003` revision 1
+- task: `SG-003` revision 2
 - 기준 SHA: `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`
 - 상태: H0b 승인을 위한 Wave 0 계약안
+
+## 개정 이력
+
+- revision 1: 최초 계약안.
+- revision 2: 지정 Claude 리뷰가 지적한 `pause`/`resume` 도메인 진입점 미지정을 §4에 명시로 보강했다. 세 공개 함수와 상태 불변 조건, phase×command 정책, event payload, RNG·scheduler 규칙은 그대로이며 새 제품 의미가 없어 §10대로 새 ADR을 만들지 않는다.
 
 이 문서는 SG-007이 구현할 공개 TypeScript 모양과 SG-010, SG-012, SG-013, SG-004가 공유할 동작 경계를 고정한다. 이 revision은 문서 계약만 만들며 소스 파일이나 실행 구현을 만들지 않는다. H0b 전에는 아래 계약이 `accepted` 기술 결정이나 Wave 1 구현 승인을 뜻하지 않는다.
 
@@ -245,6 +250,10 @@ window blur, `document.hidden`, 실제 세로↔가로 orientation 전환은 어
 ### `step`
 
 `step`은 `playing`에서만 논리 tick 하나를 계산한다. 다른 phase에서는 상태와 RNG를 건드리지 않고 `{ state, events: [] }`를 반환한다. renderer FPS, delta, accumulator는 인자로 받지 않는다.
+
+### `pause`와 `resume`
+
+`pause`와 `resume` 명령의 `accept`는 세 공개 도메인 함수가 아니라 application command router가 §7 규칙대로 수행하는 순수 phase·큐·accumulator 전이를 뜻한다. 이 두 전이는 RNG나 tick 계산 없이 `phase`, `queuedDirections`, scheduler `accumulator`만 바꾸고 §9의 domain 소유 game-rule 판정(충돌·food·점수·속도·승패)을 포함하지 않으므로 core 함수 밖에 두어도 경계가 유지된다.
 
 ## 5. 한 tick의 고정 순서
 
