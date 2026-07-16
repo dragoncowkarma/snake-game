@@ -20,7 +20,7 @@ Domain statement and branch coverage will be at least 90%, and 100% for named ri
 | AC-G08 | unit | speed-5 | Node | tickMs explicit decrease applied only on next simulation tick. | SG-011 | unit_result.json |
 | AC-G09 | unit | full-board | Node | Phase becomes WON immediately upon eating last food. | SG-011 | unit_result.json |
 | AC-G10 | unit+e2e | restart-1 | Node+Chromium | Score/length/food/queue/accumulator reset. No dup events. | SG-011, SG-018 | e2e_result.json |
-| AC-L01 | e2e | N/A | Chromium | Phase transitions to PAUSED immediately on visibility hidden. | SG-018 | e2e_result.json |
+| AC-L01 | e2e | N/A | Chromium | Phase transitions to PAUSED immediately on window blur/focus-loss, visibility hidden, or orientation change. | SG-018 | e2e_result.json |
 | AC-L02 | unit+e2e | pause-1 | Node+Chromium | Accumulator drops to 0, queue cleared, direction preserved. | SG-011, SG-018 | e2e_result.json |
 | AC-L03 | e2e | N/A | Chromium | Logical cells and phase remain identical after resize event. | SG-018 | e2e_result.json |
 | AC-U01 | manual | N/A | 320x568 | No horizontal scrollbar, canvas fully visible, buttons clear. | SG-020 | screenshot.png |
@@ -94,10 +94,10 @@ Domain statement and branch coverage will be at least 90%, and 100% for named ri
 | PC-22 | WON phase | returnToMenu | Transition to MENU | unit+e2e |
 | PC-23 | WON phase | toggleMute | Audio toggles, state unchanged | e2e+manual |
 | PC-24 | WON phase | selectDifficulty / start / direction / pause / resume | Commands ignored, state unchanged | unit+e2e |
-| PC-25 | PLAYING phase | Normal Tick (no food) | Queue consumed -> Wall/Self collision -> Tail removed. RNG not called. No events generated. | unit |
-| PC-26 | PLAYING phase | Eat Food | Food calc true -> Tail preserved -> Score updated -> RNG called exactly once -> `foodEaten` emitted. | unit |
-| PC-27 | PLAYING phase | Eat Last Food (Full Board) | Score updated -> freeCells empty -> RNG NOT called -> `foodEaten` emitted then `gameWon` emitted in exact order. | unit |
-| PC-28 | PLAYING phase | Collision | Wall/Self collision -> queue emptied -> `gameEnded` emitted exactly once. RNG not called. Terminal phase steps yield no additional events. | unit |
+| PC-25 | PLAYING phase | Normal Tick (no food) | Queue consumed -> Wall collision (None) -> Food calc (False) -> Self collision (None) -> Add head -> Tail removed. RNG not called. No events generated. | unit |
+| PC-26 | PLAYING phase | Eat Food | Queue consumed -> Wall collision (None) -> Food calc (True) -> Self collision (None) -> Add head -> Tail preserved -> Score updated -> RNG called exactly once -> `foodEaten` emitted. | unit |
+| PC-27 | PLAYING phase | Eat Last Food (Full Board) | Queue consumed -> Wall collision (None) -> Food calc (True) -> Self collision (None) -> Add head -> Tail preserved -> Score updated -> freeCells empty -> RNG NOT called -> `foodEaten` emitted then `gameWon` emitted in exact order. | unit |
+| PC-28 | PLAYING phase | Collision | Queue consumed -> Wall collision (Yes) OR (Wall: None -> Food calc -> Self collision (Yes)) -> queue emptied -> `gameEnded` emitted exactly once. RNG not called. Terminal phase steps yield no additional events. | unit |
 
 ## viewport_browser_device_and_accessibility_matrix
 - **Viewports:** 320x568, 390x844, 768x1024, 1366x768, 1920x1080.
