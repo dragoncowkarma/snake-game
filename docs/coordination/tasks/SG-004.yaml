@@ -1,6 +1,6 @@
 id: SG-004
 spec_version: "1.0-plan"
-task_revision: 1
+task_revision: 2
 status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
@@ -11,20 +11,36 @@ offline_reason: >-
   packet is the only SG-004 task source and must not coexist with a later GitHub Issue.
 approval_gate: H0a
 approval_basis: >-
-  The human H0a approval at 2026-07-15T18:47:25Z authorizes SG-001 through SG-004
-  Wave 0 work. The current human instruction, "SG-004 시작 전 준비 작업", authorizes
-  coordination preparation only. The Codex integrator narrows the approved docs-only
-  scope without changing product meaning; SG-004 remains unclaimed and not started.
-approved_by: codex-integrator
-approved_at: "2026-07-16T07:54:41Z"
+  The human H0a approval at 2026-07-15T18:47:25Z authorized SG-004 Wave 0 work. After
+  revision 1 remained below its qualitative acceptance criteria, the current human
+  instruction, "여기서 통과될 때까지 수정 진행", explicitly authorizes the Codex
+  integrator to perform a docs-only corrective pass on the existing task branch. This
+  revision changes authorship and review routing only; product meaning and scope remain
+  unchanged, and SG-004-DN01 stays reserved for human H0b resolution.
+approved_by: human-user
+approved_at: "2026-07-16T15:34:02Z"
 preparation_requested_by: human-user
 preparation_requested_at: "2026-07-16T07:54:41Z"
 priority: P0
-owner: antigravity
-model: gemini-3.1-pro
+owner: codex-integrator
+model: gpt-5
 reasoning_or_workload: high
 assigned_model_baseline: gemini-3.1-pro
-routing_deviation: null
+routing_deviation:
+  kind: human_authorized_corrective_authorship_and_branch_deviation
+  original_owner: antigravity
+  original_model: gemini-3.1-pro
+  correction_owner: codex-integrator
+  correction_model: gpt-5
+  correction_setting: not_exposed
+  original_branch: agent/antigravity/SG-004-qa-plan
+  correction_branch: agent/antigravity/SG-004-qa-plan
+  authorized_by: human-user
+  authorized_at: "2026-07-16T15:34:02Z"
+  reason: >-
+    The human directed the current Codex session to continue correcting SG-004 in
+    place until the packet acceptance criteria pass. Existing history is preserved;
+    no amend, force-push, product change, or contract assumption is authorized.
 claim_guard: >-
   The assigned Antigravity Gemini 3.1 Pro high runtime should claim this task. Any
   alternate platform or model must disclose the routing deviation and obtain an
@@ -48,6 +64,15 @@ reviewers:
   - platform: codex
     model: codex-5.5
     setting: high
+    applies_to: revision_1_antigravity_submission_only
+correction_review_guard:
+  substantive_author_platform: codex
+  required_formal_reviewer: human_or_non_codex_platform
+  recommended_platform: claude
+  exact_runtime: requires_confirmation_before_formal_review
+  reason: >-
+    Codex found and now authors the revision 2 correction, so Codex self-checks are
+    implementation evidence rather than independent formal approval.
 depends_on:
   - SG-001
 dependency_evidence:
@@ -79,9 +104,9 @@ deliverables:
   handoff: docs/coordination/handoffs/SG-004.md
   status_summary: docs/coordination/STATUS.md
 path_owners:
-  docs/coordination/QA_PLAN.md: antigravity
-  docs/coordination/tasks/SG-004.yaml: antigravity_through_review_then_codex_integrator
-  docs/coordination/handoffs/SG-004.md: antigravity_author_then_codex_reviewer
+  docs/coordination/QA_PLAN.md: antigravity_revision_1_then_codex_integrator_revision_2
+  docs/coordination/tasks/SG-004.yaml: codex-integrator_for_revision_2_correction
+  docs/coordination/handoffs/SG-004.md: codex-integrator_for_revision_2_correction
   docs/coordination/STATUS.md: codex-integrator-only
 deliverable_contract:
   master_trace_rows: 28
@@ -295,6 +320,8 @@ not_applicable_commands:
       exists, and executing browser evidence would falsely start downstream work.
 branch: agent/antigravity/SG-004-qa-plan
 claim: "CLAIM: antigravity / gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / 2026-07-16T08:22:13Z"
+correction_claim: "CLAIM: codex / gpt-5 setting-not-exposed / agent/antigravity/SG-004-qa-plan / 2026-07-16T15:34:02Z"
+correction_start_sha: 50fc8caf1d76449b97a903ff3f41f92ca07acbab
 state_history:
   - at: "2026-07-16T07:54:41Z"
     from: backlog
@@ -349,9 +376,9 @@ state_history:
       SG-004-AC02 through SG-004-AC08. Merge is blocked and the task
       returns to Antigravity; SG-004-DN01 itself remains correctly classified.
 head_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
-head_sha_role: "frozen_antigravity_review_submission (Note: subsequent metadata-only commits will cause the actual branch tip to differ from this frozen substantive SHA)"
+head_sha_role: superseded_revision_1_antigravity_frozen_submission
 qa_content_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
-qa_content_sha_role: latest_antigravity_QA_PLAN_change_in_frozen_submission
+qa_content_sha_role: superseded_revision_1_QA_PLAN_content
 handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
 review_gate:
@@ -401,6 +428,19 @@ integration_gate:
     - >-
       SG-004-AC08: known gaps outside DN01 are unclassified prose and the NFR catalog
       lacks stages and complete DEVELOPMENT_PLAN section 10 oracles.
+correction_pass:
+  revision: 2
+  started_at: "2026-07-16T15:34:02Z"
+  started_by: codex-integrator
+  status: in_progress
+  authority: current human instruction
+  target_acceptance: [SG-004-AC02, SG-004-AC03, SG-004-AC04, SG-004-AC05, SG-004-AC06, SG-004-AC07, SG-004-AC08, SG-004-AC09]
+  constraints:
+    - docs-only changes within existing allowed_paths
+    - no STATUS author other than codex-integrator
+    - no product, test, dependency, runtime, contract, decision, or deployment change
+    - SG-004-DN01 remains decision-needed for human H0b
+    - revision 1 review approval does not apply to new substantive content
 
 decision_needed:
   - id: SG-004-DN01
