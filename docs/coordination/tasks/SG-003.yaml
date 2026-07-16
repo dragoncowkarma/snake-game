@@ -1,0 +1,129 @@
+id: SG-003
+spec_version: "1.0-plan"
+task_revision: 1
+status: in_progress
+source_of_truth: offline
+offline_reason: >-
+  Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
+  the public GitHub API returned no open Issue or PR for this repository immediately
+  before the task was claimed.
+approval_gate: H0a
+approval_basis: >-
+  Current human instruction on 2026-07-16: create and approve the SG-003 revision 1
+  offline packet, and recognize SG-001 and SG-002 as completed prerequisites.
+approved_by: human-user
+approved_at: "2026-07-16T06:08:38Z"
+owner: codex
+model: gpt-5-codex
+reasoning_or_workload: very-high
+assigned_model_baseline: codex-5.6-sol
+routing_deviation: >-
+  The named Codex 5.6 Sol runtime is not exposed in this execution environment. The
+  current human approved this packet in the active Codex session; no model equivalence
+  is inferred, and the named Claude reviewer remains required before H0b.
+reviewers:
+  - platform: claude
+    model: opus-4.8
+    setting: high
+depends_on:
+  - SG-001
+  - SG-002
+dependency_evidence:
+  SG-001: >-
+    The current human explicitly recognized SG-001 as complete for SG-003. Its
+    DEVELOPMENT_PLAN change is present on the base as commit
+    a516758f5517847ae6915b504cadfc501d090fc4.
+  SG-002: >-
+    The current human explicitly recognized SG-002 as complete for SG-003. Its
+    PASS_4_2_1 implementation and both independent reviews are present on the base;
+    the merge commit is fd81ba9943e8b5786a0910e7172fb57c477c0d5e.
+base_sha: fd81ba9943e8b5786a0910e7172fb57c477c0d5e
+allowed_paths:
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/handoffs/SG-003.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/**
+  - tests/**
+  - spikes/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/DECISIONS.md
+  - dist/**
+  - "all paths not explicitly listed in allowed_paths"
+acceptance_ids:
+  - id: SG-003-AC01
+    text: >-
+      CONTRACTS.md fixes exact TypeScript shapes for GameState, Phase, Cell,
+      Direction, Difficulty, Command, DomainEvent, RandomSource, and the
+      reset/step/enqueueDirection boundaries without adding source files.
+  - id: SG-003-AC02
+    text: >-
+      A normative phase-by-command table distinguishes accepted, rejected, and
+      ignored commands, including READY Right as the only same-direction start and
+      Enter/Space never becoming a READY domain command.
+  - id: SG-003-AC03
+    text: >-
+      The contract fixes the ten-stage tick order, free-cell food selection, the
+      vacating-tail collision exception, a two-entry direction queue, one consumed
+      direction per tick, and reverse-input validation against the last accepted
+      direction.
+  - id: SG-003-AC04
+    text: >-
+      gameEnded carries wall/self reason, the last valid headCell, and attemptedCell;
+      terminal transitions and full-board victory emit once and cannot step again.
+  - id: SG-003-AC05
+    text: >-
+      Every pause entry preserves direction while clearing queued directions and the
+      scheduler accumulator, and the scheduler uses one pre-step stepDuration for
+      both eligibility and subtraction so acceleration applies only to the next step.
+  - id: SG-003-AC06
+    text: >-
+      A seeded example and explicit RNG call-order rules demonstrate that the same
+      seed plus accepted command stream yields identical snapshots and events.
+  - id: SG-003-AC07
+    text: >-
+      Import boundaries exclude Phaser, DOM, Web Audio, storage, Scene lifecycle,
+      Canvas pixels, and renderer-derived rules; no Phaser 3 or Phaser 4 API appears
+      in the domain contract.
+required_commands:
+  - git diff --check
+  - git diff --name-only fd81ba9943e8b5786a0910e7172fb57c477c0d5e..HEAD
+  - test ! -e src
+  - >-
+    rg -n 'GameState|Phase|Cell|Direction|Difficulty|Command|DomainEvent|RandomSource|reset|step|enqueueDirection|stepDuration'
+    docs/coordination/CONTRACTS.md
+not_applicable_commands:
+  - command: npm run format:check
+    reason: >-
+      The root scaffold does not exist yet; SG-003 is a Markdown-only Wave 0 contract
+      and must not preempt SG-005 formatting setup.
+  - command: npm run lint
+    reason: The root scaffold and lint command do not exist yet.
+  - command: npm run typecheck
+    reason: >-
+      SG-003 deliberately documents the exact future TypeScript shape; SG-007 owns
+      the first compileable implementation after scaffold.
+  - command: npm run test
+    reason: The root scaffold and test command do not exist yet.
+  - command: npm run build
+    reason: The root product scaffold and build command do not exist yet.
+  - command: npm run test:e2e
+    reason: SG-003 changes no runtime product or browser surface.
+branch: agent/codex/SG-003-domain-contract
+claim: "CLAIM: codex / gpt-5-codex very-high / agent/codex/SG-003-domain-contract / 2026-07-16T06:08:38Z"
+state_history:
+  - at: "2026-07-16T06:08:38Z"
+    from: backlog
+    to: ready
+    reason: The current human created and approved revision 1 and accepted both prerequisites.
+  - at: "2026-07-16T06:08:38Z"
+    from: ready
+    to: in_progress
+    reason: Codex claimed the task on its dedicated branch.
+head_sha:
+handoff: docs/coordination/handoffs/SG-003.md
