@@ -1,7 +1,7 @@
 id: SG-003
 spec_version: "1.0-plan"
 task_revision: 2
-status: review
+status: merged
 source_of_truth: offline
 offline_reason: >-
   Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
@@ -13,6 +13,12 @@ approval_basis: >-
   offline packet, and recognize SG-001 and SG-002 as completed prerequisites.
 approved_by: human-user
 approved_at: "2026-07-16T06:08:38Z"
+completion_approved_by: human-user
+completion_approved_at: "2026-07-16T07:30:22Z"
+completion_basis: >-
+  The current human instruction "SG-003 완료" accepts revision 2, resolves the
+  disclosed runtime-model routing deviation for this task, and closes SG-003 only.
+  It does not approve H0b or accept D-001 through D-006.
 owner: codex
 model: gpt-5-codex
 reasoning_or_workload: very-high
@@ -20,7 +26,8 @@ assigned_model_baseline: codex-5.6-sol
 routing_deviation: >-
   The named Codex 5.6 Sol runtime is not exposed in this execution environment. The
   current human approved this packet in the active Codex session; no model equivalence
-  is inferred, and the named Claude reviewer remains required before H0b.
+  is inferred. The assigned Claude review passed, and the current human completion
+  instruction accepts this disclosed deviation for SG-003 only.
 reviewers:
   - platform: claude
     model: opus-4.8
@@ -116,6 +123,8 @@ not_applicable_commands:
     reason: SG-003 changes no runtime product or browser surface.
 branch: agent/codex/SG-003-domain-contract
 claim: "CLAIM: codex / gpt-5-codex very-high / agent/codex/SG-003-domain-contract / 2026-07-16T06:08:38Z"
+completion_branch: agent/codex/SG-003-completion
+completion_claim: "CLAIM: codex / gpt-5-codex very-high / agent/codex/SG-003-completion / 2026-07-16T07:30:22Z"
 state_history:
   - at: "2026-07-16T06:08:38Z"
     from: backlog
@@ -152,10 +161,29 @@ state_history:
       changed. Authored by Claude (the assigned reviewer) at human direction, so any
       required formal re-review of revision 2 should be performed by a non-Claude
       platform or the human.
+  - at: "2026-07-16T07:30:22Z"
+    from: review
+    to: verified
+    reason: >-
+      A non-Claude Codex review of revision 2 found all three Claude findings resolved
+      without changing the public types, invariants, policy constant, events, RNG, or
+      scheduler rules. All scoped commands passed, and the current human explicitly
+      instructed that SG-003 is complete, accepting the disclosed routing deviation.
+  - at: "2026-07-16T07:30:22Z"
+    from: verified
+    to: merged
+    reason: >-
+      Reconciled the offline packet with the existing local main merges: revision 1 at
+      12cdf94261270566a1f6f43207cf1f125adc1222 and revision 2 at
+      c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18. No remote synchronization is claimed;
+      H0b and D-001 through D-006 remain pending.
 head_sha: 993c70309c6eeeb0a537e0d0f4d1733d84c651f6
-head_sha_role: frozen_implementation_evidence
+head_sha_role: frozen_revision_1_implementation_evidence
+revision_2_sha: b4c5130bc0a0980d95ff575ff12efd154bf001ab
+merged_sha: c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18
+merged_scope: local_main
 coordination_commit_note: >-
-  The handoff and in_progress-to-review transition are recorded in a subsequent
-  coordination-only commit, so the branch HEAD is expected to differ from the frozen
-  implementation evidence SHA.
+  head_sha preserves the original revision 1 evidence. revision_2_sha is the final
+  normative contract revision, and merged_sha is the existing local main merge that
+  contains it. Completion metadata is recorded later on the completion branch.
 handoff: docs/coordination/handoffs/SG-003.md
