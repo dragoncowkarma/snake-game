@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -339,6 +339,15 @@ state_history:
     to: review
     reason: >-
       Antigravity completely rewrote QA_PLAN.md to address all blocker findings, adding rigorous trace oracles, 15 boundary procedures, the exact 6x8 policy, browser/stage matrices, gap records, and NFRs. Resubmitting for formal Codex review.
+  - at: "2026-07-16T10:25:44Z"
+    from: review
+    to: in_progress
+    reason: >-
+      The human reported formal review 019f6a18-79e7-7f12-a40a-e67e448a1a00 as
+      Approved, but the Codex integrator's independent acceptance replay found that
+      frozen SHA b0fb73b5aa520986a810177e81e120df20e52dbd still fails qualitative
+      SG-004-AC02 through SG-004-AC08. Merge is blocked and the task
+      returns to Antigravity; SG-004-DN01 itself remains correctly classified.
 head_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
 head_sha_role: "frozen_antigravity_review_submission (Note: subsequent metadata-only commits will cause the actual branch tip to differ from this frozen substantive SHA)"
 qa_content_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
@@ -347,13 +356,51 @@ handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
 review_gate:
   round: 2
-  audited_at: "2026-07-16T10:08:00Z"
-  audited_by: antigravity
-  audit_kind: submission_for_formal_review
-  formal_review: false
-  verdict: pending_formal_review
-  formal_review_prerequisite: >-
-    Antigravity has fixed all defects. Awaiting formal review from the assigned codex-5.5/high reviewer.
+  audited_at: "2026-07-16T10:21:27Z"
+  audited_by: external-formal-review
+  audit_kind: formal_independent_review
+  formal_review: true
+  verdict: approved
+  review_id: 019f6a18-79e7-7f12-a40a-e67e448a1a00
+  review_scope_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
+  reviewed_branch_tip_sha: ab3fe68d3cf80349a8fea62a6a97c3c7172c3628
+  reported_by: human-user
+  reviewer_identity_note: runtime identity is not independently exposed in repository evidence
+  result_summary: >-
+    No SG-004 review blockers remain. The QA plan, packet, handoff, and STATUS agree
+    on the frozen substantive SHA, and all scoped validation passed. SG-004-DN01 is
+    correctly retained for human resolution at H0b.
+integration_gate:
+  checked_at: "2026-07-16T10:25:44Z"
+  checked_by: codex-integrator
+  verdict: changes_requested
+  blocks_verify_and_merge: true
+  reason: >-
+    The reported approval conflicts with the frozen document. Mechanical validators
+    pass, but packet acceptance requires substantive, reproducible procedures and
+    check-level ownership that are still absent.
+  blocking_findings:
+    - >-
+      SG-004-AC02: master rows retain bare N/A values and the fixture catalog names
+      states/sequences without supplying their exact reproducible values.
+    - >-
+      SG-004-AC03: DP-B rows omit required cases and exact oracles, and phase-command
+      coverage is grouped scenarios rather than the required explicit 6-by-8 matrix.
+    - >-
+      SG-004-AC04: environment rows do not fully assign accessibility modes and each
+      required viewport/browser/stage combination to a responsible check.
+    - >-
+      SG-004-AC05: manual-only and real-device ACs do not each have complete
+      prerequisites, ordered steps, objective PASS conditions, owner/gate, and evidence.
+    - >-
+      SG-004-AC06: deterministic fixtures and negative controls lack concrete scripted
+      values, mutations, and named expected failing tests.
+    - >-
+      SG-004-AC07: downstream task descriptions do not assign every planned check to
+      its earliest responsible task.
+    - >-
+      SG-004-AC08: known gaps outside DN01 are unclassified prose and the NFR catalog
+      lacks stages and complete DEVELOPMENT_PLAN section 10 oracles.
 
 decision_needed:
   - id: SG-004-DN01
