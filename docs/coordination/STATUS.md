@@ -5,7 +5,7 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 (SG-002는 `review` 상태로 독립 리뷰 대기)
+- 현재 활성 작업: 없음 (SG-003 계약은 독립 Claude 리뷰 통과, H0b 대기)
 - 현재 차단: 없음
 
 ## 다음 관문
@@ -16,13 +16,15 @@
 
 현재 환경에는 인증된 GitHub CLI/API 도구가 없어 SG-002는 GitHub Issue/PR과 중복되지 않는 offline packet/handoff를 원본으로 사용한다. 2026-07-16 확인 시 열린 Issue와 PR은 각각 0건이었다.
 
-SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/WebKit production-preview 매트릭스를 통과해 `PASS_4_2_1`을 반환했다. 계획상 기준 모델이 현재 런타임에서 제공되지 않아 실행 모델 라우팅 편차도 독립 리뷰 대상이다. 이 결과는 기술 검증 증거이며 D-001의 `accepted` 변경이나 H0b 통과가 아니다. 상세 재현 증거와 제약은 `docs/coordination/handoffs/SG-002.md`에 있다.
+SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/WebKit production-preview 매트릭스를 통과해 `PASS_4_2_1`을 반환했고 Claude와 Antigravity의 독립 리뷰가 기록됐다. 2026-07-16 사람 지시로 SG-001과 SG-002를 SG-003의 완료된 선행 작업으로 인정했다. 이 인정은 D-001의 `accepted` 변경이나 H0b 통과가 아니다. 상세 재현 증거와 제약은 `docs/coordination/handoffs/SG-002.md`에 있다.
+
+SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고로 `docs/coordination/handoffs/SG-003.md`에 기록됐다. 비차단 경계 명확화 1건(pause/resume 도메인 진입점)은 SG-007 착수 전 반영을 권고하며, H0b 사람 승인과 모델 라우팅 편차 처리가 남는다. 패킷 `status`는 SG-002 선례에 따라 머지 전까지 `review`로 유지한다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-002 `PASS_4_2_1` 독립 리뷰 대기, SG-001은 지정 플랫폼 선점 대기 |
+| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-001·SG-002 선행 완료 인정, SG-003 계약 독립 리뷰 통과(승인 권고)·H0b 대기 |
 | 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
