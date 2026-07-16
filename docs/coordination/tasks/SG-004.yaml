@@ -1,0 +1,308 @@
+id: SG-004
+spec_version: "1.0-plan"
+task_revision: 1
+status: ready
+source_of_truth: offline
+offline_checked_at: "2026-07-16T07:54:41Z"
+offline_reason: >-
+  Authenticated GitHub CLI/API tooling is unavailable in this execution environment.
+  Immediately before this packet was prepared, the public GitHub issues endpoint
+  returned an empty list for all open Issues and PRs in this repository. This offline
+  packet is the only SG-004 task source and must not coexist with a later GitHub Issue.
+approval_gate: H0a
+approval_basis: >-
+  The human H0a approval at 2026-07-15T18:47:25Z authorizes SG-001 through SG-004
+  Wave 0 work. The current human instruction, "SG-004 시작 전 준비 작업", authorizes
+  coordination preparation only. The Codex integrator narrows the approved docs-only
+  scope without changing product meaning; SG-004 remains unclaimed and not started.
+approved_by: codex-integrator
+approved_at: "2026-07-16T07:54:41Z"
+preparation_requested_by: human-user
+preparation_requested_at: "2026-07-16T07:54:41Z"
+priority: P0
+owner: antigravity
+model: gemini-3.1-pro
+reasoning_or_workload: high
+assigned_model_baseline: gemini-3.1-pro
+routing_deviation: null
+claim_guard: >-
+  The assigned Antigravity Gemini 3.1 Pro high runtime should claim this task. Any
+  alternate platform or model must disclose the routing deviation and obtain an
+  approved packet revision before changing status to in_progress. Antigravity must
+  not edit STATUS.md; the Codex integrator synchronizes it in a separate coordination
+  commit. A Codex reviewer/model deviation also requires disclosure and an approved
+  packet revision before formal review.
+claim_prerequisites:
+  - >-
+    Reconfirm that base_sha is an ancestor of the branch start. Between base_sha and
+    branch start, only this approved preparation packet and STATUS summary may differ;
+    any other path requires an approved packet revision with a new base.
+  - Reconfirm that no GitHub Issue or other offline source owns SG-004.
+  - >-
+    Create or switch to the dedicated Antigravity branch without editing files. As
+    the first operation there, replace claim null with "CLAIM: antigravity /
+    gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / <UTC ISO-8601>" and
+    transition ready to in_progress atomically before creating or editing QA_PLAN.md.
+  - Restate allowed paths, forbidden paths, acceptance IDs, and required commands.
+reviewers:
+  - platform: codex
+    model: codex-5.5
+    setting: high
+depends_on:
+  - SG-001
+dependency_evidence:
+  SG-001: >-
+    The approved DEVELOPMENT_PLAN output is present at
+    a516758f5517847ae6915b504cadfc501d090fc4 and is an ancestor of base_sha. It
+    contains the authoritative 28 ACs and test-strategy inputs consumed by SG-004.
+    The current human preparation instruction authorizes recording this existing
+    output as SG-004 dependency evidence without changing SG-001 state elsewhere.
+reference_inputs:
+  - path: docs/DEVELOPMENT_PLAN.md
+    role: approved_product_acceptance_criteria_and_test_strategy
+  - path: docs/coordination/CONTRACTS.md
+    role: merged_revision_2_domain_and_scheduler_contract
+    evidence_sha: b4c5130bc0a0980d95ff575ff12efd154bf001ab
+  - path: docs/AI_PROMPTS.md
+    role: P-AG-QA-PLAN_execution_prompt
+  - path: docs/EXPERT_REVIEW.md
+    role: independent_oracle_and_negative_control_rationale
+base_sha: 5b5ab4740f57f776978b602dea02ef90fdc44047
+base_scope: local_main
+base_note: >-
+  Local main is ahead of origin/main. The exact local base is authoritative for this
+  offline task; no remote synchronization is claimed. The implementer must confirm
+  base_sha is an ancestor and that no conflicting task source exists before claim.
+deliverables:
+  qa_plan: docs/coordination/QA_PLAN.md
+  packet: docs/coordination/tasks/SG-004.yaml
+  handoff: docs/coordination/handoffs/SG-004.md
+  status_summary: docs/coordination/STATUS.md
+path_owners:
+  docs/coordination/QA_PLAN.md: antigravity
+  docs/coordination/tasks/SG-004.yaml: antigravity_through_review_then_codex_integrator
+  docs/coordination/handoffs/SG-004.md: antigravity_author_then_codex_reviewer
+  docs/coordination/STATUS.md: codex-integrator-only
+deliverable_contract:
+  master_trace_rows: 28
+  authoritative_groups:
+    AC-G: 10
+    AC-L: 3
+    AC-U: 9
+    AC-R: 6
+  trace_header: "| AC | Level | Fixture/seed | Environment | Failure oracle | Owner/task | Evidence |"
+  level_format: "one or more of unit+contract+e2e+manual+deployed joined by +"
+  boundary_header: "| Scenario | Setup | Action | Oracle | Evidence |"
+  required_sections:
+    - authority_and_scope
+    - coverage_summary
+    - master_ac_trace_matrix
+    - fixture_and_seed_catalog
+    - boundary_scenarios_DP-B01_through_DP-B15
+    - phase_command_policy_coverage
+    - viewport_browser_device_and_accessibility_matrix
+    - automation_manual_and_deployed_staging
+    - evidence_and_downstream_ownership
+    - flakiness_and_negative_control_policy
+    - gaps_risks_and_decision_needed_register
+    - H0b_readiness_summary
+allowed_paths:
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/handoffs/SG-004.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - "src/**"
+  - "tests/**"
+  - "spikes/**"
+  - ".github/**"
+  - ".gitignore"
+  - ".nvmrc"
+  - ".node-version"
+  - "index.html"
+  - "public/**"
+  - package.json
+  - package-lock.json
+  - "tsconfig*.json"
+  - "vite.config.*"
+  - "eslint.config.*"
+  - ".prettierrc*"
+  - "prettier.config.*"
+  - "playwright.config.*"
+  - "vitest.config.*"
+  - "dist/**"
+  - README.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/AI_PROMPTS.md
+  - docs/EXPERT_REVIEW.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - "all paths not explicitly listed in allowed_paths"
+acceptance_ids:
+  - id: SG-004-AC01
+    text: >-
+      QA_PLAN.md contains exactly one primary trace row for each of the 28
+      authoritative IDs AC-G01 through AC-G10, AC-L01 through AC-L03, AC-U01 through
+      AC-U09, and AC-R01 through AC-R06, with no missing, duplicate, or unknown ID.
+  - id: SG-004-AC02
+    text: >-
+      Every AC row supplies non-empty test level(s) from unit, contract, e2e, manual,
+      or deployed; a fixture/seed or reasoned N/A; environment or N/A; an observable
+      implementation-independent failure oracle; downstream owner/task; and evidence
+      format. No TBD remains in the master trace matrix.
+  - id: SG-004-AC03
+    text: >-
+      Numbered setup, action, oracle, and evidence procedures cover all 15 mandatory
+      DEVELOPMENT_PLAN boundary scenarios plus the 6-by-8 phase-command policy, READY
+      Right, queue cap and consumption, reverse validation, event and RNG order, and
+      terminal idempotence.
+  - id: SG-004-AC04
+    text: >-
+      The environment matrix covers 320x568, 390x844, 768x1024, 1366x768, and
+      1920x1080; Chromium, Firefox, WebKit and the latest stable desktop browsers;
+      iOS Safari and Android Chrome real devices; keyboard-only, VoiceOver, TalkBack,
+      reduced motion, mute, safe area, and touch scope. It separates PR, release,
+      nightly, manual, and deployed stages and requires no public deploy before H3a.
+  - id: SG-004-AC05
+    text: >-
+      Every manual-only or real-device item has prerequisites, ordered steps, an
+      objective numeric or observable PASS condition, and an evidence filename rule.
+      Synthetic hidden, orientation, safe-area, or assistive-technology coverage is
+      not mislabeled as real-device evidence.
+  - id: SG-004-AC06
+    text: >-
+      The plan uses injected or scripted RNG and delta sequences, contract state and
+      event oracles, condition-based waits rather than arbitrary sleep, and failure
+      capture of seed, command trace, browser, viewport, and SHA. It records domain
+      statement and branch coverage of at least 90% and 100% for named risk branches.
+      It also plans a later throwaway negative control: intentionally mutated test or
+      product files are never merged, while failure evidence is retained in the
+      SG-020 handoff.
+  - id: SG-004-AC07
+    text: >-
+      Each planned check is assigned to the earliest responsible downstream task,
+      including SG-005, SG-008, SG-009, SG-011, SG-012, SG-015, SG-016, SG-018,
+      SG-020, SG-023, SG-024, SG-026, and SG-028. SG-004 reports a plan only and
+      makes no execution PASS, browser, device, accessibility, deployment, or H0b
+      claim.
+  - id: SG-004-AC08
+    text: >-
+      Every discovered gap or contradiction is classified blocker, high, medium, or
+      low with affected ACs and disposition. A product-meaning or public-contract
+      ambiguity is marked decision-needed rather than silently assumed. Supplemental
+      non-functional criteria are catalogued separately from the 28 product ACs.
+  - id: SG-004-AC09
+    text: >-
+      The diff is documentation-only, changes only allowed paths, introduces no source,
+      tests, dependencies, runtime configuration, contract change, accepted decision,
+      or public deployment, and passes every scoped validation command.
+required_commands:
+  - git diff --check
+  - git diff --check 5b5ab4740f57f776978b602dea02ef90fdc44047..HEAD
+  - git diff --name-only 5b5ab4740f57f776978b602dea02ef90fdc44047..HEAD
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'require "open3"; base =
+    "5b5ab4740f57f776978b602dea02ef90fdc44047"; allowed =
+    ["docs/coordination/QA_PLAN.md", "docs/coordination/tasks/SG-004.yaml",
+    "docs/coordination/handoffs/SG-004.md", "docs/coordination/STATUS.md"];
+    output, status = Open3.capture2("git", "diff", "--name-only",
+    "#{base}..HEAD"); abort("git diff failed") unless status.success?;
+    unexpected = output.lines.map(&:strip).reject(&:empty?) - allowed;
+    abort("unexpected paths: #{unexpected.join(",")}") unless unexpected.empty?;
+    worktree, clean = Open3.capture2("git", "status", "--porcelain");
+    abort("worktree not clean") unless clean.success? && worktree.empty?;
+    puts "SG-004 scope and clean worktree: OK"'
+  - >-
+    git diff --quiet 5b5ab4740f57f776978b602dea02ef90fdc44047..HEAD --
+    src tests spikes .github package.json package-lock.json README.md
+    docs/DEVELOPMENT_PLAN.md docs/TASKS.md docs/AI_PROMPTS.md
+    docs/EXPERT_REVIEW.md docs/coordination/CONTRACTS.md
+    docs/coordination/DECISIONS.md
+  - test ! -e src
+  - test ! -e tests
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'plan = File.read("docs/DEVELOPMENT_PLAN.md",
+    encoding: "UTF-8").scan(/`(AC-[GLUR]\d{2})`/).flatten.uniq.sort; rows =
+    File.read("docs/coordination/QA_PLAN.md", encoding:
+    "UTF-8").scan(/^\|\s*(AC-[GLUR]\d{2})\s*\|/).flatten; abort("AC trace
+    mismatch") unless plan.length == 28 && rows.length == 28 && rows.uniq.sort ==
+    plan; puts "28 AC rows: OK"'
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'text = File.read("docs/coordination/QA_PLAN.md",
+    encoding: "UTF-8"); allowed = %w[unit contract e2e manual deployed]; lines =
+    text.lines.grep(/^\|\s*AC-[GLUR]\d{2}\s*\|/); rows = lines.map { |line|
+    line.strip.split("|", -1)[1...-1].map(&:strip) }; abort("bad AC row shape")
+    unless rows.length == 28 && rows.all? { |row| row.length == 7 &&
+    row.none?(&:empty?) }; rows.each { |row| levels = row[1].split("+").map(&:strip);
+    abort("bad level: #{row[0]}") unless !levels.empty? && (levels - allowed).empty?
+    }; puts "AC row schema and levels: OK"'
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'text = File.read("docs/coordination/QA_PLAN.md",
+    encoding: "UTF-8"); expected = (1..15).map { |n| format("DP-B%02d", n) };
+    rows = text.scan(/^\|\s*(DP-B\d{2})\s*\|/).flatten; abort("boundary row
+    mismatch") unless rows.length == 15 && rows.uniq.sort == expected;
+    puts "15 boundary rows: OK"'
+  - >-
+    rg -n '^\| AC \| Level \| Fixture/seed \| Environment \| Failure oracle
+    \| Owner/task \| Evidence \|$' docs/coordination/QA_PLAN.md
+  - >-
+    rg -n '^\| Scenario \| Setup \| Action \| Oracle \| Evidence \|$'
+    docs/coordination/QA_PLAN.md
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'text = File.read("docs/coordination/QA_PLAN.md",
+    encoding: "UTF-8"); required = ["320x568", "390x844", "768x1024",
+    "1366x768", "1920x1080", "Chromium", "Firefox", "WebKit", "iOS
+    Safari", "Android Chrome", "Chrome", "Edge", "Safari", "keyboard-only",
+    "VoiceOver", "TalkBack", "reduced motion", "mute", "READY",
+    "stepDuration", "headCell", "attemptedCell", "localStorage", "20\u{D68C}",
+    "safe-area", "touch-action", "aria-live", "negative control",
+    "/snake-game/"]; missing = required.reject { |term| text.include?(term) };
+    abort("missing required terms: #{missing.join(",")}") unless missing.empty?;
+    puts "required QA terms: OK"'
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'text = File.read("docs/coordination/QA_PLAN.md",
+    encoding: "UTF-8"); placeholder = /\b(?:TBD|TODO)\b|\u{BBF8}\u{C815}/i;
+    abort("placeholder remains") if text.match?(placeholder);
+    puts "no placeholder: OK"'
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'require "yaml"; packet =
+    YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
+    "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
+    abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
+    packet["task_revision"] == 1 && packet["status"] == "review" &&
+    packet["claim"].is_a?(String) && packet["claim"].start_with?("CLAIM:
+    antigravity /") && packet["head_sha"].is_a?(String) &&
+    packet["head_sha"].match?(/\A[0-9a-f]{40}\z/) &&
+    File.file?("docs/coordination/handoffs/SG-004.md"); puts "SG-004 review
+    packet YAML: OK"'
+not_applicable_commands:
+  - command: npm run format:check
+    reason: >-
+      The root scaffold does not exist; SG-004 is a Markdown/YAML QA planning task
+      and must not preempt SG-005 formatting setup.
+  - command: npm run lint
+    reason: The root scaffold and lint command do not exist.
+  - command: npm run typecheck
+    reason: SG-004 changes no TypeScript or product source.
+  - command: npm run test
+    reason: SG-004 plans future tests but does not create or execute them.
+  - command: npm run build
+    reason: The root product scaffold and build command do not exist.
+  - command: npm run test:e2e
+    reason: >-
+      SG-004 defines future browser procedures; no root product or production preview
+      exists, and executing browser evidence would falsely start downstream work.
+branch: agent/antigravity/SG-004-qa-plan
+claim: null
+state_history:
+  - at: "2026-07-16T07:54:41Z"
+    from: backlog
+    to: ready
+    reason: >-
+      H0a permits SG-004, the SG-001 plan output is present on the exact local base,
+      no open GitHub Issue or PR owns the task, and the integrator fixed the docs-only
+      scope and validation contract. No implementation claim or work has started.
+head_sha: null
+handoff: docs/coordination/handoffs/SG-004.md
+prepared_on_branch: agent/codex/SG-004-preparation
