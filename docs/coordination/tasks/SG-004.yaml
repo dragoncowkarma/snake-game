@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -296,16 +296,6 @@ not_applicable_commands:
 branch: agent/antigravity/SG-004-qa-plan
 claim: "CLAIM: antigravity / gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / 2026-07-16T08:22:13Z"
 state_history:
-  - at: "2026-07-16T08:23:45Z"
-    from: in_progress
-    to: review
-    reason: >-
-      QA plan finished, transitioning to review.
-  - at: "2026-07-16T08:22:13Z"
-    from: ready
-    to: in_progress
-    reason: >-
-      Claimed by Antigravity for QA_PLAN creation.
   - at: "2026-07-16T07:54:41Z"
     from: backlog
     to: ready
@@ -313,6 +303,83 @@ state_history:
       H0a permits SG-004, the SG-001 plan output is present on the exact local base,
       no open GitHub Issue or PR owns the task, and the integrator fixed the docs-only
       scope and validation contract. No implementation claim or work has started.
-head_sha: f19f762ce75c4c2d0fe3a270b723eb35dd9603d2
+  - at: "2026-07-16T08:22:13Z"
+    from: ready
+    to: in_progress
+    reason: >-
+      Claimed by Antigravity for QA_PLAN creation.
+  - at: "2026-07-16T08:23:45Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity submitted the initial QA plan for review.
+  - at: "2026-07-16T09:16:55Z"
+    from: review
+    to: in_progress
+    reason: >-
+      Antigravity reopened the QA plan to apply interim feedback in commit
+      5b2ed7f3957f075669f816eb0c3a9a36b9e39b3b; this transition is recorded
+      retrospectively because the content changed while the packet still said review.
+  - at: "2026-07-16T09:20:24Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity resubmitted the revised QA plan at frozen content SHA
+      f19f762ce75c4c2d0fe3a270b723eb35dd9603d2.
+  - at: "2026-07-16T09:28:45Z"
+    from: review
+    to: in_progress
+    reason: >-
+      A Codex integrator pre-review audit requested changes. The submission passes
+      all packet mechanical commands but does not satisfy qualitative SG-004-AC02
+      through SG-004-AC08 or the reproducible handoff requirement. This audit is not
+      the formal codex-5.5/high review.
+head_sha: 04835b42386b90fc5552afcece13beb8ff77693d
+head_sha_role: frozen_antigravity_review_submission_before_codex_coordination
+qa_content_sha: f19f762ce75c4c2d0fe3a270b723eb35dd9603d2
+qa_content_sha_role: latest_antigravity_QA_PLAN_change_in_frozen_submission
 handoff: docs/coordination/handoffs/SG-004.md
 prepared_on_branch: agent/codex/SG-004-preparation
+review_gate:
+  round: 1
+  audited_at: "2026-07-16T09:28:45Z"
+  audited_by: codex-integrator
+  audit_kind: pre_review_acceptance_and_governance_check
+  audit_runtime: Codex based on GPT-5; exact codex-5.5/high identity is not exposed
+  formal_review: false
+  verdict: changes_requested
+  formal_review_prerequisite: >-
+    After Antigravity resubmits, use the assigned codex-5.5/high reviewer. If that
+    exact runtime is unavailable, obtain a human-approved packet revision disclosing
+    the reviewer/model deviation before claiming a formal review.
+  blocking_findings:
+    - SG-004-AC02 trace oracles, fixtures, N/A rationale, and evidence are incomplete.
+    - >-
+      SG-004-AC03 lacks an exact 6-by-8 policy matrix and complete, correct DP-B01
+      through DP-B15 procedures.
+    - >-
+      SG-004-AC04 and AC05 lack a browser-by-viewport-by-stage assignment matrix and
+      complete real-device/manual procedures with objective evidence rules.
+    - >-
+      SG-004-AC06 lacks reproducible RNG/delta fixtures, failure bundles, complete
+      wait rules, named risk branches, and retained non-merge negative-control evidence.
+    - >-
+      SG-004-AC07 names downstream tasks but does not assign each check to its earliest
+      responsible task.
+    - >-
+      SG-004-AC08 falsely reports no gaps and omits severity/disposition rows and the
+      separate supplemental non-functional catalog.
+    - >-
+      SG-004-AC09 handoff evidence and SHA roles are not reproducible and the handoff
+      incorrectly assigns H0b to Codex and implies Wave 1 may start automatically.
+decision_needed:
+  - id: SG-004-DN01
+    severity: blocker
+    affected_acceptance: [AC-G06, SG-004-AC03, SG-004-AC08]
+    question: >-
+      DEVELOPMENT_PLAN requires a same-tail-cell growth collision case, while the
+      approved contract forbids food on any snake cell and defines growth only when
+      attemptedCell equals food. That requested fixture is unreachable from a valid
+      GameState. The human must clarify whether the intended comparison is a non-tail
+      body collision or whether product/contract meaning must change.
+    disposition: human decision at or before H0b; no silent contract assumption
