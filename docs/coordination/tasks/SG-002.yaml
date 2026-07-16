@@ -1,0 +1,120 @@
+id: SG-002
+spec_version: "1.0"
+task_revision: 1
+status: review
+source_of_truth: offline
+offline_reason: >-
+  Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
+  GitHub was used read-only to confirm that no Issue or PR already owns this task.
+approval_gate: H0a
+approval_basis: "Current human instruction: H0a 계획·스파이크 실행 승인"
+approved_by: human-user
+approved_at: "2026-07-15T18:47:25Z"
+owner: codex
+model: gpt-5-codex
+reasoning_or_workload: high
+assigned_model_baseline: codex-5.6-terra
+routing_deviation: >-
+  The assigned Codex 5.6 Terra runtime was not available in this execution
+  environment, so the provided GPT-5 Codex runtime performed the spike. No model
+  equivalence is inferred. The task cannot advance beyond review until the named
+  independent reviewers and the human accept this deviation or request a rerun
+  with the assigned baseline.
+reviewers:
+  - platform: claude
+    model: opus-4.8
+    setting: high
+  - platform: antigravity
+    model: gemini-3.5-flash
+    setting: high
+depends_on:
+  - H0a
+dependency_evidence:
+  H0a: "Approved by the current human instruction at 2026-07-15T18:47:25Z"
+base_sha: 4f5f3c1bf02cbe908544add875e56a94d4e83589
+allowed_paths:
+  - spikes/phaser-4.2.1/**
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/handoffs/SG-002.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/coordination/DECISIONS.md
+  - src/**
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - dist/**
+  - "all paths not explicitly listed in allowed_paths"
+acceptance_ids:
+  - id: SG-002-AC01
+    text: >-
+      The isolated spike pins Phaser 4.2.1, Vite 8.1.x, TypeScript strict mode,
+      Playwright, and an npm lockfile without creating the product scaffold.
+  - id: SG-002-AC02
+    text: >-
+      A minimal Phaser 4 Scene renders an observable 20x20 Graphics board sample
+      and records one keyboard input using official Phaser 4 APIs only.
+  - id: SG-002-AC03
+    text: >-
+      Scale.FIT with centered canvas, resize, window blur, and document visibility
+      behavior are observable and verified without Snake rules or a completed UI.
+  - id: SG-002-AC04
+    text: >-
+      Typecheck and production build succeed with Vite base /snake-game/ and the
+      production preview serves all generated assets below that base.
+  - id: SG-002-AC05
+    text: >-
+      Chromium and WebKit production-preview smoke tests verify render, keyboard,
+      resize, blur/visibility, and report no console/page errors, failed requests,
+      or HTTP 404 responses.
+  - id: SG-002-AC06
+    text: >-
+      The handoff cites official Phaser 4 API evidence and returns exactly one gate
+      result. FALLBACK_CANDIDATE is only an intermediate trigger; a final fallback
+      result requires the clean Phaser 3.90.0 matrix described by D-001.
+required_commands:
+  - git diff --check
+  - cd spikes/phaser-4.2.1 && npm ci
+  - cd spikes/phaser-4.2.1 && npm run typecheck
+  - cd spikes/phaser-4.2.1 && npm run build
+  - cd spikes/phaser-4.2.1 && npm run test:e2e
+not_applicable_commands:
+  - command: npm run format:check
+    reason: >-
+      The repository has no root scaffold yet; SG-002 uses git diff --check as the
+      narrow substitute and must not preempt SG-005 by adding formatting tooling.
+  - command: npm run lint
+    reason: >-
+      The repository has no root scaffold yet; TypeScript strict checking is the
+      scoped static validation for this minimal spike.
+  - command: npm run test
+    reason: >-
+      SG-002 has no domain behavior or unit-test surface; its required behavior is
+      exercised through the production-preview browser matrix.
+branch: agent/codex/SG-002-phaser-spike
+claim: "CLAIM: codex / gpt-5-codex high / agent/codex/SG-002-phaser-spike / 2026-07-15T18:47:25Z"
+state_history:
+  - at: "2026-07-15T18:47:25Z"
+    from: backlog
+    to: ready
+    reason: H0a human approval opened Wave 0 validation.
+  - at: "2026-07-15T18:47:25Z"
+    from: ready
+    to: in_progress
+    reason: Codex claimed SG-002 on its dedicated branch.
+  - at: "2026-07-15T19:25:01Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Phaser 4.2.1 passed strict typecheck, production build, and the Chromium
+      and WebKit production-preview matrix; independent review remains pending.
+head_sha: 6c2f8c59164380a47804f1771497fe1c58e99a2d
+head_sha_role: frozen_implementation_evidence
+coordination_commit_note: >-
+  The handoff and in_progress-to-review transition are recorded in a subsequent
+  coordination-only commit, so the branch HEAD is expected to differ from the
+  frozen implementation evidence SHA.
+handoff: docs/coordination/handoffs/SG-002.md
+gate_result: PASS_4_2_1
