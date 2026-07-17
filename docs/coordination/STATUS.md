@@ -5,8 +5,8 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-004 revision 2 (`review`, frozen QA content SHA `f94133fa776993e3f545be2c6bd1d246455a3b72`, 독립 reviewer 확인 대기)
-- 현재 검증 대기: Codex가 revision 2를 작성했으므로 정확한 사람 또는 비-Codex reviewer/runtime 확인과 해당 SHA의 독립 판정이 필요하다.
+- 현재 활성 작업: SG-004 revision 2 (`in_progress`, AC07 owner 요약의 SG-025 누락 보완 중; frozen QA content SHA `f94133fa776993e3f545be2c6bd1d246455a3b72`는 변경 없음)
+- 현재 검증 대기: metadata 보완과 작성자 재검증 뒤 정확한 사람 또는 비-Codex reviewer/runtime 확인 및 해당 SHA의 독립 판정이 필요하다.
 - 현재 H0b 결정 필요: SG-004-DN01 (AC-G06 성장 tick/tail fixture 의미). 이는 QA 계획 결함이 아니다.
 
 ## 다음 관문
@@ -21,7 +21,7 @@ SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/W
 
 SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고를 냈고, 비차단 명확화 발견 3건(pause/resume 도메인 진입점, `start`/`restart` 난이도 출처, `accept` 의미)은 revision 2 SHA `b4c5130bc0a0980d95ff575ff12efd154bf001ab`에서 해소됐다. 비-Claude Codex 재검토와 scoped 검증도 통과했으며 revision 2는 로컬 `main`의 `c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18`에 병합돼 있다. 2026-07-16 사람의 `SG-003 완료` 지시는 revision 2와 공개된 모델 라우팅 편차를 이 작업에 한해 수락하므로 packet을 `merged`로 닫았다. 이는 원격 동기화, H0b 승인 또는 D-001~D-006의 `accepted` 전환을 뜻하지 않는다.
 
-SG-004 revision 1은 Antigravity가 frozen substantive SHA `b0fb73b5aa520986a810177e81e120df20e52dbd`로 제출했고 형식 리뷰 `019f6a18-79e7-7f12-a40a-e67e448a1a00`의 `Approved` 결과를 받았다. 그러나 Codex integrator의 독립 수용 기준 재검증에서 SG-004-AC02~AC08 미충족이 확인돼 병합하지 않았다. 사람의 “여기서 통과될 때까지 수정 진행” 지시에 따라 Codex가 같은 docs-only 범위에서 revision 2를 보완했고 QA 본문을 SHA `f94133fa776993e3f545be2c6bd1d246455a3b72`로 동결했다. 두 최종 읽기 감사와 구조·의미 validator는 blocker 없이 작성자 측 제출 검증을 통과했다. task는 현재 `review`이며 revision 1 리뷰 ID는 역사 기록일 뿐 새 본문에 적용되지 않는다. 정확한 사람 또는 비-Codex reviewer/runtime을 확인하고 이 SHA에 대한 독립 verdict를 받기 전에는 verified·merge로 전환하지 않는다. `SG-004-DN01`은 QA 계획 결함이 아닌 H0b 사람 결정으로 유지하며 Wave 1은 계속 대기한다.
+SG-004 revision 1은 Antigravity가 frozen substantive SHA `b0fb73b5aa520986a810177e81e120df20e52dbd`로 제출했고 형식 리뷰 `019f6a18-79e7-7f12-a40a-e67e448a1a00`의 `Approved` 결과를 받았다. 그러나 Codex integrator의 독립 수용 기준 재검증에서 SG-004-AC02~AC08 미충족이 확인돼 병합하지 않았다. 사람의 “여기서 통과될 때까지 수정 진행” 지시에 따라 Codex가 같은 docs-only 범위에서 revision 2를 보완했고 QA 본문을 SHA `f94133fa776993e3f545be2c6bd1d246455a3b72`로 동결했다. 두 최종 읽기 감사와 구조·의미 validator는 본문 blocker 없이 작성자 측 제출 검증을 통과했다. 이후 작성자 재리뷰에서 QA_PLAN의 `NFR-M04 → SG-025` 배정과 AC07 packet/handoff owner 요약이 불일치하는 metadata blocker 1건을 발견해 현재 보완 중이다. revision 1 리뷰 ID는 역사 기록일 뿐 새 본문에 적용되지 않는다. 보완 완료 뒤 정확한 사람 또는 비-Codex reviewer/runtime을 확인하고 이 SHA에 대한 독립 verdict를 받기 전에는 verified·merge로 전환하지 않는다. `SG-004-DN01`은 QA 계획 결함이 아닌 H0b 사람 결정으로 유지하며 Wave 1은 계속 대기한다.
 
 ## 작업 스냅샷
 

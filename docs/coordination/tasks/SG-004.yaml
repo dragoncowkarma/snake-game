@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 2
-status: review
+status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -396,6 +396,13 @@ state_history:
       f94133fa776993e3f545be2c6bd1d246455a3b72 after two read audits and the
       structural validators found no remaining content blocker. The exact human or
       non-Codex reviewer runtime must still be confirmed before formal review starts.
+  - at: "2026-07-17T16:12:21Z"
+    from: review
+    to: in_progress
+    reason: >-
+      A Codex author-side review found one review-blocking metadata mismatch: the
+      AC07 owner summaries omitted SG-025 although QA_PLAN assigns NFR-M04 there.
+      The current human instruction authorizes correction and repeated review.
 head_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
 head_sha_role: frozen_revision_2_codex_corrective_submission
 qa_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
@@ -459,7 +466,7 @@ correction_pass:
   started_by: codex-integrator
   completed_at: "2026-07-16T16:51:14Z"
   submitted_at: "2026-07-16T16:51:14Z"
-  status: review
+  status: in_progress
   authority: current human instruction
   frozen_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
   author_validation:
@@ -480,7 +487,7 @@ correction_pass:
 
 correction_review_request:
   revision: 2
-  status: awaiting_reviewer_confirmation
+  status: paused_for_author_correction
   submitted_at: "2026-07-16T16:51:14Z"
   verdict: pending
   review_scope_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
@@ -499,15 +506,17 @@ correction_review_request:
     verdict exists for this SHA; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00
     remains historical revision 1 evidence only.
 correction_integration_gate:
-  checked_at: "2026-07-16T16:51:14Z"
+  checked_at: "2026-07-17T16:12:21Z"
   checked_by: codex-integrator
-  verdict: content_validated_pending_independent_review
+  verdict: changes_requested_metadata_alignment
   blocks_verify_and_merge: true
-  blocking_findings: []
+  blocking_findings:
+    - >-
+      SG-004-AC07 owner summaries in the packet and handoff omit SG-025, while
+      QA_PLAN assigns NFR-M04 to SG-025 as its earliest downstream owner.
   reason: >-
-    The revision 1 qualitative findings are resolved in the frozen revision 2 QA
-    content. Verification and merge remain blocked only by the required independent
-    human or non-Codex formal review of that exact content SHA.
+    QA_PLAN content remains valid, but the review package must agree with its exact
+    downstream ownership registry before independent formal review resumes.
 
 decision_needed:
   - id: SG-004-DN01
