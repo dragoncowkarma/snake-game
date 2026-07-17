@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 2
-status: verified
+status: merged
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -23,7 +23,9 @@ completion_approved_by: human-user
 completion_approved_at: "2026-07-17T16:46:32Z"
 completion_instruction: "SG-004 완료 처리"
 completion_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
-completion_metadata_evidence_sha: 8711d22f797e28ee6a778ae0f3ac22aa02623ee0
+review_ready_metadata_sha: 8711d22f797e28ee6a778ae0f3ac22aa02623ee0
+completion_metadata_evidence_sha: 6ea4aa7f2f222f79f8cd1425f9c38b01548e9948
+completion_recorded_at: "2026-07-17T16:55:26Z"
 completion_basis: >-
   The current human instruction accepts the exact frozen revision 2 QA content and
   closes SG-004 only. It does not resolve SG-004-DN01, approve H0b or D-001 through
@@ -311,18 +313,27 @@ required_commands:
     YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
     "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
     sha = "81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52";
+    review_ready = "8711d22f797e28ee6a778ae0f3ac22aa02623ee0";
+    completion = "6ea4aa7f2f222f79f8cd1425f9c38b01548e9948";
+    merged = "13fd82307941160750f8c25045cf81f8c00c2885";
     digest = "ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8";
     last, last_status = Open3.capture2("git", "log", "-1", "--format=%H", "--",
     "docs/coordination/QA_PLAN.md"); unchanged, diff_status = Open3.capture2("git",
     "diff", "--name-only", "#{sha}..HEAD", "--", "docs/coordination/QA_PLAN.md");
     handoff = File.read("docs/coordination/handoffs/SG-004.md", encoding: "UTF-8");
     status = File.read("docs/coordination/STATUS.md", encoding: "UTF-8");
+    parents, parents_status = Open3.capture2("git", "rev-list", "--parents", "-n",
+    "1", merged); tail = packet.fetch("state_history").last;
     abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
-    packet["task_revision"] == 2 && packet["status"] == "verified" &&
+    packet["task_revision"] == 2 && packet["status"] == "merged" &&
     packet["correction_claim"].is_a?(String) &&
     packet["correction_claim"].start_with?("CLAIM: codex /") &&
+    packet["completion_branch"] == "agent/codex/SG-004-completion" &&
+    packet["completion_claim"].is_a?(String) &&
     packet["head_sha"] == sha && packet["qa_content_sha"] == sha &&
-    packet["completion_scope_sha"] == sha && last_status.success? &&
+    packet["completion_scope_sha"] == sha && packet["completion_metadata_evidence_sha"] ==
+    completion && packet["review_ready_metadata_sha"] == review_ready &&
+    packet["completion_recorded_at"] == "2026-07-17T16:55:26Z" && last_status.success? &&
     last.strip == sha && diff_status.success? && unchanged.empty? &&
     Digest::SHA256.file("docs/coordination/QA_PLAN.md").hexdigest == digest &&
     packet.dig("correction_review_request", "review_scope_sha") == sha &&
@@ -332,12 +343,26 @@ required_commands:
     packet.dig("correction_review_request", "reviewer_platform") == "human" &&
     packet.dig("correction_review_request", "review_id").nil? &&
     packet.dig("correction_review_request", "blocks_verify_and_merge") == false &&
+    packet.dig("correction_pass", "status") == "merged" &&
+    packet.dig("correction_integration_gate", "checked_at") == "2026-07-17T16:54:52Z" &&
+    packet.dig("correction_integration_gate", "verdict") == "merged_to_local_main" &&
     packet.dig("correction_integration_gate", "blocks_verify_and_merge") == false &&
+    packet.dig("correction_integration_gate", "blocking_findings") == [] &&
+    tail["at"] == "2026-07-17T16:54:52Z" && tail["from"] == "verified" &&
+    tail["to"] == "merged" && tail["reason"].include?(merged) &&
+    packet["merged_sha"] == merged && packet["merged_scope"] == "local_main" &&
+    parents_status.success? && parents.split.length == 3 && system("git", "merge-base",
+    "--is-ancestor", merged, "HEAD") && system("git", "merge-base", "--is-ancestor",
+    sha, merged) && system("git", "merge-base", "--is-ancestor", completion, merged) &&
     packet.dig("correction_review_guard", "required_formal_reviewer") ==
     "human_or_non_codex_platform" && packet.fetch("decision_needed").any? { |item|
-    item["id"] == "SG-004-DN01" } && handoff.include?("HUMAN COMPLETION APPROVED") &&
-    status.include?("SG-004 revision 2 (`verified`"); puts "SG-004 revision 2
-    verified packet YAML: OK"'
+    item["id"] == "SG-004-DN01" } && packet["completion_basis"].include?("remote synchronization") &&
+    handoff.include?(merged) && handoff.include?("HUMAN COMPLETION APPROVED") &&
+    handoff.include?("Approved / merged") && handoff.include?("SG-004-DN01") &&
+    handoff.include?("H0b") && handoff.include?("Wave 1") && status.include?(merged) &&
+    status.include?("SG-004 revision 2 (`merged`") && status.include?("SG-004-DN01") &&
+    status.include?("H0b") && status.include?("Wave 1");
+    puts "SG-004 revision 2 merged packet YAML: OK"'
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
@@ -358,6 +383,8 @@ not_applicable_commands:
 branch: agent/antigravity/SG-004-qa-plan
 claim: "CLAIM: antigravity / gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / 2026-07-16T08:22:13Z"
 correction_claim: "CLAIM: codex / gpt-5 setting-not-exposed / agent/antigravity/SG-004-qa-plan / 2026-07-16T15:34:02Z"
+completion_branch: agent/codex/SG-004-completion
+completion_claim: "CLAIM: codex / gpt-5 setting-not-exposed / agent/codex/SG-004-completion / 2026-07-17T16:55:26Z"
 correction_start_sha: 50fc8caf1d76449b97a903ff3f41f92ca07acbab
 state_history:
   - at: "2026-07-16T07:54:41Z"
@@ -443,10 +470,25 @@ state_history:
       audits and exact validators passed. This is recorded as the permitted human
       formal verdict for the exact frozen content SHA; no third-party model review
       is claimed, and SG-004-DN01 remains pending for H0b.
+  - at: "2026-07-17T16:54:52Z"
+    from: verified
+    to: merged
+    reason: >-
+      The verified revision 2 branch was integrated into local main by merge commit
+      13fd82307941160750f8c25045cf81f8c00c2885. No remote synchronization is claimed;
+      SG-004-DN01, H0b, D-001 through D-006, and Wave 1 remain pending.
 head_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
 head_sha_role: frozen_revision_2_codex_corrective_submission
 qa_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
 qa_content_sha_role: frozen_revision_2_QA_PLAN_content
+merged_sha: 13fd82307941160750f8c25045cf81f8c00c2885
+merged_scope: local_main
+merged_sha_role: approved_revision_2_content_integration_merge
+coordination_commit_note: >-
+  head_sha and qa_content_sha preserve the frozen QA content evidence. merged_sha is
+  the existing local main merge that first contains the approved revision 2 content
+  and human verdict. Completion metadata is recorded afterward on the completion
+  branch, avoiding a self-referential SHA.
 handoff: docs/coordination/handoffs/SG-004.md
 revision_1_prepared_on_branch: agent/codex/SG-004-preparation
 revision_1_review_gate:
@@ -507,7 +549,7 @@ correction_pass:
   completed_at: "2026-07-17T16:32:02Z"
   submitted_at: "2026-07-17T16:32:02Z"
   reopened_at: "2026-07-17T16:12:21Z"
-  status: verified
+  status: merged
   authority: current human instruction
   frozen_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
   author_validation:
@@ -584,15 +626,16 @@ author_review_rounds:
       QA_PLAN SHA-256 ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8;
       full exact validator and qualitative/content-freeze/repository audits passed.
 correction_integration_gate:
-  checked_at: "2026-07-17T16:46:32Z"
+  checked_at: "2026-07-17T16:54:52Z"
   checked_by: codex-integrator
-  verdict: approved_for_local_merge
+  verdict: merged_to_local_main
   blocks_verify_and_merge: false
   blocking_findings: []
   reason: >-
     All author-side findings are resolved in the frozen revision 2 QA content, every
     scoped validator passes, and the current human supplied the permitted formal
-    verdict and completion instruction. Local merge is authorized; H0b is not.
+    verdict and completion instruction. The approved content is now integrated at
+    merged_sha on local main; H0b is not approved.
 
 decision_needed:
   - id: SG-004-DN01
