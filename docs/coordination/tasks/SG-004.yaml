@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 2
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -301,7 +301,7 @@ required_commands:
     ruby -E UTF-8:UTF-8 -e 'require "yaml"; packet =
     YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
     "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
-    sha = "f94133fa776993e3f545be2c6bd1d246455a3b72";
+    sha = "81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52";
     abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
     packet["task_revision"] == 2 && packet["status"] == "review" &&
     packet["correction_claim"].is_a?(String) &&
@@ -403,9 +403,17 @@ state_history:
       A Codex author-side review found one review-blocking metadata mismatch: the
       AC07 owner summaries omitted SG-025 although QA_PLAN assigns NFR-M04 there.
       The current human instruction authorizes correction and repeated review.
-head_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+  - at: "2026-07-17T16:32:02Z"
+    from: in_progress
+    to: review
+    reason: >-
+      SG-025 owner summaries now match the 14-task registry, and exact gameOver/won
+      Menu/Restart router oracles are frozen at content commit
+      81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52. Three author-side audits and the
+      full exact validator found no remaining finding; independent review remains.
+head_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
 head_sha_role: frozen_revision_2_codex_corrective_submission
-qa_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+qa_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
 qa_content_sha_role: frozen_revision_2_QA_PLAN_content
 handoff: docs/coordination/handoffs/SG-004.md
 revision_1_prepared_on_branch: agent/codex/SG-004-preparation
@@ -464,20 +472,22 @@ correction_pass:
   revision: 2
   started_at: "2026-07-16T15:34:02Z"
   started_by: codex-integrator
-  completed_at: "2026-07-16T16:51:14Z"
-  submitted_at: "2026-07-16T16:51:14Z"
+  completed_at: "2026-07-17T16:32:02Z"
+  submitted_at: "2026-07-17T16:32:02Z"
   reopened_at: "2026-07-17T16:12:21Z"
-  status: in_progress
+  status: review
   authority: current human instruction
-  frozen_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+  frozen_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
   author_validation:
     checked_by: codex-integrator
+    checked_at: "2026-07-17T16:32:02Z"
     independent: false
-    verdict: changes_requested_after_author_recheck
+    verdict: pass_for_independent_review_submission
     summary: >-
-      The SG-025 owner-summary mismatch is corrected and mechanically revalidated.
-      A later qualitative author recheck found that accepted restart and returnToMenu
-      behavior in the won phase still lacks exact executable router oracles.
+      SG-025 is present in all 14-task owner summaries. Exact gameOver/won Menu and
+      Restart router cases, earliest owner/evidence, and focus flow are now fixed.
+      Three author-side audits and all structural, fixture, invariant, ownership,
+      semantic, placeholder, and whitespace validators report no finding.
   target_acceptance: [SG-004-AC02, SG-004-AC03, SG-004-AC04, SG-004-AC05, SG-004-AC06, SG-004-AC07, SG-004-AC08, SG-004-AC09]
   constraints:
     - docs-only changes within existing allowed_paths
@@ -488,10 +498,10 @@ correction_pass:
 
 correction_review_request:
   revision: 2
-  status: paused_for_author_correction
-  submitted_at: "2026-07-16T16:51:14Z"
+  status: awaiting_reviewer_confirmation
+  submitted_at: "2026-07-17T16:32:02Z"
   verdict: pending
-  review_scope_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
+  review_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
   required_reviewer: human_or_non_codex_platform
   recommended_platform: claude
   reviewer_platform: null
@@ -503,9 +513,8 @@ correction_review_request:
   review_id: null
   blocks_verify_and_merge: true
   note: >-
-    Independent review is paused while the author resolves the won-phase router
-    coverage finding and freezes a new QA content SHA. No formal verdict exists for
-    revision 2; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains historical
+    Revision 2 is review-ready with no author-side finding. No formal verdict exists
+    for this SHA; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains historical
     revision 1 evidence only.
 author_review_rounds:
   - round: 1
@@ -523,19 +532,30 @@ author_review_rounds:
     finding: >-
       FX-CMD-ROUTER and linked procedures do not execute restart and returnToMenu
       from won with exact reset, difficulty, RNG, event, and focus oracles.
-    resolution: in_progress
+    resolved_at: "2026-07-17T16:32:02Z"
+    resolution: >-
+      FX-CMD-ROUTER, DP-B11, CHK-CMD-DIFFICULTY, and AC-G10 now cover both commands
+      in both terminal phases with exact difficulty, reset, RNG, event, accumulator,
+      focus, earliest-owner, and evidence oracles.
+  - round: 3
+    reviewed_at: "2026-07-17T16:32:02Z"
+    reviewed_by: codex-author-side-final-audits
+    formal_review: false
+    verdict: pass_for_independent_review_submission
+    finding_count: 0
+    evidence: >-
+      QA_PLAN SHA-256 ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8;
+      full exact validator and qualitative/content-freeze/repository audits passed.
 correction_integration_gate:
-  checked_at: "2026-07-17T16:17:45Z"
+  checked_at: "2026-07-17T16:32:02Z"
   checked_by: codex-integrator
-  verdict: changes_requested_metadata_alignment
+  verdict: content_validated_pending_independent_review
   blocks_verify_and_merge: true
-  blocking_findings:
-    - >-
-      SG-004-AC03: the literal matrix marks restart and returnToMenu accepted in won,
-      but no exact runtime router fixture currently proves those accepted outcomes.
+  blocking_findings: []
   reason: >-
-    The SG-025 metadata mismatch is resolved. QA_PLAN must now add executable won-phase
-    router coverage before independent formal review resumes.
+    All author-side findings are resolved in the frozen revision 2 QA content.
+    Verification and merge remain blocked only by the required independent human or
+    non-Codex formal review of that exact content SHA.
 
 decision_needed:
   - id: SG-004-DN01
