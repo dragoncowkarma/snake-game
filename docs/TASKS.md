@@ -1,6 +1,6 @@
 # 세부 작업 및 AI 모델 배정
 
-이 문서는 구현 순서, 파일 소유권, 모델 설정, 검토 관계를 정의한다. 현재 모든 작업은 H0a 승인 전이므로 `backlog`다. H0a는 Wave 0 검증만 열고, H0b가 D-001~D-006과 공용 계약을 승인한 뒤에만 기능 작업을 `ready`로 바꾼다. 구현 시작 시 조정 책임자가 각 행을 versioned GitHub Issue로 옮기며, GitHub를 못 쓰면 `docs/coordination/tasks/<task-id>.yaml` offline packet을 대신 만든다. 두 방식 모두 base SHA와 정확한 허용 경로가 필요하다.
+이 문서는 구현 순서, 파일 소유권, 모델 설정, 검토 관계를 정의한다. Wave 0와 H0b는 2026-07-18(Asia/Seoul)에 완료됐고 D-001~D-006 및 공용 계약은 `accepted`다. Wave 1 작업은 자동으로 선점하지 않으며, 구현 시작 시 조정 책임자가 선택한 행을 versioned GitHub Issue로 옮기거나 GitHub를 못 쓰면 `docs/coordination/tasks/<task-id>.yaml` offline packet을 만든 뒤 `ready` 승인과 claim을 기록한다. 두 방식 모두 base SHA와 정확한 허용 경로가 필요하다.
 
 ## 1. 상태와 우선순위
 

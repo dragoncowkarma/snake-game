@@ -30,6 +30,15 @@ completion_basis: >-
   The current human instruction accepts the exact frozen revision 2 QA content and
   closes SG-004 only. It does not resolve SG-004-DN01, approve H0b or D-001 through
   D-006, start Wave 1, authorize remote synchronization, or authorize deployment.
+h0b_approval:
+  approved: true
+  approved_by: human-user
+  approved_at: "2026-07-17T17:18:21Z"
+  instruction: "Wave 0 종료"
+  result: >-
+    Revision 2 remains the accepted QA plan, SG-004-DN01 is resolved by valid-state
+    interpretation, and H0b is complete. The earlier SG-004-only completion basis
+    remains historically accurate.
 preparation_requested_by: human-user
 preparation_requested_at: "2026-07-16T07:54:41Z"
 priority: P0
@@ -363,6 +372,13 @@ required_commands:
     status.include?("SG-004 revision 2 (`merged`") && status.include?("SG-004-DN01") &&
     status.include?("H0b") && status.include?("Wave 1");
     puts "SG-004 revision 2 merged packet YAML: OK"'
+required_commands_context:
+  historical_completion_head: 983cb1387d31c7113e8e7f63f8f49e4b555b6e3f
+  note: >-
+    The required commands reproduce SG-004 completion in a clean temporary worktree at
+    this pre-H0b closeout HEAD. Current closeout coordination changes intentionally add
+    paths and update STATUS, so HEAD-relative historical scope checks are not expected
+    to pass on the later closeout branch.
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
@@ -640,11 +656,20 @@ correction_integration_gate:
 decision_needed:
   - id: SG-004-DN01
     severity: blocker
+    status: resolved
     affected_acceptance: [AC-G06, SG-004-AC03, SG-004-AC08]
-    question: >-
-      DEVELOPMENT_PLAN requires a same-tail-cell growth collision case, while the
-      approved contract forbids food on any snake cell and defines growth only when
-      attemptedCell equals food. That requested fixture is unreachable from a valid
-      GameState. The human must clarify whether the intended comparison is a non-tail
-      body collision or whether product/contract meaning must change.
-    disposition: human decision at or before H0b; no silent contract assumption
+    original_question: >-
+      At SG-004 submission time, DEVELOPMENT_PLAN required a same-tail-cell growth
+      collision case while the approved contract forbade food on any snake cell and
+      defined growth only when attemptedCell equaled food. The requested fixture was
+      unreachable from a valid GameState and required an H0b disposition.
+    disposition: >-
+      Resolved at H0b without a product or contract change. Execute the valid
+      non-growth tail-entry case and retain the invariant proof that
+      growth-at-current-tail is unreachable. Never construct an invalid GameState;
+      ordinary non-tail self-collision remains independently covered by AC-G07.
+    resolved_by: human-user
+    resolved_at: "2026-07-17T17:18:21Z"
+    resolution_basis: "Current human instruction: Wave 0 종료"
+    contract_revision_required: false
+    qa_plan_revision_required: false
