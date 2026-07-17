@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
 task_revision: 2
-status: review
+status: verified
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -19,6 +19,15 @@ approval_basis: >-
   unchanged, and SG-004-DN01 stays reserved for human H0b resolution.
 approved_by: human-user
 approved_at: "2026-07-16T15:34:02Z"
+completion_approved_by: human-user
+completion_approved_at: "2026-07-17T16:46:32Z"
+completion_instruction: "SG-004 완료 처리"
+completion_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+completion_metadata_evidence_sha: 8711d22f797e28ee6a778ae0f3ac22aa02623ee0
+completion_basis: >-
+  The current human instruction accepts the exact frozen revision 2 QA content and
+  closes SG-004 only. It does not resolve SG-004-DN01, approve H0b or D-001 through
+  D-006, start Wave 1, authorize remote synchronization, or authorize deployment.
 preparation_requested_by: human-user
 preparation_requested_at: "2026-07-16T07:54:41Z"
 priority: P0
@@ -75,7 +84,7 @@ correction_review_guard:
   substantive_author_platform: codex
   required_formal_reviewer: human_or_non_codex_platform
   recommended_platform: claude
-  exact_runtime: requires_confirmation_before_formal_review
+  exact_runtime: not_applicable_direct_human_review
   reason: >-
     Codex found and now authors the revision 2 correction, so Codex self-checks are
     implementation evidence rather than independent formal approval.
@@ -298,22 +307,37 @@ required_commands:
     abort("placeholder remains") if text.match?(placeholder);
     puts "no placeholder: OK"'
   - >-
-    ruby -E UTF-8:UTF-8 -e 'require "yaml"; packet =
+    ruby -E UTF-8:UTF-8 -e 'require "yaml"; require "digest"; require "open3"; packet =
     YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
     "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
     sha = "81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52";
+    digest = "ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8";
+    last, last_status = Open3.capture2("git", "log", "-1", "--format=%H", "--",
+    "docs/coordination/QA_PLAN.md"); unchanged, diff_status = Open3.capture2("git",
+    "diff", "--name-only", "#{sha}..HEAD", "--", "docs/coordination/QA_PLAN.md");
+    handoff = File.read("docs/coordination/handoffs/SG-004.md", encoding: "UTF-8");
+    status = File.read("docs/coordination/STATUS.md", encoding: "UTF-8");
     abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
-    packet["task_revision"] == 2 && packet["status"] == "review" &&
+    packet["task_revision"] == 2 && packet["status"] == "verified" &&
     packet["correction_claim"].is_a?(String) &&
     packet["correction_claim"].start_with?("CLAIM: codex /") &&
     packet["head_sha"] == sha && packet["qa_content_sha"] == sha &&
+    packet["completion_scope_sha"] == sha && last_status.success? &&
+    last.strip == sha && diff_status.success? && unchanged.empty? &&
+    Digest::SHA256.file("docs/coordination/QA_PLAN.md").hexdigest == digest &&
     packet.dig("correction_review_request", "review_scope_sha") == sha &&
-    packet.dig("correction_review_request", "formal_review_started") == false &&
-    packet.dig("correction_review_request", "verdict") == "pending" &&
+    packet.dig("correction_review_request", "formal_review_started") == true &&
+    packet.dig("correction_review_request", "formal_review_completed_at").is_a?(String) &&
+    packet.dig("correction_review_request", "verdict") == "approved" &&
+    packet.dig("correction_review_request", "reviewer_platform") == "human" &&
+    packet.dig("correction_review_request", "review_id").nil? &&
+    packet.dig("correction_review_request", "blocks_verify_and_merge") == false &&
+    packet.dig("correction_integration_gate", "blocks_verify_and_merge") == false &&
     packet.dig("correction_review_guard", "required_formal_reviewer") ==
-    "human_or_non_codex_platform" &&
-    File.file?("docs/coordination/handoffs/SG-004.md"); puts "SG-004 revision 2
-    review packet YAML: OK"'
+    "human_or_non_codex_platform" && packet.fetch("decision_needed").any? { |item|
+    item["id"] == "SG-004-DN01" } && handoff.include?("HUMAN COMPLETION APPROVED") &&
+    status.include?("SG-004 revision 2 (`verified`"); puts "SG-004 revision 2
+    verified packet YAML: OK"'
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
@@ -411,6 +435,14 @@ state_history:
       Menu/Restart router oracles are frozen at content commit
       81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52. Three author-side audits and the
       full exact validator found no remaining finding; independent review remains.
+  - at: "2026-07-17T16:46:32Z"
+    from: review
+    to: verified
+    reason: >-
+      The human directly instructed "SG-004 완료 처리" after all revision 2 author
+      audits and exact validators passed. This is recorded as the permitted human
+      formal verdict for the exact frozen content SHA; no third-party model review
+      is claimed, and SG-004-DN01 remains pending for H0b.
 head_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
 head_sha_role: frozen_revision_2_codex_corrective_submission
 qa_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
@@ -475,7 +507,7 @@ correction_pass:
   completed_at: "2026-07-17T16:32:02Z"
   submitted_at: "2026-07-17T16:32:02Z"
   reopened_at: "2026-07-17T16:12:21Z"
-  status: review
+  status: verified
   authority: current human instruction
   frozen_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
   author_validation:
@@ -498,24 +530,29 @@ correction_pass:
 
 correction_review_request:
   revision: 2
-  status: awaiting_reviewer_confirmation
+  status: approved_by_human
   submitted_at: "2026-07-17T16:32:02Z"
-  verdict: pending
+  reviewed_at: "2026-07-17T16:46:32Z"
+  verdict: approved
   review_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
   required_reviewer: human_or_non_codex_platform
   recommended_platform: claude
-  reviewer_platform: null
-  reviewer_runtime: null
-  reviewer_setting: null
-  reviewer_confirmed_by: null
-  reviewer_confirmed_at: null
-  formal_review_started: false
+  reviewer_platform: human
+  reviewer_runtime: not_applicable
+  reviewer_setting: not_applicable
+  reviewer_confirmed_by: human-user
+  reviewer_confirmed_at: "2026-07-17T16:46:32Z"
+  formal_review_started: true
+  formal_review_completed_at: "2026-07-17T16:46:32Z"
+  review_method: direct_human_completion_instruction
   review_id: null
-  blocks_verify_and_merge: true
+  review_id_reason: direct human instruction has no separate external review ID
+  blocks_verify_and_merge: false
   note: >-
-    Revision 2 is review-ready with no author-side finding. No formal verdict exists
-    for this SHA; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains historical
-    revision 1 evidence only.
+    The human's exact instruction "SG-004 완료 처리" supplies the allowed human
+    verdict for frozen revision 2 after all author-side findings and validators passed.
+    No Claude or Gemini review was submitted, no external review ID exists, and review
+    ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains revision 1 history only.
 author_review_rounds:
   - round: 1
     reviewed_at: "2026-07-17T16:12:21Z"
@@ -547,15 +584,15 @@ author_review_rounds:
       QA_PLAN SHA-256 ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8;
       full exact validator and qualitative/content-freeze/repository audits passed.
 correction_integration_gate:
-  checked_at: "2026-07-17T16:32:02Z"
+  checked_at: "2026-07-17T16:46:32Z"
   checked_by: codex-integrator
-  verdict: content_validated_pending_independent_review
-  blocks_verify_and_merge: true
+  verdict: approved_for_local_merge
+  blocks_verify_and_merge: false
   blocking_findings: []
   reason: >-
-    All author-side findings are resolved in the frozen revision 2 QA content.
-    Verification and merge remain blocked only by the required independent human or
-    non-Codex formal review of that exact content SHA.
+    All author-side findings are resolved in the frozen revision 2 QA content, every
+    scoped validator passes, and the current human supplied the permitted formal
+    verdict and completion instruction. Local merge is authorized; H0b is not.
 
 decision_needed:
   - id: SG-004-DN01
