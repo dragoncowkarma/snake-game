@@ -1,12 +1,13 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-16 (Asia/Seoul)
+- 마지막 동기화: 2026-07-18 (Asia/Seoul)
 - 단계: Wave 0 계약·검증 진행 / 기능 구현 미착수
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 (SG-004 revision 1 packet `ready`, 미선점)
-- 현재 차단: 없음
+- 현재 활성 작업: SG-004 revision 2 (`verified`, frozen QA content SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`, 로컬 `main` 반영 대기)
+- 현재 검증 대기: 없음. 작성자 감사와 exact validator 통과 뒤 사람이 `SG-004 완료 처리`로 최종 승인했다.
+- 현재 H0b 결정 필요: SG-004-DN01 (AC-G06 성장 tick/tail fixture 의미). 이는 QA 계획 결함이 아니다.
 
 ## 다음 관문
 
@@ -20,13 +21,13 @@ SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/W
 
 SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고를 냈고, 비차단 명확화 발견 3건(pause/resume 도메인 진입점, `start`/`restart` 난이도 출처, `accept` 의미)은 revision 2 SHA `b4c5130bc0a0980d95ff575ff12efd154bf001ab`에서 해소됐다. 비-Claude Codex 재검토와 scoped 검증도 통과했으며 revision 2는 로컬 `main`의 `c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18`에 병합돼 있다. 2026-07-16 사람의 `SG-003 완료` 지시는 revision 2와 공개된 모델 라우팅 편차를 이 작업에 한해 수락하므로 packet을 `merged`로 닫았다. 이는 원격 동기화, H0b 승인 또는 D-001~D-006의 `accepted` 전환을 뜻하지 않는다.
 
-SG-004 revision 1 offline packet은 로컬 `main` SHA `5b5ab4740f57f776978b602dea02ef90fdc44047`을 기준으로 `docs/coordination/tasks/SG-004.yaml`에 준비했다. 2026-07-16 공개 GitHub API에서 열린 Issue/PR이 없음을 재확인했고, H0a 승인과 현재 사람의 "SG-004 시작 전 준비 작업" 지시에 따라 조정 책임자가 넓은 `docs` 범위를 `docs/coordination/QA_PLAN.md` 한 파일과 packet/handoff로 한정했다. 상태는 `ready`지만 claim, Antigravity 작업 브랜치, QA 맵, handoff는 아직 없으므로 SG-004는 시작되지 않았다. 지정 작성자는 Antigravity Gemini 3.1 Pro high, 리뷰어는 Codex 5.5 high이며 라우팅 편차는 claim 전 승인된 packet revision이 필요하다. SG-004는 28개 AC와 15개 필수 경계 시나리오의 자동/수동/배포 단계, 책임자, 독립 oracle, 증거 형식을 계획하며 제품 코드·테스트·계약·결정은 변경하지 않는다.
+SG-004 revision 1은 Antigravity가 frozen substantive SHA `b0fb73b5aa520986a810177e81e120df20e52dbd`로 제출했고 형식 리뷰 `019f6a18-79e7-7f12-a40a-e67e448a1a00`의 `Approved` 결과를 받았다. 그러나 Codex integrator의 독립 수용 기준 재검증에서 SG-004-AC02~AC08 미충족이 확인돼 병합하지 않았다. 사람의 “여기서 통과될 때까지 수정 진행” 지시에 따라 Codex가 같은 docs-only 범위에서 revision 2를 보완했다. 작성자 재리뷰는 AC07 owner 요약의 `SG-025` 누락과 `won` phase Restart/Menu 실행 oracle 누락을 차례로 발견했고, 두 finding을 packet/handoff 및 FX-CMD-ROUTER·DP-B11·CHK-CMD-DIFFICULTY·AC-G10에서 해소했다. 새 QA 본문은 SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`로 동결됐고 세 작성자 감사와 전체 exact validator는 finding 없이 통과했다. 2026-07-18(Asia/Seoul) 사람의 `SG-004 완료 처리` 지시는 이 정확한 SHA에 대한 human verdict와 완료 승인을 제공하므로 task를 `verified`로 전환했다. 별도 Claude/Gemini 리뷰나 외부 review ID는 주장하지 않는다. `SG-004-DN01`은 QA 계획 결함이 아닌 H0b 사람 결정으로 유지하며 Wave 1은 계속 대기한다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-003 완료, SG-004 packet ready·미선점, H0b 대기 |
+| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-003 완료, SG-004 revision 2 verified·로컬 반영 대기, 사람 H0b 대기 |
 | 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |

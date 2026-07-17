@@ -1,7 +1,7 @@
 id: SG-004
 spec_version: "1.0-plan"
-task_revision: 1
-status: ready
+task_revision: 2
+status: verified
 source_of_truth: offline
 offline_checked_at: "2026-07-16T07:54:41Z"
 offline_reason: >-
@@ -11,28 +11,53 @@ offline_reason: >-
   packet is the only SG-004 task source and must not coexist with a later GitHub Issue.
 approval_gate: H0a
 approval_basis: >-
-  The human H0a approval at 2026-07-15T18:47:25Z authorizes SG-001 through SG-004
-  Wave 0 work. The current human instruction, "SG-004 시작 전 준비 작업", authorizes
-  coordination preparation only. The Codex integrator narrows the approved docs-only
-  scope without changing product meaning; SG-004 remains unclaimed and not started.
-approved_by: codex-integrator
-approved_at: "2026-07-16T07:54:41Z"
+  The human H0a approval at 2026-07-15T18:47:25Z authorized SG-004 Wave 0 work. After
+  revision 1 remained below its qualitative acceptance criteria, the current human
+  instruction, "여기서 통과될 때까지 수정 진행", explicitly authorizes the Codex
+  integrator to perform a docs-only corrective pass on the existing task branch. This
+  revision changes authorship and review routing only; product meaning and scope remain
+  unchanged, and SG-004-DN01 stays reserved for human H0b resolution.
+approved_by: human-user
+approved_at: "2026-07-16T15:34:02Z"
+completion_approved_by: human-user
+completion_approved_at: "2026-07-17T16:46:32Z"
+completion_instruction: "SG-004 완료 처리"
+completion_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+completion_metadata_evidence_sha: 8711d22f797e28ee6a778ae0f3ac22aa02623ee0
+completion_basis: >-
+  The current human instruction accepts the exact frozen revision 2 QA content and
+  closes SG-004 only. It does not resolve SG-004-DN01, approve H0b or D-001 through
+  D-006, start Wave 1, authorize remote synchronization, or authorize deployment.
 preparation_requested_by: human-user
 preparation_requested_at: "2026-07-16T07:54:41Z"
 priority: P0
-owner: antigravity
-model: gemini-3.1-pro
+owner: codex-integrator
+model: gpt-5
 reasoning_or_workload: high
 assigned_model_baseline: gemini-3.1-pro
-routing_deviation: null
-claim_guard: >-
+routing_deviation:
+  kind: human_authorized_corrective_authorship_and_branch_deviation
+  original_owner: antigravity
+  original_model: gemini-3.1-pro
+  correction_owner: codex-integrator
+  correction_model: gpt-5
+  correction_setting: not_exposed
+  original_branch: agent/antigravity/SG-004-qa-plan
+  correction_branch: agent/antigravity/SG-004-qa-plan
+  authorized_by: human-user
+  authorized_at: "2026-07-16T15:34:02Z"
+  reason: >-
+    The human directed the current Codex session to continue correcting SG-004 in
+    place until the packet acceptance criteria pass. Existing history is preserved;
+    no amend, force-push, product change, or contract assumption is authorized.
+revision_1_claim_guard: >-
   The assigned Antigravity Gemini 3.1 Pro high runtime should claim this task. Any
   alternate platform or model must disclose the routing deviation and obtain an
   approved packet revision before changing status to in_progress. Antigravity must
   not edit STATUS.md; the Codex integrator synchronizes it in a separate coordination
   commit. A Codex reviewer/model deviation also requires disclosure and an approved
   packet revision before formal review.
-claim_prerequisites:
+revision_1_claim_prerequisites:
   - >-
     Reconfirm that base_sha is an ancestor of the branch start. Between base_sha and
     branch start, only this approved preparation packet and STATUS summary may differ;
@@ -44,10 +69,25 @@ claim_prerequisites:
     gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / <UTC ISO-8601>" and
     transition ready to in_progress atomically before creating or editing QA_PLAN.md.
   - Restate allowed paths, forbidden paths, acceptance IDs, and required commands.
+correction_claim_guard: >-
+  Revision 2 is claimed by the human-authorized Codex integrator on the existing
+  task branch. The frozen content may enter review after all scoped content and
+  packet validators pass. Because Codex authored the correction, only a human or
+  non-Codex platform may supply the formal revision 2 verdict; Codex validation
+  cannot advance the task to verified.
 reviewers:
   - platform: codex
     model: codex-5.5
     setting: high
+    applies_to: revision_1_antigravity_submission_only
+correction_review_guard:
+  substantive_author_platform: codex
+  required_formal_reviewer: human_or_non_codex_platform
+  recommended_platform: claude
+  exact_runtime: not_applicable_direct_human_review
+  reason: >-
+    Codex found and now authors the revision 2 correction, so Codex self-checks are
+    implementation evidence rather than independent formal approval.
 depends_on:
   - SG-001
 dependency_evidence:
@@ -79,9 +119,9 @@ deliverables:
   handoff: docs/coordination/handoffs/SG-004.md
   status_summary: docs/coordination/STATUS.md
 path_owners:
-  docs/coordination/QA_PLAN.md: antigravity
-  docs/coordination/tasks/SG-004.yaml: antigravity_through_review_then_codex_integrator
-  docs/coordination/handoffs/SG-004.md: antigravity_author_then_codex_reviewer
+  docs/coordination/QA_PLAN.md: antigravity_revision_1_then_codex_integrator_revision_2
+  docs/coordination/tasks/SG-004.yaml: codex-integrator_for_revision_2_correction
+  docs/coordination/handoffs/SG-004.md: codex-integrator_for_revision_2_correction
   docs/coordination/STATUS.md: codex-integrator-only
 deliverable_contract:
   master_trace_rows: 28
@@ -105,6 +145,7 @@ deliverable_contract:
     - evidence_and_downstream_ownership
     - flakiness_and_negative_control_policy
     - gaps_risks_and_decision_needed_register
+    - NFR_catalog
     - H0b_readiness_summary
 allowed_paths:
   - docs/coordination/QA_PLAN.md
@@ -183,9 +224,9 @@ acceptance_ids:
     text: >-
       Each planned check is assigned to the earliest responsible downstream task,
       including SG-005, SG-008, SG-009, SG-011, SG-012, SG-015, SG-016, SG-018,
-      SG-020, SG-023, SG-024, SG-026, and SG-028. SG-004 reports a plan only and
-      makes no execution PASS, browser, device, accessibility, deployment, or H0b
-      claim.
+      SG-020, SG-023, SG-024, SG-025, SG-026, and SG-028. SG-004 reports a plan
+      only and makes no execution PASS, browser, device, accessibility, deployment,
+      or H0b claim.
   - id: SG-004-AC08
     text: >-
       Every discovered gap or contradiction is classified blocker, high, medium, or
@@ -266,16 +307,37 @@ required_commands:
     abort("placeholder remains") if text.match?(placeholder);
     puts "no placeholder: OK"'
   - >-
-    ruby -E UTF-8:UTF-8 -e 'require "yaml"; packet =
+    ruby -E UTF-8:UTF-8 -e 'require "yaml"; require "digest"; require "open3"; packet =
     YAML.safe_load(File.read("docs/coordination/tasks/SG-004.yaml", encoding:
     "UTF-8"), permitted_classes: [], permitted_symbols: [], aliases: false);
+    sha = "81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52";
+    digest = "ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8";
+    last, last_status = Open3.capture2("git", "log", "-1", "--format=%H", "--",
+    "docs/coordination/QA_PLAN.md"); unchanged, diff_status = Open3.capture2("git",
+    "diff", "--name-only", "#{sha}..HEAD", "--", "docs/coordination/QA_PLAN.md");
+    handoff = File.read("docs/coordination/handoffs/SG-004.md", encoding: "UTF-8");
+    status = File.read("docs/coordination/STATUS.md", encoding: "UTF-8");
     abort("bad SG-004 packet") unless packet["id"] == "SG-004" &&
-    packet["task_revision"] == 1 && packet["status"] == "review" &&
-    packet["claim"].is_a?(String) && packet["claim"].start_with?("CLAIM:
-    antigravity /") && packet["head_sha"].is_a?(String) &&
-    packet["head_sha"].match?(/\A[0-9a-f]{40}\z/) &&
-    File.file?("docs/coordination/handoffs/SG-004.md"); puts "SG-004 review
-    packet YAML: OK"'
+    packet["task_revision"] == 2 && packet["status"] == "verified" &&
+    packet["correction_claim"].is_a?(String) &&
+    packet["correction_claim"].start_with?("CLAIM: codex /") &&
+    packet["head_sha"] == sha && packet["qa_content_sha"] == sha &&
+    packet["completion_scope_sha"] == sha && last_status.success? &&
+    last.strip == sha && diff_status.success? && unchanged.empty? &&
+    Digest::SHA256.file("docs/coordination/QA_PLAN.md").hexdigest == digest &&
+    packet.dig("correction_review_request", "review_scope_sha") == sha &&
+    packet.dig("correction_review_request", "formal_review_started") == true &&
+    packet.dig("correction_review_request", "formal_review_completed_at").is_a?(String) &&
+    packet.dig("correction_review_request", "verdict") == "approved" &&
+    packet.dig("correction_review_request", "reviewer_platform") == "human" &&
+    packet.dig("correction_review_request", "review_id").nil? &&
+    packet.dig("correction_review_request", "blocks_verify_and_merge") == false &&
+    packet.dig("correction_integration_gate", "blocks_verify_and_merge") == false &&
+    packet.dig("correction_review_guard", "required_formal_reviewer") ==
+    "human_or_non_codex_platform" && packet.fetch("decision_needed").any? { |item|
+    item["id"] == "SG-004-DN01" } && handoff.include?("HUMAN COMPLETION APPROVED") &&
+    status.include?("SG-004 revision 2 (`verified`"); puts "SG-004 revision 2
+    verified packet YAML: OK"'
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
@@ -294,7 +356,9 @@ not_applicable_commands:
       SG-004 defines future browser procedures; no root product or production preview
       exists, and executing browser evidence would falsely start downstream work.
 branch: agent/antigravity/SG-004-qa-plan
-claim: null
+claim: "CLAIM: antigravity / gemini-3.1-pro high / agent/antigravity/SG-004-qa-plan / 2026-07-16T08:22:13Z"
+correction_claim: "CLAIM: codex / gpt-5 setting-not-exposed / agent/antigravity/SG-004-qa-plan / 2026-07-16T15:34:02Z"
+correction_start_sha: 50fc8caf1d76449b97a903ff3f41f92ca07acbab
 state_history:
   - at: "2026-07-16T07:54:41Z"
     from: backlog
@@ -303,6 +367,241 @@ state_history:
       H0a permits SG-004, the SG-001 plan output is present on the exact local base,
       no open GitHub Issue or PR owns the task, and the integrator fixed the docs-only
       scope and validation contract. No implementation claim or work has started.
-head_sha: null
+  - at: "2026-07-16T08:22:13Z"
+    from: ready
+    to: in_progress
+    reason: >-
+      Claimed by Antigravity for QA_PLAN creation.
+  - at: "2026-07-16T08:23:45Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity submitted the initial QA plan for review.
+  - at: "2026-07-16T09:16:55Z"
+    from: review
+    to: in_progress
+    reason: >-
+      Antigravity reopened the QA plan to apply interim feedback in commit
+      5b2ed7f3957f075669f816eb0c3a9a36b9e39b3b; this transition is recorded
+      retrospectively because the content changed while the packet still said review.
+  - at: "2026-07-16T09:20:24Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity resubmitted the revised QA plan at frozen content SHA
+      f19f762ce75c4c2d0fe3a270b723eb35dd9603d2.
+  - at: "2026-07-16T09:28:45Z"
+    from: review
+    to: in_progress
+    reason: >-
+      A Codex integrator pre-review audit requested changes. The submission passes
+      all packet mechanical commands but does not satisfy qualitative SG-004-AC02
+      through SG-004-AC08 or the reproducible handoff requirement. This audit is not
+      the formal codex-5.5/high review.
+  - at: "2026-07-16T09:56:00Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Antigravity completely rewrote QA_PLAN.md to address all blocker findings, adding rigorous trace oracles, 15 boundary procedures, the exact 6x8 policy, browser/stage matrices, gap records, and NFRs. Resubmitting for formal Codex review.
+  - at: "2026-07-16T10:25:44Z"
+    from: review
+    to: in_progress
+    reason: >-
+      The human reported formal review 019f6a18-79e7-7f12-a40a-e67e448a1a00 as
+      Approved, but the Codex integrator's independent acceptance replay found that
+      frozen SHA b0fb73b5aa520986a810177e81e120df20e52dbd still fails qualitative
+      SG-004-AC02 through SG-004-AC08. Merge is blocked and the task
+      returns to Antigravity; SG-004-DN01 itself remains correctly classified.
+  - at: "2026-07-16T16:51:14Z"
+    from: in_progress
+    to: review
+    reason: >-
+      Codex froze the revision 2 QA plan at content commit
+      f94133fa776993e3f545be2c6bd1d246455a3b72 after two read audits and the
+      structural validators found no remaining content blocker. The exact human or
+      non-Codex reviewer runtime must still be confirmed before formal review starts.
+  - at: "2026-07-17T16:12:21Z"
+    from: review
+    to: in_progress
+    reason: >-
+      A Codex author-side review found one review-blocking metadata mismatch: the
+      AC07 owner summaries omitted SG-025 although QA_PLAN assigns NFR-M04 there.
+      The current human instruction authorizes correction and repeated review.
+  - at: "2026-07-17T16:32:02Z"
+    from: in_progress
+    to: review
+    reason: >-
+      SG-025 owner summaries now match the 14-task registry, and exact gameOver/won
+      Menu/Restart router oracles are frozen at content commit
+      81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52. Three author-side audits and the
+      full exact validator found no remaining finding; independent review remains.
+  - at: "2026-07-17T16:46:32Z"
+    from: review
+    to: verified
+    reason: >-
+      The human directly instructed "SG-004 완료 처리" after all revision 2 author
+      audits and exact validators passed. This is recorded as the permitted human
+      formal verdict for the exact frozen content SHA; no third-party model review
+      is claimed, and SG-004-DN01 remains pending for H0b.
+head_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+head_sha_role: frozen_revision_2_codex_corrective_submission
+qa_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+qa_content_sha_role: frozen_revision_2_QA_PLAN_content
 handoff: docs/coordination/handoffs/SG-004.md
-prepared_on_branch: agent/codex/SG-004-preparation
+revision_1_prepared_on_branch: agent/codex/SG-004-preparation
+revision_1_review_gate:
+  applies_to_revision: 1
+  historical_only: true
+  round: 2
+  audited_at: "2026-07-16T10:21:27Z"
+  audited_by: external-formal-review
+  audit_kind: formal_independent_review
+  formal_review: true
+  verdict: approved
+  review_id: 019f6a18-79e7-7f12-a40a-e67e448a1a00
+  review_scope_sha: b0fb73b5aa520986a810177e81e120df20e52dbd
+  reviewed_branch_tip_sha: ab3fe68d3cf80349a8fea62a6a97c3c7172c3628
+  reported_by: human-user
+  reviewer_identity_note: runtime identity is not independently exposed in repository evidence
+  result_summary: >-
+    No SG-004 review blockers remain. The QA plan, packet, handoff, and STATUS agree
+    on the frozen substantive SHA, and all scoped validation passed. SG-004-DN01 is
+    correctly retained for human resolution at H0b.
+revision_1_integration_gate:
+  applies_to_revision: 1
+  historical_only: true
+  checked_at: "2026-07-16T10:25:44Z"
+  checked_by: codex-integrator
+  verdict: changes_requested
+  blocks_verify_and_merge: true
+  reason: >-
+    The reported approval conflicts with the frozen document. Mechanical validators
+    pass, but packet acceptance requires substantive, reproducible procedures and
+    check-level ownership that are still absent.
+  blocking_findings:
+    - >-
+      SG-004-AC02: master rows retain bare N/A values and the fixture catalog names
+      states/sequences without supplying their exact reproducible values.
+    - >-
+      SG-004-AC03: DP-B rows omit required cases and exact oracles, and phase-command
+      coverage is grouped scenarios rather than the required explicit 6-by-8 matrix.
+    - >-
+      SG-004-AC04: environment rows do not fully assign accessibility modes and each
+      required viewport/browser/stage combination to a responsible check.
+    - >-
+      SG-004-AC05: manual-only and real-device ACs do not each have complete
+      prerequisites, ordered steps, objective PASS conditions, owner/gate, and evidence.
+    - >-
+      SG-004-AC06: deterministic fixtures and negative controls lack concrete scripted
+      values, mutations, and named expected failing tests.
+    - >-
+      SG-004-AC07: downstream task descriptions do not assign every planned check to
+      its earliest responsible task.
+    - >-
+      SG-004-AC08: known gaps outside DN01 are unclassified prose and the NFR catalog
+      lacks stages and complete DEVELOPMENT_PLAN section 10 oracles.
+correction_pass:
+  revision: 2
+  started_at: "2026-07-16T15:34:02Z"
+  started_by: codex-integrator
+  completed_at: "2026-07-17T16:32:02Z"
+  submitted_at: "2026-07-17T16:32:02Z"
+  reopened_at: "2026-07-17T16:12:21Z"
+  status: verified
+  authority: current human instruction
+  frozen_content_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+  author_validation:
+    checked_by: codex-integrator
+    checked_at: "2026-07-17T16:32:02Z"
+    independent: false
+    verdict: pass_for_independent_review_submission
+    summary: >-
+      SG-025 is present in all 14-task owner summaries. Exact gameOver/won Menu and
+      Restart router cases, earliest owner/evidence, and focus flow are now fixed.
+      Three author-side audits and all structural, fixture, invariant, ownership,
+      semantic, placeholder, and whitespace validators report no finding.
+  target_acceptance: [SG-004-AC02, SG-004-AC03, SG-004-AC04, SG-004-AC05, SG-004-AC06, SG-004-AC07, SG-004-AC08, SG-004-AC09]
+  constraints:
+    - docs-only changes within existing allowed_paths
+    - no STATUS author other than codex-integrator
+    - no product, test, dependency, runtime, contract, decision, or deployment change
+    - SG-004-DN01 remains decision-needed for human H0b
+    - revision 1 review approval does not apply to new substantive content
+
+correction_review_request:
+  revision: 2
+  status: approved_by_human
+  submitted_at: "2026-07-17T16:32:02Z"
+  reviewed_at: "2026-07-17T16:46:32Z"
+  verdict: approved
+  review_scope_sha: 81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52
+  required_reviewer: human_or_non_codex_platform
+  recommended_platform: claude
+  reviewer_platform: human
+  reviewer_runtime: not_applicable
+  reviewer_setting: not_applicable
+  reviewer_confirmed_by: human-user
+  reviewer_confirmed_at: "2026-07-17T16:46:32Z"
+  formal_review_started: true
+  formal_review_completed_at: "2026-07-17T16:46:32Z"
+  review_method: direct_human_completion_instruction
+  review_id: null
+  review_id_reason: direct human instruction has no separate external review ID
+  blocks_verify_and_merge: false
+  note: >-
+    The human's exact instruction "SG-004 완료 처리" supplies the allowed human
+    verdict for frozen revision 2 after all author-side findings and validators passed.
+    No Claude or Gemini review was submitted, no external review ID exists, and review
+    ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains revision 1 history only.
+author_review_rounds:
+  - round: 1
+    reviewed_at: "2026-07-17T16:12:21Z"
+    reviewed_by: codex-integrator
+    formal_review: false
+    verdict: changes_requested
+    finding: AC07 owner summaries omitted SG-025 although NFR-M04 is assigned there.
+    resolution: SG-025 added to both packet and handoff summaries; mechanical recheck passed.
+  - round: 2
+    reviewed_at: "2026-07-17T16:17:45Z"
+    reviewed_by: codex-author-side-content-audit
+    formal_review: false
+    verdict: changes_requested
+    finding: >-
+      FX-CMD-ROUTER and linked procedures do not execute restart and returnToMenu
+      from won with exact reset, difficulty, RNG, event, and focus oracles.
+    resolved_at: "2026-07-17T16:32:02Z"
+    resolution: >-
+      FX-CMD-ROUTER, DP-B11, CHK-CMD-DIFFICULTY, and AC-G10 now cover both commands
+      in both terminal phases with exact difficulty, reset, RNG, event, accumulator,
+      focus, earliest-owner, and evidence oracles.
+  - round: 3
+    reviewed_at: "2026-07-17T16:32:02Z"
+    reviewed_by: codex-author-side-final-audits
+    formal_review: false
+    verdict: pass_for_independent_review_submission
+    finding_count: 0
+    evidence: >-
+      QA_PLAN SHA-256 ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8;
+      full exact validator and qualitative/content-freeze/repository audits passed.
+correction_integration_gate:
+  checked_at: "2026-07-17T16:46:32Z"
+  checked_by: codex-integrator
+  verdict: approved_for_local_merge
+  blocks_verify_and_merge: false
+  blocking_findings: []
+  reason: >-
+    All author-side findings are resolved in the frozen revision 2 QA content, every
+    scoped validator passes, and the current human supplied the permitted formal
+    verdict and completion instruction. Local merge is authorized; H0b is not.
+
+decision_needed:
+  - id: SG-004-DN01
+    severity: blocker
+    affected_acceptance: [AC-G06, SG-004-AC03, SG-004-AC08]
+    question: >-
+      DEVELOPMENT_PLAN requires a same-tail-cell growth collision case, while the
+      approved contract forbids food on any snake cell and defines growth only when
+      attemptedCell equals food. That requested fixture is unreachable from a valid
+      GameState. The human must clarify whether the intended comparison is a non-tail
+      body collision or whether product/contract meaning must change.
+    disposition: human decision at or before H0b; no silent contract assumption
