@@ -3,14 +3,15 @@
 - 명세: `1.0-plan`
 - task: `SG-003` revision 2
 - 기준 SHA: `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`
-- 상태: H0b 승인을 위한 Wave 0 계약안
+- 상태: accepted (H0b, 2026-07-17T17:18:21Z)
 
 ## 개정 이력
 
 - revision 1: 최초 계약안.
 - revision 2: 지정 Claude 리뷰의 명확화 발견을 문서로 보강했다. (1) `pause`/`resume` 도메인 진입점을 §4에 명시했고, (2) §4에서 `start`/`restart`/`returnToMenu`의 `difficulty` 출처가 `state.difficulty`임을 고정했으며, (3) §3에서 `accept`의 의미(대부분 상태 전이, `toggleMute`만 셸 처리·`GameState` 불변)를 정의했다. 세 공개 함수와 상태 불변 조건, phase×command 정책 상수, event payload, RNG·scheduler 규칙은 그대로이며 새 제품 의미가 없어 §10대로 새 ADR을 만들지 않는다.
+- H0b: 2026-07-17T17:18:21Z 현재 사람의 `Wave 0 종료` 지시로 revision 2를 공용 구현 계약으로 승인했다. 이 승인 기록은 계약 본문을 바꾸지 않는다.
 
-이 문서는 SG-007이 구현할 공개 TypeScript 모양과 SG-010, SG-012, SG-013, SG-004가 공유할 동작 경계를 고정한다. 이 revision은 문서 계약만 만들며 소스 파일이나 실행 구현을 만들지 않는다. H0b 전에는 아래 계약이 `accepted` 기술 결정이나 Wave 1 구현 승인을 뜻하지 않는다.
+이 문서는 SG-007이 구현할 공개 TypeScript 모양과 SG-010, SG-012, SG-013, SG-004가 공유할 동작 경계를 고정한다. 이 revision은 문서 계약만 만들며 소스 파일이나 실행 구현을 만들지 않는다. H0b 승인 뒤 구현은 이 계약을 따라야 하며, 공개 타입이나 제품 의미를 바꾸려면 별도 결정과 계약 revision이 먼저 필요하다.
 
 ## 1. 정확한 TypeScript 모양
 

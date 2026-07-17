@@ -1,44 +1,65 @@
 # 프로젝트 상태
 
 - 마지막 동기화: 2026-07-18 (Asia/Seoul)
-- 단계: Wave 0 계약·검증 진행 / 기능 구현 미착수
+- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기능 구현 미착수
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음. SG-004 revision 2 (`merged`, frozen QA content SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`, local main merge `13fd82307941160750f8c25045cf81f8c00c2885`) 완료.
-- 현재 검증 대기: 없음. 작성자 감사와 exact validator 통과 뒤 사람이 `SG-004 완료 처리`로 최종 승인했다.
-- 현재 H0b 결정 필요: SG-004-DN01 (AC-G06 성장 tick/tail fixture 의미). 이는 QA 계획 결함이 아니다.
+- 현재 활성 작업: 없음
+- 현재 검증 대기: 없음
+- 현재 결정 필요: 없음
+- 다음 작업 후보: SG-005. 별도의 versioned GitHub Issue 또는 승인된 offline packet을 만든 뒤 `ready`와 claim을 기록해야 시작할 수 있다.
+
+## H0b 종료 기록
+
+2026-07-17T17:18:21Z(2026-07-18 Asia/Seoul) 현재 사람의 `Wave 0 종료` 지시는 SG-001~SG-004 증거, SG-003 공용 계약 revision 2, SG-004 QA 계획 revision 2, D-001~D-006을 승인하는 H0b 판정이다. D-001~D-006은 모두 `accepted`이며 Phaser 기준 버전은 4.2.1로 동결됐다. 이 승인은 Wave 1 선행 gate만 열며 SG-005 자동 착수, 원격 push, GitHub Pages 공개 배포를 승인하지 않는다.
+
+- SG-000: 고정 calibration packet, hidden oracle, 독립 채점자가 없어 계획대로 미실행 `verified`로 닫았다. 잠정 모델 라우팅 기준선은 유지한다.
+- SG-001: `agent/claude/SG-001-spec-review`의 명세 변경 SHA `a516758f5517847ae6915b504cadfc501d090fc4`가 `main`에 fast-forward 병합돼 있다. 사전 offline packet, claim, 지정 Antigravity 리뷰 증거는 존재하지 않고 실제 실행 플랫폼/모델도 저장소에서 확정할 수 없다. 현재 사람은 H0b 종료 지시로 산출물과 이 공개된 거버넌스 예외를 Wave 0 범위에서 수락했으며, 사후 기록은 `docs/coordination/tasks/SG-001.yaml`과 `docs/coordination/handoffs/SG-001.md`에 둔다.
+- SG-002: 구현 증거 SHA `6c2f8c59164380a47804f1771497fe1c58e99a2d`가 strict TypeScript, production build, Chromium/WebKit production-preview 매트릭스에서 `PASS_4_2_1`을 반환했다. Claude와 Antigravity 독립 리뷰 뒤 `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 병합됐다. 현재 사람은 H0b에서 공개된 실행 모델 편차를 수락하고 packet을 `merged`로 정합화했다.
+- SG-003: revision 2 계약 SHA `b4c5130bc0a0980d95ff575ff12efd154bf001ab`가 `c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18`로 병합됐고 독립 리뷰와 scoped 검증을 통과했다. H0b에서 공용 구현 계약으로 승인됐다.
+- SG-004: frozen QA content SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`가 사람의 완료 승인 뒤 `13fd82307941160750f8c25045cf81f8c00c2885`로 병합됐다. 28개 AC trace row와 28개 권위 AC가 정확히 일치하며 누락·중복은 0개다.
+- SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
+- Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
+
+2026-07-17T17:44:05Z 확인에서 fetch 후 로컬 `main`, `origin/main`, 원격 `main`은 `983cb1387d31c7113e8e7f63f8f49e4b555b6e3f`로 일치했고 공개 GitHub API의 열린 Issue와 PR은 각각 0건이었다. 따라서 현재 작업은 기존 GitHub 원본과 중복되지 않는 offline coordination 기록을 사용한다.
+
+### 종료 검증
+
+| 검증 / 환경 | 결과 | 실제 증거 |
+|---|---|---|
+| H0b 문서 exact validator / Ruby UTF-8 | PASS | D-001~D-006 accepted 6/6, SG-001~004 packet `merged`, DN01 resolved, YAML 4/4 parse |
+| DEVELOPMENT_PLAN ↔ QA trace | PASS | 권위 AC 28개와 trace row 28개 정확히 일치, 누락·중복 0 |
+| frozen QA content | PASS | SHA-256 `ce9c8cc68fde88633ec4417de9228221cb9d300c85e43b479e40888d1a75b9f8`, 본문 변경 0 |
+| Wave 0 증거 ancestry | PASS | SG-001~004의 기록된 구현·병합 SHA가 모두 `main` 조상 |
+| SG-004 역사적 completion 검증 | PASS | clean `983cb1387d31c7113e8e7f63f8f49e4b555b6e3f` 기준 packet 명령 15/15 exit 0 |
+| Phaser 4.2.1 spike typecheck/build | PASS | Node 24 bundled runtime에서 exit 0; build의 기존 500 kB chunk 경고만 존재 |
+| Phaser production-preview E2E | PASS | sandbox 첫 시도는 localhost bind `EPERM`; 허용된 재실행에서 Chromium/WebKit `2 passed (22.3s)` |
+| `git diff --check` | PASS | closeout 문서 diff whitespace 오류 0 |
+
+검증 시각은 2026-07-17T18:03:51Z다. 루트 `package.json`과 product scripts는 아직 없으므로 root `format:check`, `lint`, `typecheck`, `test`, `build`, `test:e2e`는 Wave 0 closeout에 적용할 수 없다. 제품 scaffold와 해당 명령은 SG-005가 만든다.
 
 ## 다음 관문
 
-`H0a 계획·스파이크 실행 승인`은 2026-07-16(Asia/Seoul) 현재 작업의 사람 지시로 통과했다. 이 승인은 Wave 0 검증 실행만 열며 기술 선택, D-001~D-006 확정, Wave 1 기능 구현 또는 공개 배포를 승인하지 않는다. GitHub Pages Settings는 필요 시 사람이 수행한다는 운영 전제를 포함하며 실제 공개 권한은 H3a에서 다시 확인한다.
-
-다음 관문은 `H0b 계약·결정 승인`이다. SG-001~SG-004 증거와 D-001~D-006 제안을 사람이 검토해 모두 승인하기 전에는 Wave 1을 시작하지 않는다.
-
-현재 환경에는 인증된 GitHub CLI/API 도구가 없어 SG-002는 GitHub Issue/PR과 중복되지 않는 offline packet/handoff를 원본으로 사용한다. 2026-07-16 확인 시 열린 Issue와 PR은 각각 0건이었다.
-
-SG-002는 Phaser 4.2.1의 strict TypeScript 소비, production build, Chromium/WebKit production-preview 매트릭스를 통과해 `PASS_4_2_1`을 반환했고 Claude와 Antigravity의 독립 리뷰가 기록됐다. 2026-07-16 사람 지시로 SG-001과 SG-002를 SG-003의 완료된 선행 작업으로 인정했다. 이 인정은 D-001의 `accepted` 변경이나 H0b 통과가 아니다. 상세 재현 증거와 제약은 `docs/coordination/handoffs/SG-002.md`에 있다.
-
-SG-003 revision 1 offline packet은 기준 SHA `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 사람 승인을 받았다. 소스 파일 없이 `docs/coordination/CONTRACTS.md`에 공개 타입과 상태 전이 계약을 고정했고 구현 증거 SHA `993c70309c6eeeb0a537e0d0f4d1733d84c651f6`의 scoped 검증을 통과했다. 지정 리뷰어(Claude / Opus 4.8 / high)의 독립 리뷰가 차단 결함 없이 승인 권고를 냈고, 비차단 명확화 발견 3건(pause/resume 도메인 진입점, `start`/`restart` 난이도 출처, `accept` 의미)은 revision 2 SHA `b4c5130bc0a0980d95ff575ff12efd154bf001ab`에서 해소됐다. 비-Claude Codex 재검토와 scoped 검증도 통과했으며 revision 2는 로컬 `main`의 `c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18`에 병합돼 있다. 2026-07-16 사람의 `SG-003 완료` 지시는 revision 2와 공개된 모델 라우팅 편차를 이 작업에 한해 수락하므로 packet을 `merged`로 닫았다. 이는 원격 동기화, H0b 승인 또는 D-001~D-006의 `accepted` 전환을 뜻하지 않는다.
-
-SG-004 revision 1은 Antigravity가 frozen substantive SHA `b0fb73b5aa520986a810177e81e120df20e52dbd`로 제출했고 형식 리뷰 `019f6a18-79e7-7f12-a40a-e67e448a1a00`의 `Approved` 결과를 받았다. 그러나 Codex integrator의 독립 수용 기준 재검증에서 SG-004-AC02~AC08 미충족이 확인돼 병합하지 않았다. 사람의 “여기서 통과될 때까지 수정 진행” 지시에 따라 Codex가 같은 docs-only 범위에서 revision 2를 보완했다. 작성자 재리뷰는 AC07 owner 요약의 `SG-025` 누락과 `won` phase Restart/Menu 실행 oracle 누락을 차례로 발견했고, 두 finding을 packet/handoff 및 FX-CMD-ROUTER·DP-B11·CHK-CMD-DIFFICULTY·AC-G10에서 해소했다. 새 QA 본문은 SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`로 동결됐고 세 작성자 감사와 전체 exact validator는 finding 없이 통과했다. 2026-07-18(Asia/Seoul) 사람의 `SG-004 완료 처리` 지시는 이 정확한 SHA에 대한 human verdict와 완료 승인을 제공했다. 승인 기록을 포함한 revision 2는 로컬 `main`의 `13fd82307941160750f8c25045cf81f8c00c2885`에 병합됐고 task를 `merged`로 닫았다. 별도 Claude/Gemini 리뷰나 외부 review ID, 원격 동기화는 주장하지 않는다. `SG-004-DN01`은 QA 계획 결함이 아닌 H0b 사람 결정으로 유지하며 Wave 1은 계속 대기한다.
+다음 실행 대상은 Wave 1의 SG-005다. H0b와 SG-003·SG-004 선행 조건은 충족됐지만, 조정 책임자가 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담은 task 원본을 승인하기 전에는 `ready`로 보지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
-| 0. 계약·캘리브레이션 | in_progress | H0a 승인 완료; SG-003·SG-004 완료, 사람 H0b 대기 |
-| 1. 기반 구축 | pending | Wave 0 결과와 D-001~D-006의 H0b 승인 후 시작 |
+| 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
+| 1. 기반 구축 | pending | SG-005 packet/Issue 승인과 claim 뒤 시작 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
 | 5. 배포·릴리스 | pending | H3a 공개 배포 승인, H3b 결과 수락 |
 
-## 최근 기준안 (`proposed`, H0b 승인 전)
+## 승인된 기준선
 
-- Phaser 4.2.1은 SG-002 매트릭스를 통과했다. 독립 리뷰와 H0b 승인 전까지 D-001은 여전히 `proposed`이며 기능 개발을 시작하지 않는다.
-- 게임 코어는 순수 TypeScript 결정론적 상태 전이로 구성한다.
-- 게임 보드는 Phaser, 접근 가능한 인터페이스는 DOM으로 구성한다.
+- Phaser 4.2.1, framework 없는 TypeScript + Vite 8.1.x, Node.js 24.x LTS, npm lockfile.
+- 게임 코어는 Phaser/DOM과 독립된 순수 TypeScript 결정론적 상태 전이다.
+- 게임 보드는 Phaser, 메뉴·HUD·상태·모바일 버튼은 DOM이다.
+- 외부 런타임 이미지·폰트·분석·서버 API를 MVP에 추가하지 않는다.
 - 실시간 협업 상태는 GitHub Issue/PR, 장기 기록은 저장소 문서에 둔다.
 
-상세 근거는 `docs/coordination/DECISIONS.md`를 참조한다.
+상세 근거는 `docs/coordination/DECISIONS.md`와 `docs/coordination/CONTRACTS.md`를 참조한다.

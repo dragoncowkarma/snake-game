@@ -1,0 +1,111 @@
+id: SG-001
+spec_version: "1.0-plan"
+task_revision: 1
+status: merged
+source_of_truth: offline-retrospective
+record_kind: retrospective_h0b_governance_exception
+offline_checked_at: "2026-07-17T17:44:05Z"
+offline_reason: >-
+  No GitHub Issue or PR owns SG-001. The original documentation commit predates an
+  SG-001 task packet, so this file records the evidence and the human-approved process
+  exception without pretending that a packet or claim existed before the work.
+approval_gate: H0b
+approved_by: human-user
+approved_at: "2026-07-17T17:18:21Z"
+approval_instruction: "Wave 0 종료"
+completion_approved_by: human-user
+completion_approved_at: "2026-07-17T17:18:21Z"
+completion_basis: >-
+  The current human H0b instruction accepts the SG-001 result and the disclosed
+  retrospective governance exception for Wave 0 only. It does not waive task packets,
+  dedicated branches, claims, or independent review for future work.
+priority: P0
+owner: unknown
+model: unknown
+reasoning_or_workload: unknown
+planned_owner: claude
+planned_model: claude-sonnet-5
+planned_setting: medium
+actual_author: unknown
+git_author_metadata_name: mgkwon
+actual_runtime_identity: unknown
+model_note: >-
+  Git metadata identifies author mgkwon, but it does not establish the executing
+  platform, AI model, or whether the author action was manual. No runtime identity or
+  model equivalence is claimed.
+planned_reviewer:
+  platform: antigravity
+  model: gemini-3.1-pro
+  setting: high
+reviewers:
+  - platform: antigravity
+    model: gemini-3.1-pro
+    setting: high
+    evidence: null
+independent_review_evidence: null
+independent_review_note: >-
+  No durable Antigravity review evidence exists. The H0b closeout records the human
+  `Wave 0 종료` instruction as accepting this disclosed gap; no review is invented.
+depends_on:
+  - H0a
+dependency_evidence:
+  H0a: >-
+    H0a was approved before the original SG-001 commit, as recorded in STATUS history.
+base_sha: 4f5f3c1bf02cbe908544add875e56a94d4e83589
+allowed_paths:
+  - docs/DEVELOPMENT_PLAN.md
+forbidden_paths:
+  - "all paths other than docs/DEVELOPMENT_PLAN.md"
+scope_note: >-
+  These paths describe the observed historical diff; they are not presented as a
+  pre-work authorization that did not exist.
+acceptance_ids:
+  - id: SG-001-AC01
+    text: READY Left is explicitly rejected as reverse input while Enter/Space remain ignored.
+  - id: SG-001-AC02
+    text: Menu entry restores focus to Start and AC-U06 includes the transition.
+  - id: SG-001-AC03
+    text: Boundary scenario 1 distinguishes ignored Enter/Space from rejected Left.
+  - id: SG-001-AC04
+    text: The plan retains exactly 28 unique authoritative AC identifiers.
+required_commands:
+  - git diff --check 4f5f3c1bf02cbe908544add875e56a94d4e83589..a516758f5517847ae6915b504cadfc501d090fc4
+  - git diff --name-only 4f5f3c1bf02cbe908544add875e56a94d4e83589..a516758f5517847ae6915b504cadfc501d090fc4
+  - git merge-base --is-ancestor a516758f5517847ae6915b504cadfc501d090fc4 main
+  - >-
+    ruby -E UTF-8:UTF-8 -e 'ids = File.read("docs/DEVELOPMENT_PLAN.md",
+    encoding: "UTF-8").scan(/`(AC-[GLUR]\d{2})`/).flatten; abort("AC mismatch")
+    unless ids.length == 28 && ids.uniq.length == 28; puts "28 unique AC IDs: OK"'
+branch: agent/claude/SG-001-spec-review
+branch_evidence: >-
+  Local branch and reflog record creation from main, commit a516758, and fast-forward
+  integration into main at 2026-07-16T13:56:31+09:00.
+claim: null
+claim_reason: No historical claim existed; this retrospective record does not fabricate one.
+head_sha: a516758f5517847ae6915b504cadfc501d090fc4
+merged_sha: a516758f5517847ae6915b504cadfc501d090fc4
+handoff: docs/coordination/handoffs/SG-001.md
+governance_exception:
+  missing_controls:
+    - pre-work versioned task packet
+    - CLAIM record
+    - durable assigned Antigravity review evidence
+    - canonical commit message format
+  accepted_by: human-user
+  accepted_at: "2026-07-17T17:18:21Z"
+  accepted_scope: SG-001 and Wave 0 H0b closeout only
+  future_waiver: false
+validation:
+  checked_at: "2026-07-17T18:03:51Z"
+  checked_by: codex-integrator
+  result: pass
+  limitation: >-
+    These retrospective checks validate the observed three-part documentation diff,
+    path scope, ancestry, and AC identifier count. They do not reconstruct the missing
+    independent review or claim a full original-task review; human H0b acceptance
+    supplies closure for the disclosed gap.
+  evidence:
+    - historical diff changes only docs/DEVELOPMENT_PLAN.md
+    - diff check exits 0
+    - head SHA is an ancestor of main
+    - 28 authoritative AC identifiers are present exactly once

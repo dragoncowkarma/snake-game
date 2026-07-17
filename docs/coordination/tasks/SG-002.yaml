@@ -1,7 +1,7 @@
 id: SG-002
 spec_version: "1.0"
 task_revision: 1
-status: review
+status: merged
 source_of_truth: offline
 offline_reason: >-
   Authenticated GitHub CLI/API tooling is unavailable in this execution environment;
@@ -10,6 +10,13 @@ approval_gate: H0a
 approval_basis: "Current human instruction: H0a 계획·스파이크 실행 승인"
 approved_by: human-user
 approved_at: "2026-07-15T18:47:25Z"
+completion_approved_by: human-user
+completion_approved_at: "2026-07-17T17:18:21Z"
+completion_instruction: "Wave 0 종료"
+completion_basis: >-
+  The current human H0b instruction accepts PASS_4_2_1, both recorded independent
+  reviews, and the disclosed execution-model routing deviation. It closes SG-002 and
+  accepts D-001 without asserting model equivalence or authorizing deployment.
 owner: codex
 model: gpt-5-codex
 reasoning_or_workload: high
@@ -17,9 +24,9 @@ assigned_model_baseline: codex-5.6-terra
 routing_deviation: >-
   The assigned Codex 5.6 Terra runtime was not available in this execution
   environment, so the provided GPT-5 Codex runtime performed the spike. No model
-  equivalence is inferred. The task cannot advance beyond review until the named
-  independent reviewers and the human accept this deviation or request a rerun
-  with the assigned baseline.
+  equivalence is inferred. Claude and Antigravity completed the named independent
+  reviews, and the current human accepted this disclosed deviation for SG-002 in the
+  H0b `Wave 0 종료` instruction.
 reviewers:
   - platform: claude
     model: opus-4.8
@@ -110,8 +117,26 @@ state_history:
     reason: >-
       Phaser 4.2.1 passed strict typecheck, production build, and the Chromium
       and WebKit production-preview matrix; independent review remains pending.
+  - at: "2026-07-17T17:18:21Z"
+    from: review
+    to: verified
+    reason: >-
+      Claude and Antigravity independent PASS reviews are present, and the current
+      human H0b instruction accepts the disclosed execution-model routing deviation.
+  - at: "2026-07-17T17:18:21Z"
+    from: verified
+    to: merged
+    reason: >-
+      Retrospective status reconciliation: the reviewed spike and coordination commits
+      were already integrated into main by merge fd81ba9943e8b5786a0910e7172fb57c477c0d5e.
 head_sha: 6c2f8c59164380a47804f1771497fe1c58e99a2d
 head_sha_role: frozen_implementation_evidence
+review_evidence_shas:
+  claude: c856c0d09eeb817f73ee1bab7d66bfd69a660810
+  antigravity: 78fbb25752f57f4900fc7818bca5a69ace35edab
+merged_sha: fd81ba9943e8b5786a0910e7172fb57c477c0d5e
+merged_sha_role: historical_main_integration_merge
+completion_recorded_at: "2026-07-17T18:03:51Z"
 coordination_commit_note: >-
   The handoff and in_progress-to-review transition are recorded in a subsequent
   coordination-only commit, so the branch HEAD is expected to differ from the

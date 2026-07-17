@@ -19,6 +19,14 @@ completion_basis: >-
   The current human instruction "SG-003 완료" accepts revision 2, resolves the
   disclosed runtime-model routing deviation for this task, and closes SG-003 only.
   It does not approve H0b or accept D-001 through D-006.
+h0b_approval:
+  approved: true
+  approved_by: human-user
+  approved_at: "2026-07-17T17:18:21Z"
+  instruction: "Wave 0 종료"
+  result: >-
+    Revision 2 is the accepted shared implementation contract. The earlier completion
+    basis remains an accurate statement of what the SG-003-only instruction authorized.
 owner: codex
 model: gpt-5-codex
 reasoning_or_workload: very-high
@@ -104,6 +112,12 @@ required_commands:
   - >-
     rg -n 'GameState|Phase|Cell|Direction|Difficulty|Command|DomainEvent|RandomSource|reset|step|enqueueDirection|stepDuration'
     docs/coordination/CONTRACTS.md
+required_commands_context:
+  historical_revision_head: b4c5130bc0a0980d95ff575ff12efd154bf001ab
+  note: >-
+    Run the HEAD-relative SG-003 scope commands in a clean temporary worktree at the
+    final revision 2 evidence SHA. Later H0b coordination changes are outside the
+    historical SG-003 task scope.
 not_applicable_commands:
   - command: npm run format:check
     reason: >-
