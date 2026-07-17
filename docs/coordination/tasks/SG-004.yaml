@@ -215,9 +215,9 @@ acceptance_ids:
     text: >-
       Each planned check is assigned to the earliest responsible downstream task,
       including SG-005, SG-008, SG-009, SG-011, SG-012, SG-015, SG-016, SG-018,
-      SG-020, SG-023, SG-024, SG-026, and SG-028. SG-004 reports a plan only and
-      makes no execution PASS, browser, device, accessibility, deployment, or H0b
-      claim.
+      SG-020, SG-023, SG-024, SG-025, SG-026, and SG-028. SG-004 reports a plan
+      only and makes no execution PASS, browser, device, accessibility, deployment,
+      or H0b claim.
   - id: SG-004-AC08
     text: >-
       Every discovered gap or contradiction is classified blocker, high, medium, or
@@ -466,17 +466,18 @@ correction_pass:
   started_by: codex-integrator
   completed_at: "2026-07-16T16:51:14Z"
   submitted_at: "2026-07-16T16:51:14Z"
+  reopened_at: "2026-07-17T16:12:21Z"
   status: in_progress
   authority: current human instruction
   frozen_content_sha: f94133fa776993e3f545be2c6bd1d246455a3b72
   author_validation:
     checked_by: codex-integrator
     independent: false
-    verdict: pass_for_independent_review_submission
+    verdict: changes_requested_after_author_recheck
     summary: >-
-      Two read audits and the exact structure, trace, fixture, ownership, semantic,
-      placeholder, and whitespace validators found no remaining QA content blocker.
-      These Codex-family checks are implementation evidence, not formal review.
+      The SG-025 owner-summary mismatch is corrected and mechanically revalidated.
+      A later qualitative author recheck found that accepted restart and returnToMenu
+      behavior in the won phase still lacks exact executable router oracles.
   target_acceptance: [SG-004-AC02, SG-004-AC03, SG-004-AC04, SG-004-AC05, SG-004-AC06, SG-004-AC07, SG-004-AC08, SG-004-AC09]
   constraints:
     - docs-only changes within existing allowed_paths
@@ -502,21 +503,39 @@ correction_review_request:
   review_id: null
   blocks_verify_and_merge: true
   note: >-
-    Revision 2 is review-ready and all author-side content validators pass. No formal
-    verdict exists for this SHA; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00
-    remains historical revision 1 evidence only.
+    Independent review is paused while the author resolves the won-phase router
+    coverage finding and freezes a new QA content SHA. No formal verdict exists for
+    revision 2; review ID 019f6a18-79e7-7f12-a40a-e67e448a1a00 remains historical
+    revision 1 evidence only.
+author_review_rounds:
+  - round: 1
+    reviewed_at: "2026-07-17T16:12:21Z"
+    reviewed_by: codex-integrator
+    formal_review: false
+    verdict: changes_requested
+    finding: AC07 owner summaries omitted SG-025 although NFR-M04 is assigned there.
+    resolution: SG-025 added to both packet and handoff summaries; mechanical recheck passed.
+  - round: 2
+    reviewed_at: "2026-07-17T16:17:45Z"
+    reviewed_by: codex-author-side-content-audit
+    formal_review: false
+    verdict: changes_requested
+    finding: >-
+      FX-CMD-ROUTER and linked procedures do not execute restart and returnToMenu
+      from won with exact reset, difficulty, RNG, event, and focus oracles.
+    resolution: in_progress
 correction_integration_gate:
-  checked_at: "2026-07-17T16:12:21Z"
+  checked_at: "2026-07-17T16:17:45Z"
   checked_by: codex-integrator
   verdict: changes_requested_metadata_alignment
   blocks_verify_and_merge: true
   blocking_findings:
     - >-
-      SG-004-AC07 owner summaries in the packet and handoff omit SG-025, while
-      QA_PLAN assigns NFR-M04 to SG-025 as its earliest downstream owner.
+      SG-004-AC03: the literal matrix marks restart and returnToMenu accepted in won,
+      but no exact runtime router fixture currently proves those accepted outcomes.
   reason: >-
-    QA_PLAN content remains valid, but the review package must agree with its exact
-    downstream ownership registry before independent formal review resumes.
+    The SG-025 metadata mismatch is resolved. QA_PLAN must now add executable won-phase
+    router coverage before independent formal review resumes.
 
 decision_needed:
   - id: SG-004-DN01
