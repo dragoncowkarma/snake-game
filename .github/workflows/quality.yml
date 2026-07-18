@@ -1,0 +1,58 @@
+name: Quality
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Derive repository base path
+        id: repository_base
+        run: node tooling.config.ts github-output
+
+      - name: Build for the repository base path
+        env:
+          PLAYWRIGHT_BASE_PATH: ${{ steps.repository_base.outputs.base_path }}
+        run: npm run build -- --base "${{ steps.repository_base.outputs.base_path }}"
+
+      - name: Install Chromium
+        run: npm exec -- playwright install --with-deps chromium
+
+      - name: Smoke-test the existing production build
+        env:
+          PLAYWRIGHT_BASE_PATH: ${{ steps.repository_base.outputs.base_path }}
+          PLAYWRIGHT_USE_EXISTING_BUILD: '1'
+        run: npm run test:e2e

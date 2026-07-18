@@ -1,14 +1,14 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-18 (Asia/Seoul)
-- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기능 구현 미착수
+- 마지막 동기화: 2026-07-18T16:35:33Z
+- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
 - 현재 활성 작업: 없음
 - 현재 검증 대기: 없음
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-005. 별도의 versioned GitHub Issue 또는 승인된 offline packet을 만든 뒤 `ready`와 claim을 기록해야 시작할 수 있다.
+- 다음 작업 후보: SG-006, SG-007, SG-008, SG-009. 각각 최신 `main` 기준의 versioned GitHub Issue 또는 승인된 offline packet과 claim이 필요하다.
 
 ## H0b 종료 기록
 
@@ -19,6 +19,7 @@
 - SG-002: 구현 증거 SHA `6c2f8c59164380a47804f1771497fe1c58e99a2d`가 strict TypeScript, production build, Chromium/WebKit production-preview 매트릭스에서 `PASS_4_2_1`을 반환했다. Claude와 Antigravity 독립 리뷰 뒤 `fd81ba9943e8b5786a0910e7172fb57c477c0d5e`로 병합됐다. 현재 사람은 H0b에서 공개된 실행 모델 편차를 수락하고 packet을 `merged`로 정합화했다.
 - SG-003: revision 2 계약 SHA `b4c5130bc0a0980d95ff575ff12efd154bf001ab`가 `c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18`로 병합됐고 독립 리뷰와 scoped 검증을 통과했다. H0b에서 공용 구현 계약으로 승인됐다.
 - SG-004: frozen QA content SHA `81e6f68e49fd93a6e9f8ca8f43a5ab9fc57a4b52`가 사람의 완료 승인 뒤 `13fd82307941160750f8c25045cf81f8c00c2885`로 병합됐다. 28개 AC trace row와 28개 권위 AC가 정확히 일치하며 누락·중복은 0개다.
+- SG-005: scaffold implementation SHA `7435242d997e226951f8cc2828bb649e64ed3b9f`와 revision 2 review remediation은 typecheck, lint, 8/8 unit, root 및 `/snake-game/` Chromium production smoke, clean `npm ci`, `verify`를 통과했다. 사람 제공 독립 재검증이 승인했으며 completion merge `673319e71bea4dba17a09124aeae5c1dab91378a`를 거쳐 local `main`에 통합됐다. 원격 push·공개 배포는 수행하지 않았다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
@@ -37,18 +38,18 @@
 | Phaser production-preview E2E | PASS | sandbox 첫 시도는 localhost bind `EPERM`; 허용된 재실행에서 Chromium/WebKit `2 passed (22.3s)` |
 | `git diff --check` | PASS | closeout 문서 diff whitespace 오류 0 |
 
-검증 시각은 2026-07-17T18:03:51Z다. 루트 `package.json`과 product scripts는 아직 없으므로 root `format:check`, `lint`, `typecheck`, `test`, `build`, `test:e2e`는 Wave 0 closeout에 적용할 수 없다. 제품 scaffold와 해당 명령은 SG-005가 만든다.
+Wave 0 closeout의 루트 명령 부재는 SG-005가 해소했다. 현재 local `main`에는 Node 24/npm 기반 scaffold와 `format:check`, `lint`, `typecheck`, `test`, `build`, `test:e2e`, `verify`가 있다.
 
 ## 다음 관문
 
-다음 실행 대상은 Wave 1의 SG-005다. H0b와 SG-003·SG-004 선행 조건은 충족됐지만, 조정 책임자가 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담은 task 원본을 승인하기 전에는 `ready`로 보지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
+SG-005는 merged다. SG-006/007/008/009는 새 packet에 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담고 claim한 뒤에만 `ready`가 된다. 공개 배포 권한은 H3a까지 닫혀 있다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
 | 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
-| 1. 기반 구축 | pending | SG-005 packet/Issue 승인과 claim 뒤 시작 |
+| 1. 기반 구축 | in_progress | SG-005 merged; 후속 Wave 1 packet 준비 대기 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
