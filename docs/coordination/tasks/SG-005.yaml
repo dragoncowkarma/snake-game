@@ -1,7 +1,7 @@
 id: SG-005
 spec_version: "1.0-plan"
 task_revision: 2
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-18T09:40:29Z"
 offline_reason: >-
@@ -82,8 +82,15 @@ status_history:
     at: "2026-07-18T16:04:16Z"
     by: codex
     basis: Atomic revision 2 claim before remediation edits.
-head_sha: null
-review_ready_at: null
+  - status: review
+    at: "2026-07-18T16:16:21Z"
+    by: codex
+    basis: >-
+      Revision 2 implementation SHA 7435242d997e226951f8cc2828bb649e64ed3b9f
+      passed clean npm ci, format, lint, typecheck, unit, root-base Chromium,
+      /snake-game/ existing-artifact Chromium, shared CLI, build, and verify checks.
+head_sha: 7435242d997e226951f8cc2828bb649e64ed3b9f
+review_ready_at: "2026-07-18T16:16:21Z"
 handoff: docs/coordination/handoffs/SG-005.md
 deliverables:
   runtime_version: .nvmrc
