@@ -1,7 +1,7 @@
 id: SG-005
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-18T09:40:29Z"
 offline_reason: >-
@@ -65,7 +65,15 @@ status_history:
     at: "2026-07-18T09:40:29Z"
     by: codex
     basis: Atomic claim on the dedicated branch before scaffold edits.
-head_sha:
+  - status: review
+    at: "2026-07-18T10:37:19Z"
+    by: codex
+    basis: >-
+      Implementation SHA 15f6b5ae9e8c5bb52f8027d78e7b727008042ac7 passed the
+      required static, unit, build, default-base Chromium, and /snake-game/
+      existing-artifact Chromium checks; reproducible evidence is in the handoff.
+head_sha: 15f6b5ae9e8c5bb52f8027d78e7b727008042ac7
+review_ready_at: "2026-07-18T10:37:19Z"
 handoff: docs/coordination/handoffs/SG-005.md
 deliverables:
   runtime_version: .nvmrc
