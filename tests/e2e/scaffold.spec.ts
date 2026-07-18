@@ -36,8 +36,10 @@ test('boots the production entry without browser or asset failures', async ({ pa
   expect(documentResponse?.ok()).toBe(true);
   await expect(page).toHaveTitle('Snake Game');
   await expect(page.getByRole('heading', { name: 'Snake Game' })).toBeVisible();
-  await expect(page.locator('#app')).toHaveAttribute('data-app-state', 'ready');
-  await expect(page.getByText('Project scaffold ready')).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Difficulty' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mute', exact: true })).toBeVisible();
+  await expect(page.locator('#board')).toBeHidden();
   const expectedBasePath = normalizeBasePath(process.env['PLAYWRIGHT_BASE_PATH']);
   const expectedAssetPrefix = `${expectedBasePath}assets/`;
 

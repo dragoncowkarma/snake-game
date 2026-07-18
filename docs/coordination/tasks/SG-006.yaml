@@ -1,0 +1,256 @@
+id: SG-006
+spec_version: "1.0-plan"
+task_revision: 1
+status: verified
+source_of_truth: offline
+offline_reason: >-
+  GitHub CLI/API is not used in this execution environment. This packet is the only
+  SG-006 task source and must not coexist with a later GitHub Issue for the same
+  revision. STATUS.md records SG-006 as a Wave 1 candidate requiring a new packet
+  with current base SHA, allowed/forbidden paths, acceptance IDs, and verification
+  commands before it becomes ready; no such packet existed prior to this file.
+approval_gate: direct-human-instruction
+approval_basis: >-
+  No prior offline packet or GitHub Issue existed for SG-006, and the initiating
+  prompt's approval fields ({base_sha}, {approved_by}, {approved_at},
+  {forbidden_paths}, {acceptance_ids}, {required_commands}) were unfilled template
+  placeholders. Per AGENTS.md section 3 ("승인 필드가 없거나 Issue revision이
+  프롬프트와 다르면 시작하지 마라"), the assigned Claude session paused and asked the
+  human directly in chat rather than fabricating approval values. The human then gave
+  direct instruction (highest authority under AGENTS.md section 1) in-session,
+  confirming: (1) immediate direct approval in place of a Codex-integrator-authored
+  packet, using this session's derived base_sha/allowed/forbidden paths as proposed;
+  (2) implementation scope expanded beyond docs/TASKS.md's SG-006 row (static shell
+  only) to also cover the focus-transition, aria-live, and Command-routing behavior
+  that TASKS.md's SG-006 row leaves to SG-013 — i.e. this revision intentionally
+  front-loads part of SG-013's described behavior into the DOM-shell layer, at the
+  human's explicit direction; (3) a one-time exception allowing this task to also
+  edit tests/e2e/scaffold.spec.ts (normally Antigravity-owned, outside SG-006's
+  TASKS.md allowed paths) solely to keep it aligned with the real shell content this
+  task ships, since the existing scaffold.spec.ts hard-asserts SG-005's placeholder
+  marker text and would otherwise regress with no in-scope way to fix it.
+approved_by: human-user (direct chat instruction, in-session)
+approved_at: "2026-07-19"
+approved_at_note: >-
+  Date only; this environment does not expose a verifiable wall-clock time, so no
+  fabricated ISO time-of-day is recorded. Date matches the session's system-provided
+  current date.
+reconciliation_note: >-
+  docs/TASKS.md's Wave 1/Wave 2 boundary (SG-006 static shell vs. SG-013 focus/
+  aria-live/routing) is not amended by this packet, since docs/TASKS.md is outside
+  this task's allowed paths and is not owned by Claude alone. The coordination lead
+  should reconcile docs/TASKS.md, docs/DEVELOPMENT_PLAN.md, and docs/coordination/
+  DECISIONS.md against this expanded-scope precedent before SG-013 is packetized, to
+  avoid duplicate or conflicting work.
+priority: P1
+owner: claude
+model: claude-sonnet-5
+reasoning_or_workload: high
+reviewer: antigravity (gemini-3.1-pro-high per docs/TASKS.md; not executed by this
+  session)
+depends_on:
+  - H0b
+  - SG-003
+  - SG-005
+dependency_evidence:
+  H0b: >-
+    Accepted 2026-07-17T17:18:21Z per docs/coordination/DECISIONS.md; D-001..D-006
+    accepted, Wave 1 gate open.
+  SG-003: >-
+    Revision 2 public contract accepted and present verbatim in
+    docs/coordination/CONTRACTS.md at this base_sha (Phase, Command, GameState,
+    DomainEvent, PHASE_COMMAND_POLICY, focus-relevant §3/§4 prose).
+  SG-005: >-
+    Merged; local main scaffold (Node 24/Vite 8.1/TS strict/ESLint/Prettier/Vitest/
+    Playwright) present and green at this base_sha. SG-005's handoff explicitly notes
+    "SG-006이 접근 가능한 DOM shell로 교체한다" for index.html.
+base_sha: 70a80390e2b3fd10f6a5f04233c82ab4d32f3875
+base_scope: local_main
+branch: agent/claude/SG-006-a11y-shell
+head_sha: e146c47
+verification_record_sha: 56521b760b5aebac0d850a0b32922fc0d71b5c8b
+verified_at: "2026-07-19"
+claim: "CLAIM: claude / sonnet-5 high / agent/claude/SG-006-a11y-shell / 2026-07-19"
+claimed_at: "2026-07-19"
+status_history:
+  - status: in_progress
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      Direct human approval received in-session after two blocking questions
+      (approval/packet absence; scope; tests/e2e exception) were resolved.
+  - status: review
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      Implementation commit e146c47 passed format:check, lint, typecheck, 29/29
+      unit tests, build, and the (one-time-exception-updated) Playwright
+      production smoke. Manual browser QA at a real 320x568 viewport confirmed
+      layout containment, 44px targets, visible focus, tab order, single-dispatch
+      clicks, keyboard command routing/form-control guard, and fixture-driven
+      focus transitions across every phase. A [hidden]-vs-display:flex CSS bug
+      (all panels visible at once) and a UI-boundary contrast shortfall
+      (2.17/1.85:1, below the 3:1 AC-U08 target) found during this QA pass were
+      fixed before this revision. Awaiting the designated non-Claude reviewer
+      (Antigravity) or human verification before advancing to verified/merged.
+  - status: verified
+    at: "2026-07-19"
+    by: antigravity
+    basis: >-
+      Verified via independent test run (full suite and e2e passed) and code review. DOM shell elements conform to constraints, focus/tabindex rules correctly implemented, CSS constraints/color contrast checked. Approved for merging.
+allowed_paths:
+  - index.html
+  - src/ui/**
+  - src/styles.css
+  - tests/e2e/scaffold.spec.ts
+  - docs/coordination/tasks/SG-006.yaml
+  - docs/coordination/handoffs/SG-006.md
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-001.yaml
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/tasks/SG-005.yaml
+  - docs/coordination/handoffs/SG-001.md
+  - docs/coordination/handoffs/SG-002.md
+  - docs/coordination/handoffs/SG-003.md
+  - docs/coordination/handoffs/SG-004.md
+  - docs/coordination/handoffs/SG-005.md
+  - spikes/**
+  - src/main.ts
+  - src/main.test.ts
+  - src/domain/**
+  - src/game/**
+  - src/config/**
+  - tests/** except tests/e2e/scaffold.spec.ts
+  - .github/**
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - tooling.config.ts
+  - eslint.config.js
+  - .prettierrc.json
+  - .prettierignore
+  - .nvmrc
+  - .gitignore
+  - playwright.config.ts
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+scope_boundary: >-
+  Game rules, Phaser Scene code, and domain state transitions are out of scope and
+  are not implemented here. src/domain/**, src/game/**, and src/config/** do not
+  exist yet (SG-007/SG-012 pending) and are not created by this packet. Where this
+  shell needs the public Command/GameState/DomainEvent shapes to compile and to be
+  exercised by fixtures, it mirrors docs/coordination/CONTRACTS.md section 1
+  type-for-type in src/ui/contracts.ts (types only, no runtime logic, no new public
+  fields) with an explicit TODO to delete that mirror and import the real module once
+  SG-007 lands. Input is sent only through the public Command union; rendering
+  consumes only GameState snapshots and DomainEvent arrays (or hand-authored fixtures
+  of the same shape, since no domain implementation exists yet to produce them for
+  real gameplay).
+acceptance_ids:
+  - id: SG-006-AC01
+    maps_to: [AC-U01]
+    text: >-
+      Each phase (menu, ready, playing, paused, gameOver, won) renders exactly the
+      controls listed in QA_PLAN.md AC-U01's evidence row (difficulty/Start/Mute;
+      D-pad/Mute; D-pad/Pause/Mute; Resume/Mute; Restart/Menu/Mute respectively) plus
+      shared HUD (score/best), with zero horizontal scroll and zero pairwise control
+      overlap at 320x568. Full multi-environment/H1/real-phone closure remains
+      SG-015/SG-018/SG-020.
+  - id: SG-006-AC02
+    maps_to: [AC-U03]
+    text: >-
+      Every actionable control is a native button or native semantic form control
+      (difficulty), has a non-empty accessible name, is at least 44x44 CSS px, and
+      shows a visible focus indicator. Real touch-emulation/device closure remains
+      SG-015/SG-018/SG-020.
+  - id: SG-006-AC03
+    maps_to: [AC-U06]
+    text: >-
+      Each button is wired through exactly one native `click` listener (no parallel
+      `pointerdown` handler), so one activation dispatches exactly one Command.
+  - id: SG-006-AC04
+    maps_to: [AC-U02, AC-U06]
+    text: >-
+      A pure keydown-to-Command translator maps Arrow/WASD to `direction`, P/Escape
+      to phase-appropriate `pause`/`resume`, M to `toggleMute`, and leaves Enter/Space
+      and all other keys untranslated. `preventDefault` is called only for keys that
+      actually produced a Command; untranslated keys and all keys while focus is
+      outside the board/control region leave default scroll behavior intact.
+  - id: SG-006-AC05
+    maps_to: [AC-U06]
+    text: >-
+      Given a hand-authored GameState/DomainEvent fixture sequence shaped like
+      DP-B11 (Start, Pause, Resume, gameOver entry, won entry, returnToMenu), the
+      shell's focus manager moves `document.activeElement` to the board after
+      Start/Resume-shaped transitions into ready/playing, to Resume after entering
+      paused, to Restart after entering gameOver/won, and to Start after entering
+      menu. This is shell-reaction evidence against fixtures, not a live domain; real
+      end-to-end proof against actual gameplay remains SG-013/SG-018/SG-020.
+  - id: SG-006-AC06
+    maps_to: [AC-U08]
+    text: >-
+      The board placeholder container is focusable (tabindex 0), exposes a linked
+      accessible description via `aria-describedby` naming the actual controls, and
+      does not carry `role="application"` or any other unjustified role.
+  - id: SG-006-AC07
+    maps_to: [AC-U07]
+    text: >-
+      Given fixture DomainEvent sequences, the aria-live status region updates at
+      most once per phase-change/foodEaten/gameEnded/gameWon-shaped fixture event and
+      zero times for movement-only fixture ticks that carry no such event. Real
+      semantic-score injection and screen-reader transcript evidence remain SG-018's
+      DP-B14 and SG-020's MAN-U07-*.
+  - id: SG-006-AC08
+    maps_to: [AC-U04, AC-U08]
+    text: >-
+      Design-token text contrast is at least 4.5:1 and UI-boundary contrast is at
+      least 3:1 against the shipped background; end/pause/reason status is conveyed
+      in visible text, not color alone. Cross-browser/grayscale device closure
+      remains SG-020.
+  - id: SG-006-AC09
+    maps_to: [AC-U09]
+    text: >-
+      At a 320x568 viewport, mobile control clusters respect `env(safe-area-inset-*)`
+      padding, `touch-action: none` is scoped only to the board/D-pad elements (not
+      `body`/`html`), and no control intersects the simulated safe-area inset. Real
+      notched-device closure remains SG-020.
+  - id: SG-006-AC10
+    maps_to: [AC-U05]
+    text: >-
+      Any CSS transition/animation this shell adds (focus/hover only; no game-feedback
+      animation is in scope) is disabled under `prefers-reduced-motion: reduce`.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+  - git diff --name-only 70a80390e2b3fd10f6a5f04233c82ab4d32f3875..HEAD
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json (unchanged by this packet)
+  browser: Chromium installed by Playwright
+completion_guard: >-
+  Claude may move this task to review only after all scoped checks pass and the
+  handoff records actual exit codes and AC evidence. The designated non-Claude
+  reviewer (Antigravity) or the human must independently verify before this advances
+  to verified/merged; this session does not self-approve past review.
+handoff: docs/coordination/handoffs/SG-006.md
