@@ -1,7 +1,7 @@
 id: SG-005
 spec_version: "1.0-plan"
-task_revision: 1
-status: review
+task_revision: 2
+status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-18T09:40:29Z"
 offline_reason: >-
@@ -18,7 +18,7 @@ approval_basis: >-
   within those accepted contracts. No public deployment or product-contract change is
   included.
 approved_by: codex-integrator
-approved_at: "2026-07-18T09:40:29Z"
+approved_at: "2026-07-18T16:04:16Z"
 priority: P0
 owner: codex
 model: gpt-5
@@ -54,8 +54,8 @@ base_note: >-
   the live remote main. Remote synchronization is not authorized or claimed. The
   dedicated task branch starts directly at this local integration SHA.
 branch: agent/codex/SG-005-scaffold
-claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-005-scaffold / 2026-07-18T09:40:29Z"
-claimed_at: "2026-07-18T09:40:29Z"
+claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-005-scaffold / 2026-07-18T16:04:16Z"
+claimed_at: "2026-07-18T16:04:16Z"
 status_history:
   - status: ready
     at: "2026-07-18T09:40:29Z"
@@ -72,8 +72,18 @@ status_history:
       Implementation SHA 15f6b5ae9e8c5bb52f8027d78e7b727008042ac7 passed the
       required static, unit, build, default-base Chromium, and /snake-game/
       existing-artifact Chromium checks; reproducible evidence is in the handoff.
-head_sha: 15f6b5ae9e8c5bb52f8027d78e7b727008042ac7
-review_ready_at: "2026-07-18T10:37:19Z"
+  - status: ready
+    at: "2026-07-18T16:04:16Z"
+    by: codex-integrator
+    basis: >-
+      Revision 2 contains only review-directed scaffold maintainability and test
+      coverage remediation; it does not change product meaning or public contracts.
+  - status: in_progress
+    at: "2026-07-18T16:04:16Z"
+    by: codex
+    basis: Atomic revision 2 claim before remediation edits.
+head_sha: null
+review_ready_at: null
 handoff: docs/coordination/handoffs/SG-005.md
 deliverables:
   runtime_version: .nvmrc
@@ -81,6 +91,7 @@ deliverables:
   package_lock: package-lock.json
   typescript: tsconfig.json
   vite: vite.config.ts
+  tooling: tooling.config.ts
   lint: eslint.config.js
   formatting:
     - .prettierrc.json
@@ -115,6 +126,7 @@ allowed_paths:
   - package-lock.json
   - playwright.config.ts
   - tsconfig.json
+  - tooling.config.ts
   - vite.config.ts
   - src/main.ts
   - src/main.test.ts
@@ -193,11 +205,20 @@ acceptance_ids:
       The handoff explains every locked dependency, clean npm ci succeeds, and Git
       tracks no dist, coverage, generated report, test-result, node_modules, or
       Playwright browser-binary artifact.
+  - id: SG-005-AC06
+    maps_to:
+      - AC-R04
+      - ENV-PR-STATIC
+      - ENV-PR-C1366
+    text: >-
+      Vite, Playwright, the browser smoke, and the quality workflow use one shared
+      normalizer and preview endpoint. The normalizer converts empty, root, and any
+      all-slash path (including //) to /; the default-base smoke also proves that the
+      page and emitted assets use the expected root-base paths.
 required_commands:
   - git diff --check
   - git diff --name-only db5711edce7c6eb8a077b18216857fcf47226df6..HEAD
   - npm ci
-  - npm run format:check
   - npm run lint
   - npm run typecheck
   - npm run test
@@ -206,6 +227,7 @@ required_commands:
   - npm run verify
   - npm run build -- --base /snake-game/
   - PLAYWRIGHT_BASE_PATH=/snake-game/ PLAYWRIGHT_USE_EXISTING_BUILD=1 npm run test:e2e
+  - GITHUB_REPOSITORY=dragoncowkarma/snake-game GITHUB_OUTPUT=<temporary-file> node tooling.config.ts github-output
   - git ls-files dist coverage playwright-report test-results node_modules
 required_environment:
   node: 24.x LTS

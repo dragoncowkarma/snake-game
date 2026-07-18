@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { normalizeBasePath, previewOrigin } from '../../tooling.config.ts';
+
 test('boots the production entry without browser or asset failures', async ({ page }) => {
   const browserFailures: string[] = [];
   const localResponsePaths: string[] = [];
@@ -20,7 +22,7 @@ test('boots the production entry without browser or asset failures', async ({ pa
   page.on('response', (response) => {
     const responseUrl = new URL(response.url());
 
-    if (responseUrl.origin === 'http://127.0.0.1:4173') {
+    if (responseUrl.origin === previewOrigin) {
       localResponsePaths.push(responseUrl.pathname);
     }
 
@@ -36,8 +38,17 @@ test('boots the production entry without browser or asset failures', async ({ pa
   await expect(page.getByRole('heading', { name: 'Snake Game' })).toBeVisible();
   await expect(page.locator('#app')).toHaveAttribute('data-app-state', 'ready');
   await expect(page.getByText('Project scaffold ready')).toBeVisible();
-  const servedBasePath = new URL(page.url()).pathname;
+  const expectedBasePath = normalizeBasePath(process.env['PLAYWRIGHT_BASE_PATH']);
+  const expectedAssetPrefix = `${expectedBasePath}assets/`;
+
+  expect(new URL(page.url()).pathname).toBe(expectedBasePath);
   expect(localResponsePaths.length).toBeGreaterThan(0);
-  expect(localResponsePaths.every((path) => path.startsWith(servedBasePath))).toBe(true);
+  expect(localResponsePaths).toContain(expectedBasePath);
+  expect(localResponsePaths.some((path) => path.startsWith(expectedAssetPrefix))).toBe(true);
+  expect(
+    localResponsePaths.every(
+      (path) => path === expectedBasePath || path.startsWith(expectedAssetPrefix),
+    ),
+  ).toBe(true);
   expect(browserFailures).toEqual([]);
 });

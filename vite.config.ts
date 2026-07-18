@@ -1,14 +1,6 @@
 import { defineConfig } from 'vite';
 
-function normalizeBasePath(value: string | undefined): string {
-  const path = value?.trim() ?? '';
-
-  if (path === '' || path === '/') {
-    return '/';
-  }
-
-  return `/${path.replace(/^\/+|\/+$/g, '')}/`;
-}
+import { normalizeBasePath, previewHost, previewPort } from './tooling.config.ts';
 
 export default defineConfig({
   base: normalizeBasePath(process.env['PLAYWRIGHT_BASE_PATH']),
@@ -17,8 +9,8 @@ export default defineConfig({
     emptyOutDir: true,
   },
   preview: {
-    host: '127.0.0.1',
-    port: 4173,
+    host: previewHost,
+    port: previewPort,
     strictPort: true,
   },
 });

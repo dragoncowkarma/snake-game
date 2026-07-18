@@ -16,12 +16,14 @@
     "noFallthroughCasesInSwitch": true,
     "noPropertyAccessFromIndexSignature": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "types": ["node", "vite/client"]
   },
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
+    "tooling.config.ts",
     "eslint.config.js",
     "playwright.config.ts",
     "vite.config.ts"

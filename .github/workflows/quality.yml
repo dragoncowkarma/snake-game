@@ -41,14 +41,7 @@ jobs:
 
       - name: Derive repository base path
         id: repository_base
-        shell: bash
-        run: |
-          set -euo pipefail
-          repository_name="${GITHUB_REPOSITORY##*/}"
-          [[ -n "$repository_name" ]]
-          [[ "$repository_name" =~ ^[A-Za-z0-9._-]+$ ]]
-          base_path="/${repository_name}/"
-          printf 'base_path=%s\n' "$base_path" >> "$GITHUB_OUTPUT"
+        run: node tooling.config.ts github-output
 
       - name: Build for the repository base path
         env:

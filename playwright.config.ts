@@ -1,22 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const previewOrigin = 'http://127.0.0.1:4173';
-
-function normalizeBasePath(value: string | undefined): string {
-  const path = value?.trim() ?? '';
-
-  if (path === '' || path === '/') {
-    return '/';
-  }
-
-  return `/${path.replace(/^\/+|\/+$/g, '')}/`;
-}
+import { normalizeBasePath, previewHost, previewOrigin, previewPort } from './tooling.config.ts';
 
 const basePath = normalizeBasePath(process.env['PLAYWRIGHT_BASE_PATH']);
 const useExistingBuild = process.env['PLAYWRIGHT_USE_EXISTING_BUILD'] === '1';
+const previewArguments = `--host ${previewHost} --port ${previewPort} --strictPort`;
 const previewCommand = useExistingBuild
-  ? 'npm run preview -- --host 127.0.0.1 --port 4173 --strictPort'
-  : 'npm run build && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort';
+  ? `npm run preview -- ${previewArguments}`
+  : `npm run build && npm run preview -- ${previewArguments}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
