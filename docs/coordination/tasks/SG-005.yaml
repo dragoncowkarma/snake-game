@@ -1,7 +1,7 @@
 id: SG-005
 spec_version: "1.0-plan"
 task_revision: 2
-status: verified
+status: merged
 source_of_truth: offline
 offline_checked_at: "2026-07-18T09:40:29Z"
 offline_reason: >-
@@ -96,9 +96,17 @@ status_history:
       Human-provided independent revalidation confirms all five review findings are
       fixed; typecheck and lint are clean, and all 8 unit tests pass. The reviewer
       recommends approval with no new regression or defect found.
+  - status: merged
+    at: "2026-07-18T16:35:33Z"
+    by: codex-integrator
+    basis: >-
+      Verified SG-005 branch was integrated through local completion merge commit
+      673319e71bea4dba17a09124aeae5c1dab91378a; no remote push or deployment occurred.
 head_sha: 7435242d997e226951f8cc2828bb649e64ed3b9f
 review_ready_at: "2026-07-18T16:16:21Z"
 verified_at: "2026-07-18T16:34:19Z"
+merged_at: "2026-07-18T16:35:33Z"
+merge_commit: 673319e71bea4dba17a09124aeae5c1dab91378a
 handoff: docs/coordination/handoffs/SG-005.md
 deliverables:
   runtime_version: .nvmrc
