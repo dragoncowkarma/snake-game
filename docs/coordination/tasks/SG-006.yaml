@@ -68,6 +68,8 @@ base_sha: 70a80390e2b3fd10f6a5f04233c82ab4d32f3875
 base_scope: local_main
 branch: agent/claude/SG-006-a11y-shell
 head_sha: e146c47
+verification_record_sha: 56521b760b5aebac0d850a0b32922fc0d71b5c8b
+verified_at: "2026-07-19"
 claim: "CLAIM: claude / sonnet-5 high / agent/claude/SG-006-a11y-shell / 2026-07-19"
 claimed_at: "2026-07-19"
 status_history:
