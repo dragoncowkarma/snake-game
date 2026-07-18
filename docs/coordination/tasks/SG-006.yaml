@@ -1,7 +1,7 @@
 id: SG-006
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_reason: >-
   GitHub CLI/API is not used in this execution environment. This packet is the only
@@ -67,6 +67,7 @@ dependency_evidence:
 base_sha: 70a80390e2b3fd10f6a5f04233c82ab4d32f3875
 base_scope: local_main
 branch: agent/claude/SG-006-a11y-shell
+head_sha: e146c47
 claim: "CLAIM: claude / sonnet-5 high / agent/claude/SG-006-a11y-shell / 2026-07-19"
 claimed_at: "2026-07-19"
 status_history:
@@ -76,6 +77,20 @@ status_history:
     basis: >-
       Direct human approval received in-session after two blocking questions
       (approval/packet absence; scope; tests/e2e exception) were resolved.
+  - status: review
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      Implementation commit e146c47 passed format:check, lint, typecheck, 29/29
+      unit tests, build, and the (one-time-exception-updated) Playwright
+      production smoke. Manual browser QA at a real 320x568 viewport confirmed
+      layout containment, 44px targets, visible focus, tab order, single-dispatch
+      clicks, keyboard command routing/form-control guard, and fixture-driven
+      focus transitions across every phase. A [hidden]-vs-display:flex CSS bug
+      (all panels visible at once) and a UI-boundary contrast shortfall
+      (2.17/1.85:1, below the 3:1 AC-U08 target) found during this QA pass were
+      fixed before this revision. Awaiting the designated non-Claude reviewer
+      (Antigravity) or human verification before advancing to verified/merged.
 allowed_paths:
   - index.html
   - src/ui/**
