@@ -1,7 +1,7 @@
 id: SG-006
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 source_of_truth: offline
 offline_reason: >-
   GitHub CLI/API is not used in this execution environment. This packet is the only
@@ -46,8 +46,7 @@ priority: P1
 owner: claude
 model: claude-sonnet-5
 reasoning_or_workload: high
-reviewer: antigravity (gemini-3.1-pro-high per docs/TASKS.md; not executed by this
-  session)
+reviewer: antigravity (gemini-3.1-pro-high per docs/TASKS.md)
 depends_on:
   - H0b
   - SG-003
@@ -70,6 +69,9 @@ branch: agent/claude/SG-006-a11y-shell
 head_sha: e146c47
 verification_record_sha: 56521b760b5aebac0d850a0b32922fc0d71b5c8b
 verified_at: "2026-07-19"
+integration_record_sha: 75c91769d4500a461441ad639b0f67d339d240e5
+merged_at: "2026-07-18T18:03:54Z"
+merge_commit: 42d91eeb4221b38ea2c49c06320da57a838cb060
 claim: "CLAIM: claude / sonnet-5 high / agent/claude/SG-006-a11y-shell / 2026-07-19"
 claimed_at: "2026-07-19"
 status_history:
@@ -98,6 +100,15 @@ status_history:
     by: antigravity
     basis: >-
       Verified via independent test run (full suite and e2e passed) and code review. DOM shell elements conform to constraints, focus/tabindex rules correctly implemented, CSS constraints/color contrast checked. Approved for merging.
+  - status: merged
+    at: "2026-07-18T18:03:54Z"
+    by: codex-integrator
+    basis: >-
+      The verified SG-006 implementation, handoff, and independent-review record were
+      integrated into local main by merge commit
+      42d91eeb4221b38ea2c49c06320da57a838cb060. Before integration, Codex reran
+      format, lint, typecheck, 29/29 unit tests, build, and Chromium E2E 1/1 on Node
+      24.14.0. No remote push or deployment occurred.
 allowed_paths:
   - index.html
   - src/ui/**
