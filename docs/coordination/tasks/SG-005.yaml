@@ -1,0 +1,255 @@
+id: SG-005
+spec_version: "1.0-plan"
+task_revision: 2
+status: verified
+source_of_truth: offline
+offline_checked_at: "2026-07-18T09:40:29Z"
+offline_reason: >-
+  GitHub CLI is unavailable in this execution environment. A fresh read-only check of
+  the live remote found main at 983cb1387d31c7113e8e7f63f8f49e4b555b6e3f and zero
+  open Issues or pull requests. This packet is the only SG-005 task source and must
+  not coexist with a later GitHub Issue.
+approval_gate: H0b
+approval_basis: >-
+  Human instruction "wave 1 시작" at 2026-07-18 authorizes Wave 1 to begin. H0b and
+  the accepted SG-003 revision 2 contract and SG-004 revision 2 QA plan already fix
+  the product meaning. Under AGENTS.md, the Codex integrator approves this revision's
+  bounded scaffold paths, acceptance evidence, and commands as implementation detail
+  within those accepted contracts. No public deployment or product-contract change is
+  included.
+approved_by: codex-integrator
+approved_at: "2026-07-18T16:04:16Z"
+priority: P0
+owner: codex
+model: gpt-5
+reasoning_or_workload: high
+assigned_model_baseline: codex-5.6-terra
+routing_deviation: >-
+  The named Codex 5.6 Terra runtime is not exposed in this session. The active runtime
+  is the current Codex GPT-5 environment with no exact model-setting identifier
+  exposed. It remains on the assigned Codex platform; no model equivalence is claimed,
+  and the required independent reviewer remains Claude.
+reviewers:
+  - platform: claude
+    model: sonnet-5
+    setting: medium
+depends_on:
+  - H0b
+  - SG-003
+  - SG-004
+dependency_evidence:
+  H0b: >-
+    Human-user accepted H0b with "Wave 0 종료" at 2026-07-17T17:18:21Z. The closeout
+    is recorded in DECISIONS.md and STATUS.md on base_sha.
+  SG-003: >-
+    Revision 2 is merged and accepted; its implementation contract is present in
+    docs/coordination/CONTRACTS.md on base_sha.
+  SG-004: >-
+    Revision 2 is merged and accepted; its QA registry assigns CHK-R04,
+    ENV-PR-STATIC, ENV-PR-C1366, NFR-SC04, and NFR-M03 to SG-005.
+base_sha: db5711edce7c6eb8a077b18216857fcf47226df6
+base_scope: local_main
+base_note: >-
+  Local main contains the accepted H0b closeout and is exactly two commits ahead of
+  the live remote main. Remote synchronization is not authorized or claimed. The
+  dedicated task branch starts directly at this local integration SHA.
+branch: agent/codex/SG-005-scaffold
+claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-005-scaffold / 2026-07-18T16:04:16Z"
+claimed_at: "2026-07-18T16:04:16Z"
+status_history:
+  - status: ready
+    at: "2026-07-18T09:40:29Z"
+    by: codex-integrator
+    basis: Approved revision 1 packet with all dependencies satisfied.
+  - status: in_progress
+    at: "2026-07-18T09:40:29Z"
+    by: codex
+    basis: Atomic claim on the dedicated branch before scaffold edits.
+  - status: review
+    at: "2026-07-18T10:37:19Z"
+    by: codex
+    basis: >-
+      Implementation SHA 15f6b5ae9e8c5bb52f8027d78e7b727008042ac7 passed the
+      required static, unit, build, default-base Chromium, and /snake-game/
+      existing-artifact Chromium checks; reproducible evidence is in the handoff.
+  - status: ready
+    at: "2026-07-18T16:04:16Z"
+    by: codex-integrator
+    basis: >-
+      Revision 2 contains only review-directed scaffold maintainability and test
+      coverage remediation; it does not change product meaning or public contracts.
+  - status: in_progress
+    at: "2026-07-18T16:04:16Z"
+    by: codex
+    basis: Atomic revision 2 claim before remediation edits.
+  - status: review
+    at: "2026-07-18T16:16:21Z"
+    by: codex
+    basis: >-
+      Revision 2 implementation SHA 7435242d997e226951f8cc2828bb649e64ed3b9f
+      passed clean npm ci, format, lint, typecheck, unit, root-base Chromium,
+      /snake-game/ existing-artifact Chromium, shared CLI, build, and verify checks.
+  - status: verified
+    at: "2026-07-18T16:34:19Z"
+    by: human-user
+    basis: >-
+      Human-provided independent revalidation confirms all five review findings are
+      fixed; typecheck and lint are clean, and all 8 unit tests pass. The reviewer
+      recommends approval with no new regression or defect found.
+head_sha: 7435242d997e226951f8cc2828bb649e64ed3b9f
+review_ready_at: "2026-07-18T16:16:21Z"
+verified_at: "2026-07-18T16:34:19Z"
+handoff: docs/coordination/handoffs/SG-005.md
+deliverables:
+  runtime_version: .nvmrc
+  package_manifest: package.json
+  package_lock: package-lock.json
+  typescript: tsconfig.json
+  vite: vite.config.ts
+  tooling: tooling.config.ts
+  lint: eslint.config.js
+  formatting:
+    - .prettierrc.json
+    - .prettierignore
+  source_entry: src/main.ts
+  unit_smoke: src/main.test.ts
+  browser_smoke:
+    - playwright.config.ts
+    - tests/e2e/scaffold.spec.ts
+  workflow: .github/workflows/quality.yml
+  packet: docs/coordination/tasks/SG-005.yaml
+  handoff: docs/coordination/handoffs/SG-005.md
+ownership_handoffs:
+  index.html: >-
+    SG-005 owns only the minimal Vite boot document. SG-006 may replace it with the
+    approved accessible DOM shell after SG-005 is merged.
+  playwright: >-
+    SG-005 owns only the production-preview entry smoke and its minimal config.
+    SG-008 owns the downstream fixture and test foundation after SG-005 is merged.
+  vite_and_quality_workflow: >-
+    SG-005 owns the non-deploying PR-quality minimum. SG-009 may extend base/artifact
+    behavior after SG-005 is merged, while SG-024 owns release hardening and deploy.
+allowed_paths:
+  - .gitignore
+  - .nvmrc
+  - .prettierignore
+  - .prettierrc.json
+  - .github/workflows/quality.yml
+  - eslint.config.js
+  - index.html
+  - package.json
+  - package-lock.json
+  - playwright.config.ts
+  - tsconfig.json
+  - tooling.config.ts
+  - vite.config.ts
+  - src/main.ts
+  - src/main.test.ts
+  - tests/e2e/scaffold.spec.ts
+  - docs/coordination/tasks/SG-005.yaml
+  - docs/coordination/handoffs/SG-005.md
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-001.yaml
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/handoffs/SG-001.md
+  - docs/coordination/handoffs/SG-002.md
+  - docs/coordination/handoffs/SG-003.md
+  - docs/coordination/handoffs/SG-004.md
+  - spikes/**
+  - src/** except src/main.ts and src/main.test.ts
+  - tests/** except tests/e2e/scaffold.spec.ts
+  - public/**
+  - .github/** except .github/workflows/quality.yml
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+acceptance_ids:
+  - id: SG-005-AC01
+    maps_to:
+      - AC-R04
+      - CHK-R04
+    text: >-
+      The root is a framework-free Phaser 4.2.1 TypeScript project using Node 24.x,
+      an npm lockfile, Vite 8.1.x, strict TypeScript, ESLint flat config, Prettier,
+      Vitest, and Playwright without experimental Vite features or template telemetry.
+  - id: SG-005-AC02
+    maps_to:
+      - AC-R04
+      - ENV-PR-STATIC
+    text: >-
+      package.json exposes dev, build, preview, format:check, lint, typecheck, test,
+      test:e2e, and verify. From a clean checkout on Node 24, npm ci and every required
+      quality command exit zero without warning/error bypasses.
+  - id: SG-005-AC03
+    maps_to:
+      - AC-R04
+      - ENV-PR-C1366
+    text: >-
+      A non-empty Vitest smoke imports the real src/main.ts entry, and a Chromium
+      production-preview smoke at 1366x768 proves the minimal page booted with zero
+      page errors, request failures, console errors, or asset 404 responses.
+  - id: SG-005-AC04
+    maps_to:
+      - AC-R04
+      - ENV-PR-STATIC
+      - ENV-PR-C1366
+    text: >-
+      The pull-request quality workflow has contents: read only, derives a normalized
+      /<repository>/ base from GITHUB_REPOSITORY, runs clean static/unit/build checks
+      and Chromium smoke against that existing build, and contains no Pages metadata
+      API, upload, deploy, pages write, id-token write, or public environment.
+  - id: SG-005-AC05
+    maps_to:
+      - NFR-SC04
+      - NFR-M03
+    text: >-
+      The handoff explains every locked dependency, clean npm ci succeeds, and Git
+      tracks no dist, coverage, generated report, test-result, node_modules, or
+      Playwright browser-binary artifact.
+  - id: SG-005-AC06
+    maps_to:
+      - AC-R04
+      - ENV-PR-STATIC
+      - ENV-PR-C1366
+    text: >-
+      Vite, Playwright, the browser smoke, and the quality workflow use one shared
+      normalizer and preview endpoint. The normalizer converts empty, root, and any
+      all-slash path (including //) to /; the default-base smoke also proves that the
+      page and emitted assets use the expected root-base paths.
+required_commands:
+  - git diff --check
+  - git diff --name-only db5711edce7c6eb8a077b18216857fcf47226df6..HEAD
+  - npm ci
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - npm run verify
+  - npm run build -- --base /snake-game/
+  - PLAYWRIGHT_BASE_PATH=/snake-game/ PLAYWRIGHT_USE_EXISTING_BUILD=1 npm run test:e2e
+  - GITHUB_REPOSITORY=dragoncowkarma/snake-game GITHUB_OUTPUT=<temporary-file> node tooling.config.ts github-output
+  - git ls-files dist coverage playwright-report test-results node_modules
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json
+  browser: Chromium installed by Playwright
+completion_guard: >-
+  Codex may move this task only to review after all scoped checks pass and the handoff
+  records actual exit codes. Only the assigned non-Codex Claude reviewer may advance
+  the implementation to verified. SG-006 through SG-009 remain unready until SG-005
+  is independently approved and merged by the integrator.
