@@ -1,0 +1,254 @@
+/*
+ * Design tokens and layout for the accessible DOM shell (menu/HUD/status/buttons).
+ * The Phaser board itself (SG-012) is out of scope; #board here is a plain,
+ * accessible placeholder container. Colors are chosen for >=4.5:1 text contrast and
+ * >=3:1 UI-boundary contrast against their own background in both color schemes.
+ */
+
+:root {
+  color-scheme: dark light;
+
+  --sg-font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sg-space-1: 0.25rem;
+  --sg-space-2: 0.5rem;
+  --sg-space-3: 0.75rem;
+  --sg-space-4: 1rem;
+  --sg-space-6: 1.5rem;
+  --sg-radius: 0.5rem;
+  --sg-touch-min: 44px;
+  --sg-focus-width: 3px;
+
+  --sg-bg: #0b1120;
+  --sg-surface: #16213a;
+  --sg-surface-border: #64707e;
+  --sg-text: #f3f5fb;
+  --sg-text-muted: #c7cee3;
+  --sg-accent: #6fd67a;
+  --sg-accent-text: #04240a;
+  --sg-danger: #ff8f8f;
+  --sg-danger-text: #3a0a0a;
+  --sg-focus-ring: #ffd166;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --sg-bg: #f5f6fb;
+    --sg-surface: #ffffff;
+    --sg-surface-border: #878f9b;
+    --sg-text: #10162b;
+    --sg-text-muted: #3c4460;
+    --sg-accent: #1f7a34;
+    --sg-accent-text: #ffffff;
+    --sg-danger: #8a1f1f;
+    --sg-danger-text: #ffffff;
+    --sg-focus-ring: #7a4b00;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--sg-bg);
+  color: var(--sg-text);
+  font-family: var(--sg-font-family);
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sg-space-2);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: max(var(--sg-space-2), env(safe-area-inset-top))
+    max(var(--sg-space-2), env(safe-area-inset-right))
+    max(var(--sg-space-2), env(safe-area-inset-bottom))
+    max(var(--sg-space-2), env(safe-area-inset-left));
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sg-space-2) var(--sg-space-4);
+  margin: 0;
+}
+
+.hud__line {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--sg-text-muted);
+}
+
+.hud__phase {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sg-text);
+}
+
+.hud__result {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 1rem;
+  color: var(--sg-text);
+}
+
+.board-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.board {
+  width: min(56vw, 200px);
+  aspect-ratio: 1 / 1;
+  background: var(--sg-surface);
+  border: 2px solid var(--sg-surface-border);
+  border-radius: var(--sg-radius);
+  touch-action: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.panel:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sg-space-2);
+}
+
+.difficulty {
+  display: flex;
+  gap: var(--sg-space-4);
+  border: 1px solid var(--sg-surface-border);
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-3);
+  margin: 0;
+  color: var(--sg-text);
+}
+
+.difficulty legend {
+  padding: 0 var(--sg-space-1);
+  color: var(--sg-text-muted);
+}
+
+.difficulty__option {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-space-1);
+  min-height: var(--sg-touch-min);
+}
+
+.action,
+.mute {
+  min-width: var(--sg-touch-min);
+  min-height: var(--sg-touch-min);
+  padding: var(--sg-space-2) var(--sg-space-4);
+  border-radius: var(--sg-radius);
+  border: 1px solid var(--sg-surface-border);
+  background: var(--sg-surface);
+  color: var(--sg-text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.action--primary {
+  background: var(--sg-accent);
+  color: var(--sg-accent-text);
+  border-color: var(--sg-accent);
+  font-weight: 700;
+}
+
+.mute {
+  align-self: center;
+}
+
+.mute[aria-pressed='true'] {
+  background: var(--sg-danger);
+  color: var(--sg-danger-text);
+  border-color: var(--sg-danger);
+}
+
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, var(--sg-touch-min));
+  grid-template-rows: repeat(2, var(--sg-touch-min));
+  gap: var(--sg-space-2);
+  touch-action: none;
+}
+
+.dpad__button {
+  min-width: var(--sg-touch-min);
+  min-height: var(--sg-touch-min);
+  padding: 0;
+  border-radius: var(--sg-radius);
+  border: 1px solid var(--sg-surface-border);
+  background: var(--sg-surface);
+  color: var(--sg-text);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.dpad__button--up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dpad__button--left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.dpad__button--right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.dpad__button--down {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--sg-focus-width) solid var(--sg-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
