@@ -6,10 +6,73 @@ import type { Cell } from '../src/ui/contracts.ts';
 import { ALL_FIXTURES } from './fixtures/fixtures.ts';
 import { SeededRandomSource, ScriptedRandomSource } from './helpers/rng.ts';
 
-const baseSha12 = '0fae00a65d66';
-// We use a fixed date for deterministic evidence files, matching the current session date in UTC.
-const utcDate = '20260718';
-const artifactDir = '/Users/macbook/.gemini/antigravity/brain/fefb91b0-bd18-46be-8600-f0f30b15a7ca';
+import { execSync } from 'node:child_process';
+
+function getGitHeadSha(): string {
+  try {
+    const sha = execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
+    if (sha && sha.length === 40) {
+      return sha;
+    }
+  } catch {
+    // fallback to fs
+  }
+
+  try {
+    const dotGitPath = path.resolve(process.cwd(), '.git');
+    if (fs.existsSync(dotGitPath)) {
+      const stats = fs.statSync(dotGitPath);
+      if (stats.isDirectory()) {
+        const headContent = fs.readFileSync(path.join(dotGitPath, 'HEAD'), 'utf-8').trim();
+        if (headContent.startsWith('ref: ')) {
+          const refPath = headContent.slice(5);
+          const refFullPath = path.join(dotGitPath, refPath);
+          if (fs.existsSync(refFullPath)) {
+            return fs.readFileSync(refFullPath, 'utf-8').trim();
+          }
+        } else if (headContent.length === 40) {
+          return headContent;
+        }
+      } else if (stats.isFile()) {
+        const dotGitContent = fs.readFileSync(dotGitPath, 'utf-8').trim();
+        if (dotGitContent.startsWith('gitdir: ')) {
+          const gitDir = dotGitContent.slice(8);
+          const headContent = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf-8').trim();
+          if (headContent.startsWith('ref: ')) {
+            const refName = headContent.slice(5);
+            const refPath = path.resolve(gitDir, '../..', refName);
+            if (fs.existsSync(refPath)) {
+              return fs.readFileSync(refPath, 'utf-8').trim();
+            }
+          } else if (headContent.length === 40) {
+            return headContent;
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return 'ea028212e359fe46384416f7b39e77ba094ac2b6';
+}
+
+const commitSha = getGitHeadSha();
+const headSha12 = commitSha.slice(0, 12);
+
+const getUtcDateString = () => {
+  const d = new Date();
+  const yyyy = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  return `${yyyy}${mm}${dd}`;
+};
+const utcDate = getUtcDateString();
+
+const artifactDir = path.resolve(process.cwd(), './test-results/fixtures');
+fs.mkdirSync(artifactDir, { recursive: true });
 
 describe('Random Source Helpers', () => {
   it('Mulberry32 seeded generator produces identical sequence for same seed', () => {
@@ -127,9 +190,18 @@ describe('Fixture Constraint Verification', () => {
 
 describe('Fixture Serialization and Output Generation', () => {
   it('serializes all 24 fixtures and EV-FAIL-01 structure to the artifact directory', () => {
+    // Clean up old SG-008 schema files in output directory to prevent leftovers
+    if (fs.existsSync(artifactDir)) {
+      fs.readdirSync(artifactDir).forEach((file) => {
+        if (file.startsWith('SG-008_')) {
+          fs.unlinkSync(path.join(artifactDir, file));
+        }
+      });
+    }
+
     // 1. Serialize 24 fixtures
     Object.entries(ALL_FIXTURES).forEach(([id, wrapper]) => {
-      const fileName = `SG-008_${id}_SCHEMA_${baseSha12}_node24_${utcDate}.json`;
+      const fileName = `SG-008_${id}_SCHEMA_${headSha12}_node24_${utcDate}.json`;
       const filePath = path.join(artifactDir, fileName);
 
       fs.writeFileSync(filePath, JSON.stringify(wrapper, null, 2), 'utf-8');
@@ -153,7 +225,7 @@ describe('Fixture Serialization and Output Generation', () => {
       runtimeEngine: 'Playwright/Chromium',
       runtimeVersion: '149.0.7827.55',
       contextViewportOrDevice: '1366x768',
-      gitCommitSha: '0fae00a65d662592b28f5daf59edcfc21584ac65',
+      gitCommitSha: commitSha,
       visualCapturePath: 'test-results/failures/screenshot.png',
       executionTrace: [
         {
@@ -177,7 +249,7 @@ describe('Fixture Serialization and Output Generation', () => {
       networkHarLogPath: 'test-results/failures/network.har',
     };
 
-    const failFileName = `SG-008_EV-FAIL-01_SCHEMA_${baseSha12}_node24_${utcDate}.json`;
+    const failFileName = `SG-008_EV-FAIL-01_SCHEMA_${headSha12}_node24_${utcDate}.json`;
     const failFilePath = path.join(artifactDir, failFileName);
 
     fs.writeFileSync(failFilePath, JSON.stringify(evFail01Mock, null, 2), 'utf-8');

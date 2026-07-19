@@ -1,7 +1,7 @@
 id: SG-008
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_reason: >-
   GitHub CLI/API is not used in this execution environment. This packet is the only
@@ -88,4 +88,8 @@ status_history:
     at: "2026-07-19"
     by: antigravity
     basis: "Claimed and started execution phase"
+  - status: review
+    at: "2026-07-19"
+    by: antigravity
+    basis: "Remediated review findings for EPERM, FX_PLAY_R, and dynamic SHA filenames"
 handoff: docs/coordination/handoffs/SG-008.md

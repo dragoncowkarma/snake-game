@@ -71,12 +71,12 @@ export const FX_PLAY_R: FixtureWrapper<GameState> = {
   state: {
     phase: 'playing',
     snake: [
-      { x: 11, y: 10 },
       { x: 10, y: 10 },
       { x: 9, y: 10 },
+      { x: 8, y: 10 },
     ],
     direction: 'right',
-    queuedDirections: [],
+    queuedDirections: ['right'],
     food: { x: 0, y: 0 },
     score: 0,
     foodsEaten: 0,
