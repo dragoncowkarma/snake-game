@@ -1,6 +1,6 @@
 # 결정 기록
 
-상태 값은 `proposed`, `accepted`, `superseded` 중 하나다. H0a는 검증 실행만 승인한다. D-001~D-006은 2026-07-17T17:18:21Z 현재 사람의 `Wave 0 종료` 지시로 H0b에서 모두 승인됐다.
+상태 값은 `proposed`, `accepted`, `superseded` 중 하나다. H0a는 검증 실행만 승인한다. D-001~D-006은 2026-07-17T17:18:21Z 현재 사람의 `Wave 0 종료` 지시로 H0b에서 모두 승인됐다. H1은 2026-07-19T19:12:19Z(2026-07-20 Asia/Seoul) 사람의 `Wave 2 종료` 지시로 승인됐다.
 
 ## H0b 승인 기록
 
@@ -13,6 +13,17 @@
 - SG-004-DN01 해소: 음식은 snake와 겹치지 않고 성장은 `attemptedCell == food`일 때만 일어나므로, 유효한 `GameState`에서 “성장하면서 현재 tail로 진입”하는 상태는 도달 불가능하다. 계약과 제품 규칙은 바꾸지 않는다. AC-G06은 유효한 비성장 tail 진입 실행 검증과 성장-동일-tail 상태의 불가능성 증명을 함께 근거로 삼으며 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 기존 QA 계획대로 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`는 SG-004 승인 대상 SHA를 보존하기 위해 byte-for-byte 유지한다. 그 문서의 H0b·SG-004-DN01 대기 및 D-001/D-002 `proposed` 표현은 제출 당시 상태이며, 현재 상태는 이 accepted 결정 기록과 `STATUS.md`가 우선한다.
 - 효과: Wave 0는 완료됐고 Wave 1의 선행 gate가 열렸다. 다만 SG-005는 별도의 승인된 task packet/Issue와 claim 뒤에만 시작하며, 이 승인은 공개 배포 권한을 포함하지 않는다.
+
+## H1 승인 기록
+
+- 승인자: human-user
+- 승인 시각: 2026-07-19T19:12:19Z (2026-07-20 Asia/Seoul)
+- 승인 지시: `Wave 2 종료`
+- 승인 범위: SG-010 결정론 시뮬레이션, SG-011 독립 도메인 테스트, SG-012 Phaser 어댑터, SG-013 DOM UI 정합화, SG-014 production 수직 통합, SG-015 독립 QA의 증거와 local `main` 병합 상태. 핵심 게임 루프(시작→이동→먹기→죽기→재시작)는 플레이 가능하고 SG-015의 blocker/high 결함은 0건이다.
+- H1 증거 기반: `docs/DEVELOPMENT_PLAN.md`의 H1은 "320px 모바일 UI와 실제 게임 감각을 플레이해 승인"이다. 저장소 증거는 SG-015의 Playwright 320×568 뷰포트·터치 에뮬레이션 자동 감사(AC-U01/U09 PASS, 20회 재시작·다중 입력 큐 PASS)와 SG-014의 root/Pages-base production vertical E2E다. 실기기(iOS/Android) 수동 플레이 증거는 저장소에 없으며, 현재 사람은 `Wave 2 종료` 지시로 이 공개된 편차를 수락하고 H1을 승인했다.
+- DF-SG015-01 처리: 키보드 `m` 음소거 토글이 UI 쉘의 muted 상태·버튼 표시(`aria-pressed`, textContent)를 갱신하지 않는 medium 결함을 출시 차단이 아닌 Wave 3 이관 결함으로 수용한다. Wave 3의 SG-016/SG-017에서 UI 쉘과 ApplicationRouter 간 오디오 상태 바인딩을 결정해 해결한다. 제품 계약과 명세는 바꾸지 않는다.
+- 공개된 기록 편차 수락: SG-011은 `docs/TASKS.md` 표의 지정 모델(Gemini 3.1 Pro high)과 다른 Gemini 3.5 Flash (High)로 실행됐고 packet의 routing_deviation 기재가 표와 모순되며, SG-011 packet status_history 일부 타임스탬프에 timezone 표기 오류가 있다. 플랫폼·리뷰 독립성 규칙은 전건 준수됐으므로 사람은 이 기록 편차를 Wave 2 범위에서 수락한다. SG-009 packet의 `merged` 미정합화와 SG-011/SG-012 packet의 `handoff` 포인터 누락은 이 closeout에서 정합화했다.
+- 효과: Wave 2는 완료됐고 Wave 3의 선행 gate가 열렸다. 다만 SG-016은 별도의 승인된 task packet/Issue와 claim 뒤에만 시작하며, 이 승인은 H2 플레이테스트 판정, 원격 push 정책 변경, GitHub Pages 공개 배포(H3a까지 금지)를 포함하지 않는다.
 
 ## D-001: Phaser 4.2.1 기준선
 

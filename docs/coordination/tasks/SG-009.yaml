@@ -1,7 +1,7 @@
 id: SG-009
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 source_of_truth: offline
 offline_checked_at: "2026-07-19T09:00:00Z"
 offline_reason: >-
@@ -71,9 +71,21 @@ status_history:
     basis: >-
       Antigravity reviewed final implementation head 331a9545a1634ca5b80594a2fba6e6290b7df25e
       and found no blocking findings. Node 24 verify and local-preview checks passed successfully.
+  - status: merged
+    at: "2026-07-19T10:37:18Z"
+    by: codex-integrator
+    basis: >-
+      Codex completed the local integration merge
+      7f65009018ee1fbb478ed478c64ce33f55e6c72a onto local main, as recorded in
+      STATUS.md at the time. No remote push, Pages API call, or public deployment
+      was performed. This history entry was reconciled retroactively during the H1
+      `Wave 2 종료` closeout because the packet had not been updated to its
+      documented terminal state.
 head_sha: 331a9545a1634ca5b80594a2fba6e6290b7df25e
 verified_at: "2026-07-19T10:19:00Z"
 verified_by: antigravity-reviewer
+merge_commit: 7f65009018ee1fbb478ed478c64ce33f55e6c72a
+merged_at: "2026-07-19T10:37:18Z"
 review_ready_at: "2026-07-19T10:01:43Z"
 handoff: docs/coordination/handoffs/SG-009.md
 deliverables:

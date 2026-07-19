@@ -293,3 +293,4 @@ status_history:
       ef76675a2ea6f0aaad16e3c5d0814ab4645c68d7 as integration commit
       05cddcd3dbfea9eab6d8319911900580474630b4. SG-014 preflight confirmed the
       implementation head, review record, and merge commit are main ancestors.
+handoff: docs/coordination/handoffs/SG-012.md
