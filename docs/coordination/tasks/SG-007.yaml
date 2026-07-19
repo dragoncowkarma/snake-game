@@ -1,7 +1,7 @@
 id: SG-007
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-19T07:49:31Z"
 offline_reason: >-
@@ -55,6 +55,8 @@ dependency_evidence:
 base_sha: 0fae00a65d662592b28f5daf59edcfc21584ac65
 base_scope: local_and_remote_main
 branch: agent/codex/SG-007-domain-foundation
+head_sha: 1d8d936b0316fe15f3785e73ba605f049cca3660
+review_requested_at: "2026-07-19T08:00:13Z"
 claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-007-domain-foundation / 2026-07-19T07:49:31Z"
 claimed_at: "2026-07-19T07:49:31Z"
 status_history:
@@ -69,6 +71,15 @@ status_history:
     by: codex
     basis: >-
       Atomic claim on the dedicated SG-007 branch before product-source edits.
+  - status: review
+    at: "2026-07-19T08:00:13Z"
+    by: codex
+    basis: >-
+      Implementation 1d8d936b0316fe15f3785e73ba605f049cca3660 passed clean
+      Node 24 npm ci, format, lint, strict typecheck, 40/40 unit tests, build,
+      Chromium production smoke 1/1, import-boundary scan, scope audit, and diff
+      checks. Awaiting the designated independent Claude review; not verified or
+      merged by this implementation session.
 allowed_paths:
   - src/domain/**
   - src/config/**
