@@ -234,3 +234,4 @@ status_history:
       8674cb1bc1d38784923d4cf9ccbc346f149f0ea1 as
       45c7ac9453ee3e665ad7ee9ec010e65c6eb0b92d. No remote push or deployment was
       performed.
+handoff: docs/coordination/handoffs/SG-011.md

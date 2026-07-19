@@ -1,6 +1,6 @@
 # 세부 작업 및 AI 모델 배정
 
-이 문서는 구현 순서, 파일 소유권, 모델 설정, 검토 관계를 정의한다. Wave 0와 H0b는 2026-07-18(Asia/Seoul)에 완료됐고 D-001~D-006 및 공용 계약은 `accepted`다. Wave 1 작업은 자동으로 선점하지 않으며, 구현 시작 시 조정 책임자가 선택한 행을 versioned GitHub Issue로 옮기거나 GitHub를 못 쓰면 `docs/coordination/tasks/<task-id>.yaml` offline packet을 만든 뒤 `ready` 승인과 claim을 기록한다. 두 방식 모두 base SHA와 정확한 허용 경로가 필요하다.
+이 문서는 구현 순서, 파일 소유권, 모델 설정, 검토 관계를 정의한다. Wave 0와 H0b는 2026-07-18(Asia/Seoul)에 완료됐고 D-001~D-006 및 공용 계약은 `accepted`다. Wave 1(SG-005~SG-009)과 Wave 2(SG-010~SG-015)는 local `main`에 병합됐고, H1은 2026-07-20(Asia/Seoul) 사람의 `Wave 2 종료` 지시로 승인됐다(`docs/coordination/DECISIONS.md`의 H1 승인 기록 참조). DF-SG015-01(medium)은 SG-016/SG-017 이관 결함이다. Wave 3 작업은 자동으로 선점하지 않으며, 구현 시작 시 조정 책임자가 선택한 행을 versioned GitHub Issue로 옮기거나 GitHub를 못 쓰면 `docs/coordination/tasks/<task-id>.yaml` offline packet을 만든 뒤 `ready` 승인과 claim을 기록한다. 두 방식 모두 base SHA와 정확한 허용 경로가 필요하다.
 
 ## 1. 상태와 우선순위
 
