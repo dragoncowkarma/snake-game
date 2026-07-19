@@ -1,0 +1,210 @@
+id: SG-010
+spec_version: "1.0-plan"
+task_revision: 1
+status: in_progress
+source_of_truth: offline
+offline_checked_at: "2026-07-19T08:31:05Z"
+offline_reason: >-
+  A fresh read-only GitHub check found zero open Issues and zero open pull
+  requests. Remote main remains 0fae00a65d662592b28f5daf59edcfc21584ac65,
+  while the human explicitly selected the newer local main integration commit
+  a9267a79cc755d049838d158cca31bad87f71528 as this task's base. No SG-010
+  GitHub source exists, so this packet is the only SG-010 source of truth.
+approval_gate: direct-human-instruction
+approval_basis: >-
+  After the start audit reported the missing task source and unresolved prompt
+  placeholders, the human explicitly instructed: "Codex integrator가 로컬 main
+  a9267a79cc755d049838d158cca31bad87f71528 기준 SG-010 revision 1 offline
+  packet을 작성·승인하고, 현재 런타임 편차를 기록한 뒤 진행하라." Under
+  AGENTS.md section 1, this direct instruction authorizes the Codex integrator
+  to approve this bounded implementation-detail packet inside the accepted H0b,
+  SG-003 revision 2 contract, and DEVELOPMENT_PLAN. It does not authorize a
+  public-contract change, dependency change, remote push, deploy, or merge.
+approved_by: codex-integrator
+approved_at: "2026-07-19T08:31:05Z"
+priority: P0
+owner: codex
+model: gpt-5
+reasoning_or_workload: not-exposed
+assigned_model_baseline: codex-5.6-sol
+assigned_setting_baseline: very-high
+routing_deviation: >-
+  The active session identifies itself only as a Codex GPT-5-based runtime. It
+  does not expose the exact Codex 5.6 Sol alias or a verifiable reasoning-setting
+  label, so neither alias nor equivalence is claimed. The task remains on the
+  assigned Codex platform and requires the designated independent Claude review
+  before verified or merged status.
+reviewers:
+  - platform: claude
+    model: opus-4.8
+    setting: high
+depends_on:
+  - H0b
+  - SG-003
+  - SG-007
+dependency_evidence:
+  H0b: >-
+    Human-user accepted H0b at 2026-07-17T17:18:21Z. D-001 through D-006 are
+    accepted in DECISIONS.md and the approved plan permits Wave 2 domain work.
+  SG-003: >-
+    Revision 2 CONTRACTS.md is accepted and fixes the exact public types,
+    enqueue validation order, ten-step tick order, collision event payload,
+    row-major free-cell RNG contract, score/speed formula, and terminal behavior.
+  SG-007: >-
+    Deterministic domain foundation implementation 1d8d936b0316fe15f3785e73ba605f049cca3660
+    and local integration merge a66716c4e7f12f45dba4cb5ed4b836d4cf783af5
+    are ancestors of base_sha. Independent review approved the accepted types,
+    configuration, injected RNG, reset, and row-major food selection foundation.
+base_sha: a9267a79cc755d049838d158cca31bad87f71528
+base_scope: human-selected-local-main
+branch: agent/codex/SG-010-simulation
+claim: "CLAIM: codex / current GPT-5 runtime; setting not exposed / agent/codex/SG-010-simulation / 2026-07-19T08:31:05Z"
+claimed_at: "2026-07-19T08:31:05Z"
+status_history:
+  - status: ready
+    at: "2026-07-19T08:31:05Z"
+    by: codex-integrator
+    basis: >-
+      Direct human authorization supplied the missing task-source gate and fixed
+      revision 1 against the selected local-main base.
+  - status: in_progress
+    at: "2026-07-19T08:31:05Z"
+    by: codex
+    basis: >-
+      Atomic claim on the dedicated SG-010 branch before product-source edits.
+allowed_paths:
+  - src/domain/**
+  - docs/coordination/tasks/SG-010.yaml
+  - docs/coordination/handoffs/SG-010.md
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/** except docs/coordination/tasks/SG-010.yaml
+  - docs/coordination/handoffs/** except docs/coordination/handoffs/SG-010.md
+  - src/config/**
+  - src/ui/**
+  - src/game/**
+  - src/adapters/**
+  - src/main.ts
+  - src/main.test.ts
+  - src/styles.css
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - tooling.config.ts
+  - eslint.config.js
+  - .prettierrc.json
+  - .prettierignore
+  - .nvmrc
+  - .gitignore
+  - playwright.config.ts
+  - index.html
+  - spikes/**
+  - public/**
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+scope_boundary: >-
+  SG-010 implements the accepted enqueueDirection and step functions, their
+  private pure helpers, exports, colocated src/domain unit tests, and the SG-007
+  review's explicit food-selection invariant failure. It does not add or alter a
+  public type, command, event, product meaning, scheduler/accumulator, command
+  router, Phaser/DOM adapter, high-score repository, dependency, or root test
+  configuration. AC-G04, AC-G08, and AC-G10 evidence in this packet is limited to
+  the domain-owned single-step/tickMs/reset-state portions; renderer-rate scheduling,
+  high-score persistence, accumulator reset, and listener cleanup remain their
+  already assigned downstream tasks.
+acceptance_ids:
+  - id: SG-010-AC01
+    maps_to: [AC-G01, AC-G02, AC-G03]
+    text: >-
+      READY accepts Right/Up/Down exactly once as a transition to playing with the
+      accepted direction queued, rejects Left, and does not move immediately.
+      PLAYING validates against the last accepted reservation, ignores duplicates
+      and overflow beyond two entries, rejects reversals before capacity checks,
+      and consumes no RNG.
+  - id: SG-010-AC02
+    maps_to: [AC-G02, AC-G04]
+    text: >-
+      A playing step consumes at most one queued direction, moves exactly one cell,
+      and has no renderer time, delta, FPS, timer, or wall-clock input. It returns a
+      fresh value snapshot without mutating the input state.
+  - id: SG-010-AC03
+    maps_to: [AC-G06, AC-G07]
+    text: >-
+      Wall is checked before growth/self collision. Non-growth may enter the one
+      tail cell removed this tick; self collision checks all other occupied cells.
+      Collision does not move the snake or change food/score, preserves the consumed
+      direction, clears the queue, and emits exactly one gameEnded event with reason,
+      last normal headCell, and actual attemptedCell. Later terminal steps are no-ops.
+  - id: SG-010-AC04
+    maps_to: [AC-G05, AC-G08]
+    text: >-
+      Eating grows once, increments foodsEaten and score once, emits one ordered
+      foodEaten event, and applies the accepted 5-food acceleration formula with
+      difficulty minimum. The state tickMs change is output for the next scheduler
+      iteration; SG-010 does not own accumulator subtraction or high-score storage.
+  - id: SG-010-AC05
+    maps_to: [AC-G05, AC-G09]
+    text: >-
+      Food is selected uniformly by one injected nextInt call over the row-major
+      free-cell list, never by retry. No free cell after growth causes won with null
+      food, empty queue, no RNG call, and ordered foodEaten then gameWon events.
+      An impossible selected lookup throws an invariant error rather than becoming
+      the full-board null sentinel.
+  - id: SG-010-AC06
+    maps_to: [AC-G10]
+    text: >-
+      Existing reset still restores score, length, speed, food, direction queue,
+      and phase exactly as SG-007 proved. SG-010 introduces no listener or scheduler
+      state; downstream integration owns accumulator and listener reset.
+  - id: SG-010-AC07
+    maps_to: [AC-G01, AC-G02, AC-G03, AC-G04, AC-G05, AC-G06, AC-G07, AC-G08, AC-G09, AC-G10]
+    text: >-
+      Two independent injected seeded RandomSource instances with the same seed and
+      the same reset, direction, and 100-step command sequence produce value-identical
+      dispositions, snapshots, event streams, RNG upper-bound calls, and terminal
+      behavior. Frozen-input tests and source scans demonstrate no mutation or hidden
+      global randomness.
+  - id: SG-010-AC08
+    maps_to: [D-003, SG-003]
+    text: >-
+      Production src/domain imports only domain modules and pure src/config values
+      and contains no Phaser, DOM, timer, localStorage, Web Audio, Date, Math.random,
+      Canvas, scheduler, or mutable global dependency. No dependency or lockfile
+      change occurs.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+  - git diff --name-only a9267a79cc755d049838d158cca31bad87f71528..HEAD
+  - >-
+    ! rg -n "(from ['\"]phaser|document\.|window\.|localStorage|AudioContext|setTimeout|setInterval|Date\.|Math\.random)"
+    src/domain -g '!*.test.ts'
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json unchanged
+  browser: Chromium installed by Playwright for unchanged scaffold smoke
+completion_guard: >-
+  Codex may advance SG-010 only to review after every scoped check passes and the
+  handoff records actual exit codes and AC evidence. The designated Claude reviewer
+  or the human must independently verify before verified/merged; this implementation
+  session does not self-approve, merge, push, or deploy.
+handoff: docs/coordination/handoffs/SG-010.md
