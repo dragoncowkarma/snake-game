@@ -72,6 +72,53 @@ required_commands:
   - git diff --check
 claim: "CLAIM: codex / current GPT-5 runtime; setting label not exposed / agent/codex/SG-012-phaser-integration / 2026-07-19T00:00:00Z"
 claimed_at: "2026-07-19T00:00:00Z"
+independent_reviewed_at: "2026-07-19T12:00:00Z"
+independent_reviewed_by: Claude Sonnet 5
+independent_review:
+  result: REQUEST_CHANGES
+  reviewed_head: a350cc8cf8858684dfbbe1f5ef3fee42c9f46596
+  environment: >-
+    Node 22.18.0, deviating from the packet's required Node 24; the deviation does
+    not affect the blocking finding below, which was confirmed via live browser
+    DOM/CSS inspection rather than any Node-version-sensitive command.
+  command_evidence: >-
+    Independently reran npm ci, format:check, lint, typecheck, test (103/103
+    passed), build, test:e2e (Chromium 1/1 passed), and git diff --check; all
+    passed. Diffstat confirmed no changes outside the packet's allowed_paths.
+  contract_review: >-
+    Read application-router.ts, fixed-step-scheduler.ts, board-renderer.ts,
+    game-scene.ts, input-controller.ts, and lifecycle-controller.ts against
+    CONTRACTS.md sections 2-9. The domain-only call boundary, the pre-step
+    stepDuration capture, the pause/resume accumulator and queue clear, and the
+    single shared dispatch route for keyboard and shell buttons all match the
+    contract on inspection.
+  blocking_findings:
+    - >-
+      The game board never becomes visible after Start in a real Chromium
+      session. Reproduction: npm run preview, open the production build, click
+      Start; phase correctly transitions to Ready but the board renders as an
+      empty rectangle with no grid, snake, or food, on a clean reload with no
+      prior window resize. Root cause: src/ui/render.ts's
+      setHidden(elements.board, isMenu) keeps #board `hidden` (display:none)
+      during the menu phase, but src/game/bootstrap.ts constructs
+      `new Phaser.Game({ scale: { parent: board, mode: FIT, ... } })`
+      synchronously at mount time, while #board is still hidden. Phaser's FIT
+      ScaleManager measures a 0x0 parent at that moment and freezes the canvas's
+      inline style at width:0px/height:0px. No later phase transition
+      recalculates it; game.scale.refresh() is wired only to the window
+      `resize` event in src/game/lifecycle-controller.ts. Confirmed the
+      mechanism directly: document.querySelector('#board canvas').style stayed
+      `width: 0px; height: 0px` after Start, and dispatching a manual
+      `window.dispatchEvent(new Event('resize'))` immediately corrected it to
+      `width: 200px; height: 200px`. This violates SG-012-AC04 and contradicts
+      the handoff's reviewer-reproduction step 3 claim of a visible 480x480
+      canvas. tests/e2e/scaffold.spec.ts never clicks Start (it only asserts
+      #board is hidden pre-start), so this regression has no automated
+      coverage. Recommended fix: call game.scale.refresh() at the moment
+      #board leaves `hidden` (e.g. right after dispatching start/restart, or
+      via a ResizeObserver on #board) instead of relying solely on window
+      resize.
+  non_blocking_findings: []
 status_history:
   - status: ready
     at: "2026-07-19T00:00:00Z"
@@ -85,3 +132,15 @@ status_history:
     at: "2026-07-19T00:00:00Z"
     by: codex
     basis: implementation commit a350cc8cf8858684dfbbe1f5ef3fee42c9f46596 and required local verification complete; independent Claude review pending
+  - status: review
+    at: "2026-07-19T12:00:00Z"
+    by: claude-sonnet-5-reviewer
+    basis: >-
+      Independent review of implementation head a350cc8cf8858684dfbbe1f5ef3fee42c9f46596
+      completed with result REQUEST_CHANGES. The game board never becomes visible
+      after Start in a clean browser session because Phaser.Game is constructed
+      while #board is still `hidden`, freezing the canvas at a 0x0 CSS size (see
+      independent_review.blocking_findings). Status remains `review`, not
+      `verified`; codex implementer to fix game.scale.refresh() timing and
+      resubmit with browser evidence that the canvas renders immediately after
+      Start without any intervening window resize.
