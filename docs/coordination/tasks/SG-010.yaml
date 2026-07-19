@@ -1,7 +1,7 @@
 id: SG-010
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 source_of_truth: offline
 offline_checked_at: "2026-07-19T08:31:05Z"
 offline_reason: >-
@@ -62,6 +62,16 @@ head_sha: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
 review_requested_at: "2026-07-19T08:47:20Z"
 verified_at: "2026-07-19T09:02:51Z"
 verified_by: claude-opus-4.8-review-relayed-by-human-user
+merged_at: "2026-07-19T09:14:46Z"
+merge_commit: d114bf81a706c5c7af932144d22cdaa2436bf24f
+integration_base: 700a2bf77890c78316715a8994a49bc10ca03973
+integration_validation: >-
+  The verified SG-010 branch was merged without conflict onto local main tip
+  700a2bf77890c78316715a8994a49bc10ca03973, which already contained SG-008.
+  Integration commit d114bf81a706c5c7af932144d22cdaa2436bf24f passed
+  bundled Node 24.14.0 format, lint, strict typecheck, 97/97 unit tests across
+  five files, production build, Chromium E2E 1/1, forbidden import/global scan,
+  scope audit, and diff checks. No remote push or deployment was performed.
 independent_review:
   result: APPROVE
   reviewed_head: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
@@ -134,6 +144,16 @@ status_history:
       independently and temporary greedy/random adversarial probes found zero
       correctness defects. The one replay-coverage recommendation is non-blocking,
       is preserved for SG-011, and does not justify changing the reviewed head.
+  - status: merged
+    at: "2026-07-19T09:14:46Z"
+    by: codex-integrator
+    basis: >-
+      The verified SG-010 branch was merged without conflict onto latest local main
+      700a2bf77890c78316715a8994a49bc10ca03973, which already contained SG-008,
+      as d114bf81a706c5c7af932144d22cdaa2436bf24f. The integration result passed
+      Node 24 format, lint, typecheck, 97/97 unit tests, build, Chromium E2E 1/1,
+      import-boundary and scope scans, and diff checks. No remote push or deployment
+      was performed.
 allowed_paths:
   - src/domain/**
   - docs/coordination/tasks/SG-010.yaml
