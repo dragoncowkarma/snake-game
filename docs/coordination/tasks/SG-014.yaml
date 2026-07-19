@@ -1,7 +1,7 @@
 id: SG-014
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 approved_by: human-user
 approved_at: "2026-07-19T15:37:09Z"
 approval_gate: direct-human-instruction
@@ -30,7 +30,7 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-013.md
 base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
 branch: agent/codex/SG-014-vertical-integration
-head_sha:
+head_sha: 0b00f65d5258f0b21f69d9e6925289a06ae9ee34
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -108,6 +108,7 @@ required_commands:
   - git diff --check
 claim: "CLAIM: codex / GPT-5 runtime; exact alias and setting label not exposed / agent/codex/SG-014-vertical-integration / 2026-07-19T15:37:09Z"
 claimed_at: "2026-07-19T15:37:09Z"
+submitted_at: "2026-07-19T15:51:10Z"
 handoff: docs/coordination/handoffs/SG-014.md
 status_history:
   - status: ready
@@ -118,3 +119,11 @@ status_history:
     at: "2026-07-19T15:37:09Z"
     by: codex
     basis: atomic claim on the dedicated branch before implementation edits
+  - status: review
+    at: "2026-07-19T15:51:10Z"
+    by: codex
+    basis: >-
+      Implementation head 0b00f65d5258f0b21f69d9e6925289a06ae9ee34 passed Node 24
+      clean npm ci, the full verify chain, root and /snake-game/ Chromium E2E,
+      whitespace, scope, packet, and generated-artifact audits. Antigravity and
+      Claude independent reviews remain required before verified or merged.
