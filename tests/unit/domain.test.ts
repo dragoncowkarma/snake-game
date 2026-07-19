@@ -295,6 +295,11 @@ describe('SG-011 Independent Domain Verification Suite', () => {
     const semUpUp = enqueueDirection(semUp1, 'up');
     const semUpDown = enqueueDirection(semUp1, 'down');
 
+    expect(semLeft.disposition).toBe('rejected');
+    expect(semRight.disposition).toBe('ignored');
+    expect(semUpUp.disposition).toBe('ignored');
+    expect(semUpDown.disposition).toBe('rejected');
+
     recordEvidence('PROC-DP-B03', 'AC-G03', 'node24', {
       id: 'PROC-DP-B03',
       passed: true,
@@ -662,19 +667,36 @@ describe('SG-011 Independent Domain Verification Suite', () => {
 
   it('NFR-M02: Prohibited dependency direction from domain to game/UI/adapter is zero', () => {
     const domainDir = path.resolve(process.cwd(), './src/domain');
-    const files = fs.readdirSync(domainDir);
+
+    const getAllFilesRecursive = (dir: string): string[] => {
+      let results: string[] = [];
+      const list = fs.readdirSync(dir);
+      list.forEach((file) => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(getAllFilesRecursive(filePath));
+        } else {
+          results.push(filePath);
+        }
+      });
+      return results;
+    };
+
+    const files = getAllFilesRecursive(domainDir);
     const prohibitedImports: string[] = [];
 
     const prohibitedRegex =
-      /(from ['"]phaser|document\.|window\.|localStorage|AudioContext|setTimeout|setInterval|Date\.|Math\.random)/;
+      /(from ['"]phaser|document\.|window\.|localStorage|AudioContext|setTimeout|setInterval|Date\.|Math\.random|from ['"].*\.\.\/(game|ui|adapters))/;
 
     files.forEach((file) => {
       if (file.endsWith('.ts') && !file.endsWith('.test.ts')) {
-        const content = fs.readFileSync(path.join(domainDir, file), 'utf-8');
+        const content = fs.readFileSync(file, 'utf-8');
         const lines = content.split('\n');
+        const relativePath = path.relative(process.cwd(), file);
         lines.forEach((line, idx) => {
           if (prohibitedRegex.test(line)) {
-            prohibitedImports.push(`${file}:${idx + 1}: ${line.trim()}`);
+            prohibitedImports.push(`${relativePath}:${idx + 1}: ${line.trim()}`);
           }
         });
       }
