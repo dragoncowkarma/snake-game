@@ -23,7 +23,7 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-010.md
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 branch: agent/codex/SG-012-phaser-integration
-head_sha: a350cc8cf8858684dfbbe1f5ef3fee42c9f46596
+head_sha: 01946e71fa939d5ed8db98466e0f1e9794087655
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -119,6 +119,20 @@ independent_review:
       via a ResizeObserver on #board) instead of relying solely on window
       resize.
   non_blocking_findings: []
+implementation_response:
+  response_head: 01946e71fa939d5ed8db98466e0f1e9794087655
+  status: resubmitted-for-independent-browser-review
+  change: >-
+    bootstrap.ts now queries the board before subscribing, applies the DOM shell
+    snapshot first, and calls Phaser ScaleManager.refresh() only on the
+    menu-hidden -> visible board transition. This uses the same refresh path that
+    the independent reviewer proved correct with a manual resize, without making
+    ordinary resize a pause transition.
+  validation: >-
+    Node 24.14.0 format:check, lint, typecheck, test (103/103), build, and
+    Chromium production-preview e2e all passed after the fix. A fresh independent
+    browser confirmation of non-zero canvas CSS dimensions immediately after Start
+    remains required before verified or merge.
 status_history:
   - status: ready
     at: "2026-07-19T00:00:00Z"
@@ -144,3 +158,10 @@ status_history:
       `verified`; codex implementer to fix game.scale.refresh() timing and
       resubmit with browser evidence that the canvas renders immediately after
       Start without any intervening window resize.
+  - status: review
+    at: "2026-07-19T00:00:00Z"
+    by: codex
+    basis: >-
+      Fixed the review finding in 01946e71fa939d5ed8db98466e0f1e9794087655 and
+      reran required local checks. Awaiting independent Chromium verification of
+      canvas CSS dimensions after Start without a window resize.
