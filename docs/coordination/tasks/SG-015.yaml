@@ -1,0 +1,69 @@
+id: SG-015
+spec_version: "1.0-plan"
+task_revision: 1
+status: review-ready
+approved_by: human-user
+approved_at: "2026-07-20T03:00:26+09:00"
+approval_gate: direct-human-instruction
+owner: antigravity
+model: "Gemini 3.5 Flash (High)"
+reasoning_or_workload: "high planned"
+reviewers:
+  - Codex
+depends_on:
+  - SG-014
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-014.md
+base_sha: e5d956a4032f1cea7d8f3d00000c074e153435ed
+branch: qa-review-sg-015
+head_sha: a5d2d2fa4b94fe27b9767b68a6a6423b6027654f
+allowed_paths:
+  - tests/e2e/**
+  - docs/coordination/tasks/SG-015.yaml
+  - docs/coordination/handoffs/SG-015.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/**
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - tooling.config.ts
+  - playwright.config.ts
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+acceptance_ids:
+  - AC-U01
+  - AC-U02
+  - AC-U06
+  - AC-G03
+  - AC-G10
+  - AC-R06
+  - AC-R05
+required_commands:
+  - npm ci
+  - npm run verify
+  - npx playwright test tests/e2e/qa-audit.spec.ts
+claim: "CLAIM: antigravity / Gemini 3.5 Flash (High) / qa-review-sg-015 / 2026-07-20T03:00:26+09:00"
+claimed_at: "2026-07-20T03:00:26+09:00"
+submitted_at: "2026-07-20T03:06:40+09:00"
+handoff: docs/coordination/handoffs/SG-015.md
+findings:
+  - id: DF-SG015-01
+    title: "Mute toggle via 'm' key on focused board does not update the visual UI or toggle mute status"
+    severity: medium
+    connected_ac:
+      - AC-U02
+      - AC-U05
+    description: >-
+      Pressing 'm' or 'M' on the focused board dispatches a toggleMute command,
+      but the UI shell's local muted state is not updated because ApplicationRouter.dispatch
+      treats toggleMute as a no-op comment and never triggers a new snapshot notification.
+      Consequently, the mute button text remains 'Mute' and aria-pressed stays 'false'.
+    reproduction: >-
+      Run npx playwright test tests/e2e/qa-audit.spec.ts and check the expected failure at
+      'Audit keyboard mute shortcut toggle'.
+result: PASS
