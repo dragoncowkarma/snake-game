@@ -72,7 +72,7 @@ dependency_evidence:
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 base_scope: local_main
 branch: claude/sg-013-ui-implementation-bd0257
-head_sha: <set at handoff time from git rev-parse HEAD after commit>
+head_sha: 3a443185e8f4775fc27032f6ae6638abf8fb3fc7
 claim: "CLAIM: claude / sonnet-5 high / claude/sg-013-ui-implementation-bd0257 / 2026-07-19"
 claimed_at: "2026-07-19"
 status_history:
