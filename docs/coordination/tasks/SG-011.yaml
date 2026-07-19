@@ -44,11 +44,14 @@ dependency_evidence:
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 base_scope: local-main-tip
 branch: test-engineering-sg-011
-head_sha: 2eb7cbf8cc8a882b00a75f99e5fd427517ef4e45
+head_sha: a34e38373f0edb335058b3313b3623eddc319b99
 allowed_paths:
   - tests/unit/**
   - docs/coordination/tasks/SG-011.yaml
   - docs/coordination/handoffs/SG-011.md
+  - package.json
+  - package-lock.json
+  - vite.config.ts
 forbidden_paths:
   - README.md
   - LICENSE
@@ -64,10 +67,7 @@ forbidden_paths:
   - src/**
   - tests/** except tests/unit/**
   - .github/**
-  - package.json
-  - package-lock.json
   - tsconfig.json
-  - vite.config.ts
   - tooling.config.ts
   - eslint.config.js
   - .prettierrc.json
