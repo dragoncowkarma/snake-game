@@ -1,12 +1,14 @@
 id: SG-013
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 source_of_truth: offline
+offline_checked_at: "2026-07-19T10:30:14Z"
 offline_reason: >-
-  GitHub CLI/API is not used in this execution environment. This packet is the only
-  SG-013 task source and must not coexist with a later GitHub Issue for the same
-  revision.
+  A fresh read-only fetch and GitHub CLI check found zero open Issues and zero open
+  pull requests. Remote main remains 0fae00a65d662592b28f5daf59edcfc21584ac65,
+  while local main is cf811f293918a4b7eed38b5cb44c3673950959cb. No SG-013
+  GitHub source exists, so this packet remains the only SG-013 source of truth.
 approval_gate: direct-human-instruction
 approval_basis: >-
   STATUS.md recorded an explicit block: "SG-013은 SG-006과의 범위 정합화가 끝나기 전
@@ -73,6 +75,21 @@ base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 base_scope: local_main
 branch: claude/sg-013-ui-implementation-bd0257
 head_sha: 3a443185e8f4775fc27032f6ae6638abf8fb3fc7
+verification_record_sha: 664cd480739a671d7cc371f964691fe3391f3972
+verified_at: "2026-07-19"
+verified_by: antigravity
+merged_at: "2026-07-19T10:30:14Z"
+merge_commit: 8391960c9fd01315db55053bf7c1d12459f6c702
+integration_base: cf811f293918a4b7eed38b5cb44c3673950959cb
+integration_validation: >-
+  The independently verified SG-013 branch was merged without conflict onto local
+  main cf811f293918a4b7eed38b5cb44c3673950959cb as integration commit
+  8391960c9fd01315db55053bf7c1d12459f6c702. On bundled Node 24.14.0, Codex reran
+  format, lint, strict typecheck, 101/101 unit tests across six files, production
+  build, and Chromium E2E 1/1. The configured E2E port 4173 was occupied by a clean
+  SG-012 review preview, so the passing E2E rerun used a temporary uncommitted 4174
+  port substitution; tooling.config.ts was immediately restored and has zero final
+  diff. Scope and whitespace checks passed. No remote push or deployment occurred.
 claim: "CLAIM: claude / sonnet-5 high / claude/sg-013-ui-implementation-bd0257 / 2026-07-19"
 claimed_at: "2026-07-19"
 status_history:
@@ -108,7 +125,20 @@ status_history:
     at: "2026-07-19"
     by: antigravity
     basis: >-
-      Verification suite (format, lint, typecheck, test, build, e2e) passed successfully. The DOM shell correctly uses the domain type re-exports and interfaces with the domain state. Approved for integration.
+      Verification suite (format, lint, typecheck, test, build, e2e) passed
+      successfully. The DOM shell correctly uses the domain type re-exports and
+      interfaces with the domain state. Approved for integration.
+  - status: merged
+    at: "2026-07-19T10:30:14Z"
+    by: codex-integrator
+    basis: >-
+      The verified SG-013 branch was merged without conflict onto local main
+      cf811f293918a4b7eed38b5cb44c3673950959cb as
+      8391960c9fd01315db55053bf7c1d12459f6c702. The integration result passed Node
+      24 format, lint, typecheck, 101/101 unit tests, build, Chromium E2E 1/1, scope,
+      and whitespace checks. The E2E rerun used temporary port 4174 because a clean
+      SG-012 review preview occupied configured port 4173; the port substitution was
+      reverted with zero final diff. No remote push or deployment was performed.
 allowed_paths:
   - src/ui/**
   - src/styles.css
@@ -214,10 +244,10 @@ acceptance_ids:
     text: >-
       src/ui/contracts.ts contains no duplicated type declarations; it re-exports
       exclusively from src/domain/index.ts, so the UI-layer public type shape and the
-      real domain public type shape cannot drift out of sync. tests/fixtures.ts,
-      tests/fixtures.test.ts, and tests/helpers/ev-fail-01.ts (Antigravity-owned,
-      outside this packet's allowed paths) continue to resolve and typecheck against
-      this path unmodified.
+      real domain public type shape cannot drift out of sync.
+      tests/fixtures/fixtures.ts, tests/fixtures.test.ts, and
+      tests/helpers/ev-fail-01.ts (Antigravity-owned, outside this packet's allowed
+      paths) continue to resolve and typecheck against this path unmodified.
 required_commands:
   - npm run format:check
   - npm run lint
