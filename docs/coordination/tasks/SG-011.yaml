@@ -86,7 +86,7 @@ forbidden_paths:
   - all paths not explicitly listed in allowed_paths
 scope_boundary: >-
   SG-011 implements the independent domain unit, contract, and dependency tests under tests/unit/**.
-  It does not modify product source code, public contracts, or configurations.
+  It also modifies package.json, package-lock.json, and vite.config.ts for Vitest coverage configuration.
 acceptance_ids:
   - id: CHK-G01
     maps_to: [AC-G01]
@@ -165,7 +165,7 @@ required_commands:
     src/domain -g '!*.test.ts'
 required_environment:
   node: 24.x LTS
-  package_manager: npm with committed package-lock.json unchanged
+  package_manager: npm with updated package-lock.json for @vitest/coverage-v8
   browser: Chromium installed by Playwright for unchanged scaffold smoke
 completion_guard: >-
   Antigravity may advance SG-011 to review once all test suites under tests/unit/** pass
