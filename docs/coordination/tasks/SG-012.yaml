@@ -1,0 +1,87 @@
+id: SG-012
+spec_version: "1.0-plan"
+task_revision: 1
+status: review
+approved_by: Codex integrator
+approved_at: "2026-07-19T00:00:00Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human directly authorized the Codex integrator to create, approve, and
+  execute this bounded offline packet at base SHA
+  cf811f293918a4b7eed38b5cb44c3673950959cb. This packet implements accepted
+  H0b contracts only; it makes no public-contract, product-meaning,
+  dependency, deployment, or Pages-permission change.
+owner: codex
+model: "GPT-5 runtime (planned routing: Codex 5.6 Terra / high)"
+reasoning_or_workload: high
+reviewer: Claude Sonnet 5 / high
+depends_on:
+  - SG-005
+  - SG-010
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-005.md
+  - docs/coordination/handoffs/SG-010.md
+base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
+branch: agent/codex/SG-012-phaser-integration
+head_sha: a350cc8cf8858684dfbbe1f5ef3fee42c9f46596
+allowed_paths:
+  - src/game/**
+  - src/main.ts
+  - index.html
+  - tsconfig.json
+  - docs/coordination/tasks/SG-012.yaml
+  - docs/coordination/handoffs/SG-012.md
+forbidden_paths:
+  - src/domain/**
+  - src/config/**
+  - src/ui/**
+  - src/styles.css
+  - tests/**
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - tooling.config.ts
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/STATUS.md
+  - dist/**
+acceptance_ids:
+  - "SG-012-AC01: GameScene uses only the accepted domain transition APIs; it does not calculate game rules."
+  - "SG-012-AC02: accumulator clamps delta to 250ms, caps each frame at three steps, and captures one pre-step duration for eligibility and subtraction."
+  - "SG-012-AC03: a speed change from a domain step affects the next scheduler step, never the current subtraction."
+  - "SG-012-AC04: board rendering is 480x480 logical pixels / 20x20 cells and draws only snapshots plus collision events."
+  - "SG-012-AC05: native keyboard and shell button Commands share one application command route; READY Right starts, Enter/Space do not."
+  - "SG-012-AC06: blur, hidden, and real orientation changes pause and clear queue/accumulator; resize only relayouts."
+  - "SG-012-AC07: repeated resets do not add listeners; twenty reset cycles retain the baseline listener count."
+  - "SG-012-AC08: TypeScript 6 checks project source while skipping the two incompatible Phaser 4.2.1 declaration errors verified in the installed package."
+  - AC-G02
+  - AC-G04
+  - AC-G10
+  - AC-L01
+  - AC-L02
+  - AC-L03
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+claim: "CLAIM: codex / current GPT-5 runtime; setting label not exposed / agent/codex/SG-012-phaser-integration / 2026-07-19T00:00:00Z"
+claimed_at: "2026-07-19T00:00:00Z"
+status_history:
+  - status: ready
+    at: "2026-07-19T00:00:00Z"
+    by: Codex integrator
+    basis: direct human authorization for this bounded H0b implementation packet
+  - status: in_progress
+    at: "2026-07-19T00:00:00Z"
+    by: codex
+    basis: atomic claim on the dedicated branch before implementation edits
+  - status: review
+    at: "2026-07-19T00:00:00Z"
+    by: codex
+    basis: implementation commit a350cc8cf8858684dfbbe1f5ef3fee42c9f46596 and required local verification complete; independent Claude review pending
