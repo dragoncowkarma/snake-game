@@ -1,7 +1,7 @@
 id: SG-009
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-19T09:00:00Z"
 offline_reason: >-
@@ -58,6 +58,16 @@ status_history:
     at: "2026-07-19T09:45:24Z"
     by: codex
     basis: Atomic claim on the dedicated branch before workflow edits.
+  - status: review
+    at: "2026-07-19T10:01:43Z"
+    by: codex
+    basis: >-
+      Revision 1 workflow implementation commit 331a9545a1634ca5b80594a2fba6e6290b7df25e
+      passed the Node 24 clean install, static policy, full verify, and repository-base
+      existing-artifact preview checks. The structured handoff contains actual results.
+head_sha: 331a9545a1634ca5b80594a2fba6e6290b7df25e
+review_ready_at: "2026-07-19T10:01:43Z"
+handoff: docs/coordination/handoffs/SG-009.md
 deliverables:
   workflow: .github/workflows/quality.yml
   packet: docs/coordination/tasks/SG-009.yaml
@@ -193,7 +203,6 @@ research:
       imported asset paths for a nested public path, supporting the planned runtime
       repository-base build and preview check.
 completion_guard: >-
-  Codex may move this revision only to review after all scoped checks pass and the
-  handoff records actual exit codes. The assigned Antigravity reviewer must verify
-  the workflow evidence before it may be marked verified. Public deployment remains
-  prohibited pending H3a and SG-024.
+  The assigned Antigravity reviewer must verify the workflow evidence before this
+  revision may be marked verified. Public deployment remains prohibited pending H3a
+  and SG-024.
