@@ -23,7 +23,7 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-010.md
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 branch: agent/codex/SG-012-phaser-integration
-head_sha: 01946e71fa939d5ed8db98466e0f1e9794087655
+head_sha: 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -133,6 +133,40 @@ implementation_response:
     Chromium production-preview e2e all passed after the fix. A fresh independent
     browser confirmation of non-zero canvas CSS dimensions immediately after Start
     remains required before verified or merge.
+independent_review_round_2:
+  result: REQUEST_CHANGES
+  reviewed_head: 01946e71fa939d5ed8db98466e0f1e9794087655
+  reviewed_docs_commit: d998b314c8febab2676b2f77e8ed5e725a4ffd87
+  reviewed_at: "2026-07-19T13:00:00Z"
+  outcome: >-
+    A fresh browser session with no window resize still showed width: 0px and
+    height: 0px after Start, including after a one-second wait. The synchronous
+    refresh fix therefore did not resolve SG-012-AC04.
+  root_cause_of_fix_failure: >-
+    ScaleManager.refresh ran in the same application subscription callback that
+    removed the board's hidden attribute, before the browser committed its new
+    layout. Dispatching resize in a later task corrected the canvas to 200x200,
+    isolating the defect to hidden-parent construction and timing.
+  recommended_fix: >-
+    Do not construct Phaser under the hidden parent; create it only after the
+    visible board has a committed layout, or otherwise defer refresh beyond the
+    synchronous reveal callback.
+  affected_acceptance_id: SG-012-AC04
+implementation_response_round_3:
+  response_head: 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3
+  status: resubmitted-for-independent-review
+  change: >-
+    bootstrap.ts now defers the first Phaser.Game/GameScene construction itself
+    to the next task after the shell publishes a non-menu snapshot. Phaser FIT
+    therefore first measures the visible board instead of a display:none parent.
+  browser_evidence: >-
+    Fresh Chromium production preview, with no window resize: Start produced one
+    visible canvas whose inline style was width: 200px; height: 200px, while its
+    intrinsic attributes stayed 480x480. The rendered board visibly contained
+    the 20x20 grid, three snake cells, and food.
+  validation: >-
+    Node 24.14.0 format:check, lint, typecheck, test (103/103), build, and
+    Chromium production-preview e2e passed after the fix.
 status_history:
   - status: ready
     at: "2026-07-19T00:00:00Z"
@@ -165,3 +199,11 @@ status_history:
       Fixed the review finding in 01946e71fa939d5ed8db98466e0f1e9794087655 and
       reran required local checks. Awaiting independent Chromium verification of
       canvas CSS dimensions after Start without a window resize.
+  - status: review
+    at: "2026-07-19T00:00:00Z"
+    by: codex
+    basis: >-
+      Resubmitted delayed Phaser construction
+      3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3 with fresh no-resize Chromium
+      evidence: CSS canvas dimensions 200x200, intrinsic dimensions 480x480,
+      and visible grid/snake/food. Independent final review remains required.
