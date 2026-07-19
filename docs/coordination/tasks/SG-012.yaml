@@ -1,7 +1,7 @@
 id: SG-012
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 approved_by: Codex integrator
 approved_at: "2026-07-19T00:00:00Z"
 approval_gate: direct-human-instruction
@@ -167,6 +167,50 @@ implementation_response_round_3:
   validation: >-
     Node 24.14.0 format:check, lint, typecheck, test (103/103), build, and
     Chromium production-preview e2e passed after the fix.
+independent_review_round_3:
+  result: APPROVE
+  reviewed_head: 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3
+  reviewed_docs_commit: b5bcb5b36c96e9fb6e5cb8e70dc4b381a178b8bf
+  reviewed_at: "2026-07-19T14:00:00Z"
+  environment: >-
+    Checked out 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3 in an isolated git
+    worktree and independently reran npm ci, format:check, lint, typecheck,
+    test (103/103 passed), build, and git diff --check under Node 22.18.0;
+    all passed, matching the implementation record.
+  fix_review: >-
+    bootstrap.ts no longer constructs Phaser.Game synchronously at mount.
+    Instead the application.subscribe callback detects the first transition
+    away from `menu` and defers createPhaserGame() by one tick via
+    ownerWindow.setTimeout(..., 0), so the ScaleManager measures the board
+    only after the hidden-to-visible layout change has been committed. This
+    addresses the round-2 root cause (measuring in the same synchronous
+    callback that toggles `hidden`) by constructing the canvas at the right
+    size from the start rather than refreshing a stale one. `game` is now
+    correctly typed Phaser.Game | null and both destroy() and the resize
+    relayout use optional chaining. The `game !== null` guard fires the
+    creation branch exactly once, preserving the single-Scene invariant and
+    AC07's restart-listener guarantee (ApplicationRouter/GameScene subscribe
+    boundaries are untouched by this change).
+  browser_verification: >-
+    Opened a fresh tab with no prior window resize, loaded the fixed
+    production preview, and clicked Start with no other interaction.
+    document.querySelector('#board canvas').getAttribute('style') read
+    `width: 200px; height: 200px` immediately, canvas count stayed 1 with
+    intrinsic 480x480, and a screenshot confirmed the 20x20 grid, snake, and
+    food render correctly. Clicked the Move-right D-pad button and confirmed
+    the Ready -> Playing transition and Pause button appeared; verified tick
+    progression is compatible with this change but could only be observed
+    at a throttled rate because the automated tab lacked OS-level focus
+    (document.hidden was true, heavily throttling requestAnimationFrame) --
+    an artifact of the headless browser harness, not a code defect. Domain
+    tick correctness is independently covered by
+    fixed-step-scheduler.test.ts and application-router.test.ts, which do
+    not depend on requestAnimationFrame and were unmodified by this fix.
+  non_blocking_findings: []
+  recommendation: >-
+    All acceptance criteria, including SG-012-AC04, are satisfied. Recommend
+    transitioning to `verified`. Remote push/PR/deploy/merge left to the
+    Codex integrator's follow-up.
 status_history:
   - status: ready
     at: "2026-07-19T00:00:00Z"
@@ -200,6 +244,21 @@ status_history:
       reran required local checks. Awaiting independent Chromium verification of
       canvas CSS dimensions after Start without a window resize.
   - status: review
+    at: "2026-07-19T13:00:00Z"
+    by: claude-sonnet-5-reviewer
+    basis: >-
+      Independent round-2 review of resubmitted head
+      01946e71fa939d5ed8db98466e0f1e9794087655 completed with result
+      REQUEST_CHANGES: the fix does not resolve the round-1 finding. A fresh,
+      no-resize browser session still shows the canvas frozen at
+      `width: 0px; height: 0px` after Start (see independent_review_round_2).
+      The fix calls game.scale.refresh() synchronously in the same callback
+      that unhides #board, before the browser has committed the layout change,
+      so the measurement is still stale. Status remains `review`; codex
+      implementer to defer the refresh call by at least one frame (e.g.
+      requestAnimationFrame or a ResizeObserver on #board) and resubmit with
+      fresh no-resize browser evidence.
+  - status: review
     at: "2026-07-19T00:00:00Z"
     by: codex
     basis: >-
@@ -207,3 +266,18 @@ status_history:
       3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3 with fresh no-resize Chromium
       evidence: CSS canvas dimensions 200x200, intrinsic dimensions 480x480,
       and visible grid/snake/food. Independent final review remains required.
+  - status: verified
+    at: "2026-07-19T14:00:00Z"
+    by: claude-sonnet-5-reviewer
+    basis: >-
+      Independent round-3 review of resubmitted head
+      3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3 completed with result APPROVE
+      (see independent_review_round_3). bootstrap.ts now defers Phaser.Game
+      construction until the board is first measurable, resolving the
+      round-2 root cause instead of refreshing a stale measurement. A fresh,
+      no-resize browser session confirmed the canvas renders at
+      `width: 200px; height: 200px` immediately after Start with the grid,
+      snake, and food visible. All required local commands pass
+      independently. SG-012-AC04 and the remaining acceptance criteria are
+      satisfied; no blocking findings remain. Local push/PR/deploy/merge
+      decisions are left to the Codex integrator.
