@@ -1,7 +1,7 @@
 id: SG-009
 spec_version: "1.0-plan"
-task_revision: 0
-status: draft
+task_revision: 1
+status: in_progress
 source_of_truth: offline
 offline_checked_at: "2026-07-19T09:00:00Z"
 offline_reason: >-
@@ -10,11 +10,11 @@ offline_reason: >-
   source; it is not ready and must not coexist with a later GitHub Issue.
 approval_gate: H0b
 approval_basis: >-
-  H0b opens Wave 1 prerequisites but does not approve this task automatically. The
-  current human instruction authorizes only this pre-start packet preparation, not
-  implementation, a PR, remote push, Pages configuration, or deployment.
-approved_by: null
-approved_at: null
+  Human-user explicitly approved SG-009 revision 1 on 2026-07-19. This authorization
+  covers the bounded private PR-quality artifact workflow only; it excludes remote
+  push, Pages configuration, public deployment, and any deploy-pages invocation.
+approved_by: human-user
+approved_at: "2026-07-19T09:43:59Z"
 priority: P0
 owner: codex
 model: gpt-5
@@ -34,12 +34,11 @@ dependency_evidence:
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 base_scope: local_main
 base_note: >-
-  This SHA was the local main/HEAD at draft creation. A ready revision must recheck
-  that it is the current integration base and must not silently retarget a changed
-  main branch.
-branch: null
-claim: null
-claimed_at: null
+  Revision 1 rechecked this SHA as the current local main at approval. The task
+  branch contains only the prior draft-packet commit on top of this base.
+branch: agent/codex/SG-009-pages-artifact-prep
+claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-009-pages-artifact-prep / 2026-07-19T09:45:24Z"
+claimed_at: "2026-07-19T09:45:24Z"
 status_history:
   - status: draft
     at: "2026-07-19T09:00:00Z"
@@ -47,6 +46,18 @@ status_history:
     basis: >-
       Human requested SG-009 pre-start preparation. Approval fields, implementation
       claim, and ready state remain intentionally unset.
+  - status: ready
+    at: "2026-07-19T09:43:59Z"
+    by: human-user
+    basis: >-
+      Explicit approval: "SG-009 revision 1을 승인하며, approved_by: human-user,
+      approved_at: <UTC 시각>으로 ready 전환한다". Codex recorded the current UTC
+      approval time and rechecked the local main base, SG-005 dependency, and zero
+      open GitHub Issues or pull requests.
+  - status: in_progress
+    at: "2026-07-19T09:45:24Z"
+    by: codex
+    basis: Atomic claim on the dedicated branch before workflow edits.
 deliverables:
   workflow: .github/workflows/quality.yml
   packet: docs/coordination/tasks/SG-009.yaml
@@ -161,6 +172,11 @@ implementation_notes:
     Resolve the precise current full commit SHA and release comment for every new or
     changed action from its official release at implementation time; do not copy an
     unverified SHA from this draft.
+  - >-
+    Implementation check resolved actions/upload-artifact v4.6.2 to
+    ea165f8d65b6e75b540449e92b4886f43607fa02. Existing checkout and setup-node v7
+    pins remain 9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 and
+    820762786026740c76f36085b0efc47a31fe5020, respectively.
 research:
   checked_at: "2026-07-19"
   github_pages_custom_workflows: >-
@@ -177,6 +193,7 @@ research:
       imported asset paths for a nested public path, supporting the planned runtime
       repository-base build and preview check.
 completion_guard: >-
-  This draft must stay non-ready until a human or authorized Codex integrator records
-  a revision greater than 0, approved_by, approved_at, refreshed base SHA, branch,
-  and claim. Only then may the task change to in_progress and modify the workflow.
+  Codex may move this revision only to review after all scoped checks pass and the
+  handoff records actual exit codes. The assigned Antigravity reviewer must verify
+  the workflow evidence before it may be marked verified. Public deployment remains
+  prohibited pending H3a and SG-024.
