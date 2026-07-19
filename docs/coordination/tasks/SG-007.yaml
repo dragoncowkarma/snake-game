@@ -1,0 +1,192 @@
+id: SG-007
+spec_version: "1.0-plan"
+task_revision: 1
+status: in_progress
+source_of_truth: offline
+offline_checked_at: "2026-07-19T07:49:31Z"
+offline_reason: >-
+  A fresh read-only GitHub API check found remote main at
+  0fae00a65d662592b28f5daf59edcfc21584ac65 with zero open Issues and zero open
+  pull requests. No SG-007 GitHub task source exists, so this packet is the only
+  SG-007 source of truth and must not coexist with a later Issue for revision 1.
+approval_gate: direct-human-instruction
+approval_basis: >-
+  After the SG-007 start audit reported that the prompt contained unresolved
+  placeholders and no approved task source, the human explicitly instructed:
+  "Codex integrator가 최신 main 기준 SG-007 revision 1 offline packet을 작성·승인하고
+  진행하라". Under AGENTS.md section 1 this direct instruction authorizes the
+  Codex integrator to approve this bounded implementation-detail packet inside the
+  already accepted H0b, SG-003 revision 2 contract, and DEVELOPMENT_PLAN. It does
+  not authorize a public-contract change, dependency change, remote push, or deploy.
+approved_by: codex-integrator
+approved_at: "2026-07-19T07:49:31Z"
+priority: P0
+owner: codex
+model: gpt-5
+reasoning_or_workload: high
+assigned_model_baseline: codex-5.6-sol
+assigned_setting_baseline: very-high
+routing_deviation: >-
+  The active session exposes the Codex GPT-5 runtime but not the exact Codex 5.6 Sol
+  alias or a verifiable equivalent setting. No equivalence is claimed. The task
+  remains on the assigned Codex platform and requires the designated independent
+  Claude review before verified or merged status.
+reviewers:
+  - platform: claude
+    model: opus-4.8
+    setting: high
+depends_on:
+  - H0b
+  - SG-003
+  - SG-005
+dependency_evidence:
+  H0b: >-
+    Human-user accepted H0b at 2026-07-17T17:18:21Z. D-001 through D-006 and the
+    SG-003 revision 2 public contract are accepted in DECISIONS.md on base_sha.
+  SG-003: >-
+    Contract implementation evidence b4c5130bc0a0980d95ff575ff12efd154bf001ab
+    and merge c41bb45c81aa5f39ee9465b0db5ea08dcd99ea18 are ancestors of base_sha.
+    CONTRACTS.md fixes the exact type shapes, command policy, reset constants,
+    row-major free-cell selection, injected RandomSource, and call counts used here.
+  SG-005: >-
+    Scaffold implementation 7435242d997e226951f8cc2828bb649e64ed3b9f is an
+    ancestor of base_sha. Node 24, strict TypeScript, ESLint, Prettier, Vitest,
+    build, and Playwright commands are present without any SG-007 dependency change.
+base_sha: 0fae00a65d662592b28f5daf59edcfc21584ac65
+base_scope: local_and_remote_main
+branch: agent/codex/SG-007-domain-foundation
+claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-007-domain-foundation / 2026-07-19T07:49:31Z"
+claimed_at: "2026-07-19T07:49:31Z"
+status_history:
+  - status: ready
+    at: "2026-07-19T07:49:31Z"
+    by: codex-integrator
+    basis: >-
+      Direct human authorization supplied the previously missing task-source gate;
+      latest main, dependencies, allowed paths, ACs, and commands were fixed here.
+  - status: in_progress
+    at: "2026-07-19T07:49:31Z"
+    by: codex
+    basis: >-
+      Atomic claim on the dedicated SG-007 branch before product-source edits.
+allowed_paths:
+  - src/domain/**
+  - src/config/**
+  - docs/coordination/tasks/SG-007.yaml
+  - docs/coordination/handoffs/SG-007.md
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/** except docs/coordination/tasks/SG-007.yaml
+  - docs/coordination/handoffs/** except docs/coordination/handoffs/SG-007.md
+  - src/ui/**
+  - src/game/**
+  - src/adapters/**
+  - src/main.ts
+  - src/main.test.ts
+  - src/styles.css
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - tooling.config.ts
+  - eslint.config.js
+  - .prettierrc.json
+  - .prettierignore
+  - .nvmrc
+  - .gitignore
+  - playwright.config.ts
+  - index.html
+  - spikes/**
+  - public/**
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+scope_boundary: >-
+  SG-007 implements the accepted public type skeleton and phase-command policy,
+  fixed game configuration, injected RandomSource boundary, row-major free-cell
+  food selection, and reset({phase: menu|ready}) initial snapshots. Unit tests live
+  beside the domain source under src/domain/** so they remain within the task row's
+  ownership. enqueueDirection and the full playing step (movement, queue consumption,
+  growth, collision, score/speed update, and won transition) remain SG-010 and must
+  not be pre-implemented. This packet also leaves src/ui/contracts.ts untouched;
+  deleting that temporary mirror and rewiring UI imports requires a separately
+  approved UI/integration allowlist. No public field, command, event, dependency, or
+  product meaning may change.
+acceptance_ids:
+  - id: SG-007-AC01
+    maps_to: [SG-003-AC01, SG-003-AC02]
+    text: >-
+      src/domain exposes the exact accepted Phase, Direction, Difficulty, EndReason,
+      Cell, DirectionQueue, GameState, Command, command-policy, DomainEvent,
+      RandomSource, reset request/result, and enqueue/transition result type shapes,
+      plus the exact 6-phase by 8-command PHASE_COMMAND_POLICY value. No extra public
+      GameState field or command/event variant is added.
+  - id: SG-007-AC02
+    maps_to: [AC-G10, SG-003-AC06]
+    text: >-
+      reset creates a fresh length-3 head-first snake at (10,10),(9,10),(8,10),
+      direction right, empty queue, zero score/foods, difficulty start tick, null
+      endReason, and no events. Menu has null food and zero RNG calls; ready has one
+      non-overlapping food and exactly one RNG call.
+  - id: SG-007-AC03
+    maps_to: [AC-G05, AC-G09]
+    text: >-
+      Food selection enumerates the 20x20 board once in y-major/x-minor row-major
+      order, selects from only unoccupied cells with one nextInt(freeCellCount) call,
+      performs no retry or modulo coercion, and returns null without touching RNG
+      when there are no free cells. SG-010 owns converting that null after growth to
+      phase won.
+  - id: SG-007-AC04
+    maps_to: [SG-003-AC06]
+    text: >-
+      Two independent injected seeded RandomSource instances with the same seed and
+      the same reset request produce value-identical initial snapshots, events, RNG
+      call counts, and upper bounds; different valid selected indexes map to the
+      documented row-major free cells.
+  - id: SG-007-AC05
+    maps_to: [SG-003-AC07, D-003]
+    text: >-
+      Production files under src/domain and src/config import only each other and
+      contain no Phaser, DOM, timer, localStorage, Web Audio, wall-clock, Canvas, or
+      hidden global-random dependency. No dependency or lockfile changes occur.
+  - id: SG-007-AC06
+    maps_to: [SG-003-AC03, SG-003-AC04]
+    text: >-
+      SG-010-owned enqueueDirection and step runtime functions are not implemented
+      in this packet. Their accepted queue, READY Right, tick ordering, tail-cell,
+      collision-event, score/speed, and won rules remain unchanged in CONTRACTS.md.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+  - git diff --name-only 0fae00a65d662592b28f5daf59edcfc21584ac65..HEAD
+  - >-
+    ! rg -n "(from ['\"]phaser|document\.|window\.|localStorage|AudioContext|setTimeout|setInterval|Date\.|Math\.random)"
+    src/domain src/config -g '!*.test.ts'
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json unchanged
+  browser: Chromium installed by Playwright for unchanged scaffold smoke
+completion_guard: >-
+  Codex may advance SG-007 only to review after every scoped check passes and the
+  handoff records actual exit codes and AC evidence. The designated Claude reviewer
+  or the human must independently verify before verified/merged; this implementation
+  session does not self-approve or merge the task.
+handoff: docs/coordination/handoffs/SG-007.md
