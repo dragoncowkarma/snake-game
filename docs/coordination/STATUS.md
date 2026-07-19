@@ -1,6 +1,6 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-19T08:16:06Z
+- 마지막 동기화: 2026-07-19T08:26:15Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
@@ -8,7 +8,7 @@
 - 현재 활성 작업: 없음
 - 현재 검증 대기: 없음
 - 현재 결정 필요: SG-013 packet 작성 전 SG-006에서 선행 구현한 focus/aria-live/Command-routing 범위를 `TASKS.md`와 `DECISIONS.md`에 정합화
-- 다음 작업 후보: SG-008, SG-009, SG-010. 각각 최신 `main` 기준의 versioned GitHub Issue 또는 승인된 offline packet과 claim이 필요하다.
+- 다음 작업 후보: SG-009, SG-010. 각각 최신 `main` 기준의 versioned GitHub Issue 또는 승인된 offline packet과 claim이 필요하다.
 
 ## H0b 종료 기록
 
@@ -22,6 +22,7 @@
 - SG-005: scaffold implementation SHA `7435242d997e226951f8cc2828bb649e64ed3b9f`와 revision 2 review remediation은 typecheck, lint, 8/8 unit, root 및 `/snake-game/` Chromium production smoke, clean `npm ci`, `verify`를 통과했다. 사람 제공 독립 재검증이 승인했으며 completion merge `673319e71bea4dba17a09124aeae5c1dab91378a`를 거쳐 local `main`에 통합됐다. 원격 push·공개 배포는 수행하지 않았다.
 - SG-006: accessible DOM shell implementation SHA `e146c47`과 verification record `56521b760b5aebac0d850a0b32922fc0d71b5c8b`는 지정 Antigravity 리뷰와 Codex 통합 재검증(format, lint, typecheck, 29/29 unit, build, Chromium E2E 1/1)을 통과했다. local integration merge `42d91eeb4221b38ea2c49c06320da57a838cb060`으로 `main`에 통합됐고 원격 push·공개 배포는 수행하지 않았다. SG-013의 focus/aria-live/Command-routing 일부를 사람 승인으로 선행 구현했으므로 SG-013 packet 작성 전 작업 경계를 정합화해야 한다.
 - SG-007: deterministic domain foundation implementation SHA `1d8d936b0316fe15f3785e73ba605f049cca3660`은 승인된 타입/정책, 단일 설정, injected RNG, menu/ready reset, row-major free-cell 선택을 구현했다. 독립 APPROVE 리뷰가 397개 index 전수 property 검증과 계약 대조를 통과시켰고, Codex 통합 재검증(Node 24 format, lint, typecheck, 40/40 unit, build, Chromium E2E 1/1) 뒤 local merge `a66716c4e7f12f45dba4cb5ed4b836d4cf783af5`로 `main`에 통합됐다. 원격 push·배포는 수행하지 않았다. SG-010은 `food-spawner.ts`의 도달 불가 `?? null`을 explicit invariant failure로 정리하고 enqueue/step을 구현해야 하며, 후속 UI/통합 packet은 `src/ui/contracts.ts` mirror를 실제 domain import로 교체해야 한다.
+- SG-008: fixture/evidence foundation implementation SHA `c857f2bc08bf84ab4e12e7222664e46cb8686d4f`는 24개 fixture, EV-FAIL-01 schema, Mulberry32 seeded RNG, scripted RNG, E2E listener helper를 추가했다. Codex 리뷰에서 이전 EPERM artifact path, FX_PLAY_R 상태, stale SHA metadata, Playwright outputDir 재현 절차 문제가 모두 해소됐음을 확인했다. SG-008 구현 head는 57/57 unit tests와 필수 검증을 통과했고, 최신 `main`(SG-007 포함) 위 local integration merge `522fcb7ebb3460b5dce858cc23bae825866e9681`도 format, lint, typecheck, 68/68 unit, build, 25 schema generation, Chromium E2E 1/1, diff check를 통과했다. 원격 push·공개 배포는 수행하지 않았다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
@@ -44,14 +45,14 @@ Wave 0 closeout의 루트 명령 부재는 SG-005가 해소했다. 현재 local 
 
 ## 다음 관문
 
-SG-005~SG-007은 merged다. SG-008/009는 새 packet에 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담고 claim한 뒤에만 `ready`가 된다. SG-010도 SG-007 선행 조건이 충족됐지만 별도 최신 packet과 claim 전에는 시작하지 않는다. SG-013은 SG-006과의 범위 정합화가 끝나기 전 packet화하지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
+SG-005~SG-008은 merged다. SG-009는 새 packet에 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담고 claim한 뒤에만 `ready`가 된다. SG-010도 SG-007 선행 조건이 충족됐지만 별도 최신 packet과 claim 전에는 시작하지 않는다. SG-013은 SG-006과의 범위 정합화가 끝나기 전 packet화하지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
 | 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
-| 1. 기반 구축 | in_progress | SG-005·SG-006·SG-007 merged; SG-008/009 packet 준비 대기 |
+| 1. 기반 구축 | in_progress | SG-005·SG-006·SG-007·SG-008 merged; SG-009 packet 준비 대기 |
 | 2. 수직 슬라이스 | pending | 핵심 플레이 가능 상태 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
