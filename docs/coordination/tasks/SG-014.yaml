@@ -1,0 +1,120 @@
+id: SG-014
+spec_version: "1.0-plan"
+task_revision: 1
+status: in_progress
+approved_by: human-user
+approved_at: "2026-07-19T15:37:09Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human directly authorized the Codex integrator to create and approve SG-014
+  revision 1 at base SHA 05cddcd3dbfea9eab6d8319911900580474630b4,
+  reconcile the already-merged SG-012 records and STATUS, and proceed on a dedicated
+  branch within the accepted contracts and the docs/TASKS.md SG-014 scope. This
+  packet does not authorize a public-contract, product-meaning, dependency,
+  deployment, Pages-permission, or main-direct-push change.
+owner: codex
+model: "Codex GPT-5 runtime (exact deployment alias not exposed)"
+reasoning_or_workload: "very-high planned; exact runtime setting label not exposed"
+reviewers:
+  - Antigravity Gemini 3.5 Flash high
+  - Claude Sonnet 5 high
+depends_on:
+  - SG-010
+  - SG-011
+  - SG-012
+  - SG-013
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-010.md
+  - docs/coordination/handoffs/SG-011.md
+  - docs/coordination/handoffs/SG-012.md
+  - docs/coordination/handoffs/SG-013.md
+base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
+branch: agent/codex/SG-014-vertical-integration
+head_sha:
+allowed_paths:
+  - src/game/**
+  - src/main.ts
+  - tests/e2e/**
+  - docs/coordination/tasks/SG-012.yaml
+  - docs/coordination/handoffs/SG-012.md
+  - docs/coordination/tasks/SG-014.yaml
+  - docs/coordination/handoffs/SG-014.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/domain/**
+  - src/config/**
+  - src/ui/**
+  - src/styles.css
+  - index.html
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - tooling.config.ts
+  - playwright.config.ts
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - dist/**
+acceptance_ids:
+  - >-
+    SG-014-AC01: Production keeps one direction of ownership: DOM commands enter the
+    shared ApplicationRouter, only accepted domain transitions mutate simulation
+    state, and immutable snapshots/events feed Phaser and the DOM shell without a
+    duplicated UI or renderer game-rule branch.
+  - >-
+    SG-014-AC02: A production-build browser flow deterministically starts from MENU,
+    enters READY, accepts one focused-board Right command, advances exactly one cell,
+    eats one food, and exposes the resulting score/event through the DOM while the
+    Phaser board remains visible.
+  - >-
+    SG-014-AC03: The same production-build flow reaches one wall GAME_OVER, exposes
+    the end reason and Restart focus, then one Restart returns a zero-score READY
+    state with the board focused and no listener or duplicate-command symptom.
+  - >-
+    SG-014-AC04: The vertical E2E uses only public user input and observable DOM/canvas
+    state, runs under the Pages-style base path, reports zero browser/console/request
+    failures, contains no fixed sleep, and puts no product logic in test selectors.
+  - >-
+    SG-014-AC05: Clean Node 24 verification passes format, lint, strict project
+    typecheck, unit, domain coverage thresholds, production build, Chromium E2E,
+    whitespace, scope, and generated-artifact audits.
+  - >-
+    SG-014-AC06: SG-010 through SG-013 implementation/review heads are main ancestors,
+    SG-012's offline packet and handoff record actual merge 05cddcd, and STATUS matches
+    the repository before SG-014 is submitted for independent review.
+  - AC-G02
+  - AC-G05
+  - AC-G07
+  - AC-G10
+  - AC-U06
+  - AC-U07
+  - AC-R03
+  - AC-R04
+  - AC-R05
+required_commands:
+  - npm ci
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run test:coverage
+  - npm run build
+  - npm run test:e2e
+  - PLAYWRIGHT_BASE_PATH=snake-game npm run test:e2e
+  - npm run verify
+  - git diff --check
+claim: "CLAIM: codex / GPT-5 runtime; exact alias and setting label not exposed / agent/codex/SG-014-vertical-integration / 2026-07-19T15:37:09Z"
+claimed_at: "2026-07-19T15:37:09Z"
+handoff: docs/coordination/handoffs/SG-014.md
+status_history:
+  - status: ready
+    at: "2026-07-19T15:37:09Z"
+    by: human-user
+    basis: direct authorization of revision 1 at the exact base SHA
+  - status: in_progress
+    at: "2026-07-19T15:37:09Z"
+    by: codex
+    basis: atomic claim on the dedicated branch before implementation edits
