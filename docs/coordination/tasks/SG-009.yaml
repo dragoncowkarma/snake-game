@@ -1,0 +1,182 @@
+id: SG-009
+spec_version: "1.0-plan"
+task_revision: 0
+status: draft
+source_of_truth: offline
+offline_checked_at: "2026-07-19T09:00:00Z"
+offline_reason: >-
+  GitHub read-only check on 2026-07-19 returned zero open Issues and zero open pull
+  requests for dragoncowkarma/snake-game. This draft is the sole proposed SG-009
+  source; it is not ready and must not coexist with a later GitHub Issue.
+approval_gate: H0b
+approval_basis: >-
+  H0b opens Wave 1 prerequisites but does not approve this task automatically. The
+  current human instruction authorizes only this pre-start packet preparation, not
+  implementation, a PR, remote push, Pages configuration, or deployment.
+approved_by: null
+approved_at: null
+priority: P0
+owner: codex
+model: gpt-5
+reasoning_or_workload: high
+assigned_model_baseline: codex-5.6-terra
+reviewers:
+  - platform: antigravity
+    model: gemini-3.5-flash
+    setting: high
+depends_on:
+  - SG-005
+dependency_evidence:
+  SG-005: >-
+    SG-005 is merged on the proposed base. Its handoff records clean npm ci, full
+    quality checks, and an existing /snake-game/ production-preview smoke. It also
+    reserves Pages deployment hardening for SG-024.
+base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
+base_scope: local_main
+base_note: >-
+  This SHA was the local main/HEAD at draft creation. A ready revision must recheck
+  that it is the current integration base and must not silently retarget a changed
+  main branch.
+branch: null
+claim: null
+claimed_at: null
+status_history:
+  - status: draft
+    at: "2026-07-19T09:00:00Z"
+    by: codex
+    basis: >-
+      Human requested SG-009 pre-start preparation. Approval fields, implementation
+      claim, and ready state remain intentionally unset.
+deliverables:
+  workflow: .github/workflows/quality.yml
+  packet: docs/coordination/tasks/SG-009.yaml
+  handoff: docs/coordination/handoffs/SG-009.md
+allowed_paths:
+  - .github/workflows/quality.yml
+  - docs/coordination/tasks/SG-009.yaml
+  - docs/coordination/handoffs/SG-009.md
+forbidden_paths:
+  - AGENTS.md
+  - README.md
+  - LICENSE
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-001.yaml
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/tasks/SG-005.yaml
+  - docs/coordination/tasks/SG-006.yaml
+  - docs/coordination/tasks/SG-007.yaml
+  - docs/coordination/tasks/SG-008.yaml
+  - docs/coordination/tasks/SG-010.yaml
+  - docs/coordination/handoffs/** except docs/coordination/handoffs/SG-009.md
+  - package.json
+  - package-lock.json
+  - tooling.config.ts
+  - vite.config.ts
+  - playwright.config.ts
+  - index.html
+  - src/**
+  - tests/**
+  - public/**
+  - .github/** except .github/workflows/quality.yml
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+acceptance_ids:
+  - id: SG-009-AC01
+    maps_to:
+      - AC-R03
+      - AC-R04
+    text: >-
+      The pull-request quality job keeps workflow-level permissions at exactly
+      contents: read. It performs no GitHub Pages metadata/API action and declares
+      no pages: write, pages: read, id-token: write, public environment, concurrency,
+      or deploy-pages step.
+  - id: SG-009-AC02
+    maps_to:
+      - AC-R03
+      - AC-R04
+    text: >-
+      The quality job derives the current repository name at runtime, normalizes it
+      to a trailing-slash base path such as /snake-game/, passes that path to the Vite
+      production build, and smoke-tests the resulting existing artifact through the
+      production preview. Repository names and /snake-game/ are not hard-coded in
+      workflow logic.
+  - id: SG-009-AC03
+    maps_to:
+      - AC-R03
+      - AC-R04
+    text: >-
+      After clean npm ci and all format, lint, typecheck, unit, production build, and
+      preview checks pass, the job uploads only dist as a regular CI artifact using a
+      current official Actions release pinned to its full commit SHA and annotated
+      with its release tag. It neither creates a gh-pages branch nor commits dist.
+  - id: SG-009-AC04
+    maps_to:
+      - AC-R03
+    text: >-
+      A local /snake-game/ existing-artifact production-preview run proves the
+      document and emitted assets load under the repository prefix with zero asset
+      404 responses. The workflow provides evidence only; actual Pages publication
+      remains zero deployments pending H3a and SG-024.
+required_commands:
+  - git diff --check
+  - git diff --name-only cf811f293918a4b7eed38b5cb44c3673950959cb..HEAD
+  - npm ci
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - npm run verify
+  - npm run build -- --base /snake-game/
+  - PLAYWRIGHT_BASE_PATH=/snake-game/ PLAYWRIGHT_USE_EXISTING_BUILD=1 npm run test:e2e
+  - GITHUB_REPOSITORY=dragoncowkarma/snake-game GITHUB_OUTPUT=<temporary-file> node tooling.config.ts github-output
+  - git ls-files dist coverage playwright-report test-results node_modules
+  - node <workflow static-policy checker>
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json
+  browser: Chromium installed by Playwright
+implementation_notes:
+  - >-
+    Use actions/upload-artifact, not configure-pages, upload-pages-artifact, or
+    deploy-pages. SG-024 owns the separated Pages build/deploy workflow and its
+    pages permissions, configure-pages metadata, release SHA gate, environment, and
+    concurrency.
+  - >-
+    Retain the existing shared repositoryBasePath()/normalizeBasePath() source rather
+    than reimplementing repository-name parsing in shell. Do not change it in SG-009.
+  - >-
+    Resolve the precise current full commit SHA and release comment for every new or
+    changed action from its official release at implementation time; do not copy an
+    unverified SHA from this draft.
+research:
+  checked_at: "2026-07-19"
+  github_pages_custom_workflows: >-
+    https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+  vite_production_build: "https://vite.dev/guide/build.html"
+  conclusions:
+    - >-
+      GitHub's Pages guide reserves configure-pages, upload-pages-artifact, and
+      deploy-pages for a Pages deployment workflow; deploy requires pages: write,
+      id-token: write, a build dependency, and github-pages environment. None are
+      in scope for SG-009's contents-read-only PR quality job.
+    - >-
+      Vite's production-build guide states that --base rewrites HTML, CSS, and
+      imported asset paths for a nested public path, supporting the planned runtime
+      repository-base build and preview check.
+completion_guard: >-
+  This draft must stay non-ready until a human or authorized Codex integrator records
+  a revision greater than 0, approved_by, approved_at, refreshed base SHA, branch,
+  and claim. Only then may the task change to in_progress and modify the workflow.
