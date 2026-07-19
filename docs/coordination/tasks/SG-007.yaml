@@ -1,7 +1,7 @@
 id: SG-007
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 source_of_truth: offline
 offline_checked_at: "2026-07-19T07:49:31Z"
 offline_reason: >-
@@ -59,6 +59,8 @@ head_sha: 1d8d936b0316fe15f3785e73ba605f049cca3660
 review_requested_at: "2026-07-19T08:00:13Z"
 verified_at: "2026-07-19T08:12:29Z"
 verified_by: independent-review-provided-by-human-user
+merged_at: "2026-07-19T08:16:06Z"
+merge_commit: a66716c4e7f12f45dba4cb5ed4b836d4cf783af5
 independent_review:
   result: APPROVE
   reviewed_head: 192fd31dddc3e7629a222d921de5bd6901dbaa82
@@ -124,6 +126,15 @@ status_history:
       Reviewer Node 22/no-E2E limitations are covered by the implementation record's
       clean Node 24.14.0 and Chromium E2E evidence. Two findings are non-blocking and
       preserved for SG-010/UI integration; no reviewed product code was changed.
+  - status: merged
+    at: "2026-07-19T08:16:06Z"
+    by: codex-integrator
+    basis: >-
+      After independent APPROVE, clean local/remote base and zero open pull requests
+      were reconfirmed. The verified head passed Node 24 format, lint, typecheck,
+      40/40 unit tests, build, and Chromium E2E 1/1, then merged without conflict to
+      local main as a66716c4e7f12f45dba4cb5ed4b836d4cf783af5. No remote push or
+      deployment was performed.
 allowed_paths:
   - src/domain/**
   - src/config/**
