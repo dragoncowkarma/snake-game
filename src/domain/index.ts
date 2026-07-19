@@ -1,5 +1,6 @@
 export { PHASE_COMMAND_POLICY } from './command-policy.ts';
 export { reset } from './reset.ts';
+export { enqueueDirection, step } from './snake-simulation.ts';
 export type {
   Cell,
   Command,

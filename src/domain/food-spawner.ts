@@ -37,5 +37,11 @@ export function spawnFood(snake: readonly Cell[], randomSource: RandomSource): C
     );
   }
 
-  return freeCells[selectedIndex] ?? null;
+  const selectedCell = freeCells[selectedIndex];
+
+  if (selectedCell === undefined) {
+    throw new Error(`Invariant violation: free cell ${selectedIndex} disappeared after selection`);
+  }
+
+  return selectedCell;
 }
