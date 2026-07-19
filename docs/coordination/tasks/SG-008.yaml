@@ -1,0 +1,120 @@
+id: SG-008
+spec_version: "1.0-plan"
+task_revision: 1
+status: merged
+source_of_truth: offline
+offline_reason: >-
+  GitHub CLI/API is not used in this execution environment. This packet is the only
+  SG-008 task source and must not coexist with a later GitHub Issue for the same
+  revision.
+approval_gate: direct-human-instruction
+approved_by: human-user (direct chat instruction, in-session)
+approved_at: "2026-07-19"
+priority: P0
+owner: antigravity
+model: gemini-3.5-flash-high
+reasoning_or_workload: high
+reviewer: codex (codex-5.5-high per docs/TASKS.md)
+depends_on:
+  - H0b
+  - SG-004
+  - SG-005
+base_sha: 0fae00a65d662592b28f5daf59edcfc21584ac65
+branch: test-engineering-sg-008
+head_sha: c857f2bc08bf84ab4e12e7222664e46cb8686d4f
+verified_at: "2026-07-19T08:26:15Z"
+verified_by: codex-reviewer
+merged_at: "2026-07-19T08:26:15Z"
+merge_commit: 522fcb7ebb3460b5dce858cc23bae825866e9681
+allowed_paths:
+  - tests/**
+  - playwright.config.ts
+  - docs/coordination/tasks/SG-008.yaml
+  - docs/coordination/handoffs/SG-008.md
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/STATUS.md
+  - src/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - tooling.config.ts
+  - eslint.config.js
+  - .prettierrc.json
+  - .prettierignore
+  - .nvmrc
+  - .gitignore
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+acceptance_ids:
+  - id: SG-008-AC01
+    text: >-
+      Implement all 24 fixtures and EV-FAIL-01 schema defined in docs/coordination/QA_PLAN.md.
+  - id: SG-008-AC02
+    text: >-
+      Implement SeededRandomSource (Mulberry32) and ScriptedRandomSource conforming to
+      docs/coordination/CONTRACTS.md.
+  - id: SG-008-AC03
+    text: >-
+      Verify all fixtures pass structure and constraint verification (Manhattan contiguity,
+      coordinate range, score consistency, tick formula).
+  - id: SG-008-AC04
+    text: >-
+      Ensure E2E smoke tests and vitest fixtures verify successfully using local npm CLI.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+claim: "CLAIM: antigravity / gemini-3.5-flash-high / test-engineering-sg-008 / 2026-07-18T20:35:19Z"
+claimed_at: "2026-07-19"
+status_history:
+  - status: ready
+    at: "2026-07-19"
+    by: human-user
+    basis: "Direct human approval of implementation plan in chat session"
+  - status: in_progress
+    at: "2026-07-19"
+    by: antigravity
+    basis: "Claimed and started execution phase"
+  - status: review
+    at: "2026-07-19"
+    by: antigravity
+    basis: "Remediated review findings for EPERM, FX_PLAY_R, and dynamic SHA filenames"
+  - status: verified
+    at: "2026-07-19T08:26:15Z"
+    by: codex-reviewer
+    basis: >-
+      Codex reviewed final head c857f2bc08bf84ab4e12e7222664e46cb8686d4f and found
+      no blocking findings. The earlier EPERM artifact path, FX_PLAY_R pre-tick
+      state, stale SHA metadata, and Playwright outputDir/reproduction-order issues
+      were resolved. The final SG-008 implementation head passed format, lint,
+      typecheck, 57/57 unit tests, build, git diff --check, and Chromium E2E 1/1
+      with local-server permission; the latest-main completion merge also passed
+      format, lint, typecheck, 68/68 unit tests, build, git diff --check, and
+      Chromium E2E 1/1.
+  - status: merged
+    at: "2026-07-19T08:26:15Z"
+    by: codex-integrator
+    basis: >-
+      The verified SG-008 fixture/evidence foundation branch was merged without
+      conflict onto latest local main, which already contained SG-007, as
+      522fcb7ebb3460b5dce858cc23bae825866e9681. No remote push or deployment was
+      performed.
+handoff: docs/coordination/handoffs/SG-008.md

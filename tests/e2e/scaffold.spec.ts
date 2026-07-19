@@ -1,33 +1,19 @@
 import { expect, test } from '@playwright/test';
 
 import { normalizeBasePath, previewOrigin } from '../../tooling.config.ts';
+import { setupPageListeners } from '../helpers/e2e-helpers.ts';
 
 test('boots the production entry without browser or asset failures', async ({ page }) => {
   const browserFailures: string[] = [];
   const localResponsePaths: string[] = [];
 
-  page.on('console', (message) => {
-    if (message.type() === 'error') {
-      browserFailures.push(`console: ${message.text()}`);
-    }
-  });
-  page.on('pageerror', (error) => {
-    browserFailures.push(`pageerror: ${error.message}`);
-  });
-  page.on('requestfailed', (request) => {
-    browserFailures.push(
-      `requestfailed: ${request.method()} ${request.url()} ${request.failure()?.errorText ?? ''}`,
-    );
-  });
+  setupPageListeners(page, browserFailures);
+
   page.on('response', (response) => {
     const responseUrl = new URL(response.url());
 
     if (responseUrl.origin === previewOrigin) {
       localResponsePaths.push(responseUrl.pathname);
-    }
-
-    if (response.status() >= 400) {
-      browserFailures.push(`http-${response.status()}: ${response.url()}`);
     }
   });
 
