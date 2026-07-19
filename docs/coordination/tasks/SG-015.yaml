@@ -1,7 +1,7 @@
 id: SG-015
 spec_version: "1.0-plan"
 task_revision: 1
-status: review-ready
+status: merged
 approved_by: human-user
 approved_at: "2026-07-20T03:00:26+09:00"
 approval_gate: direct-human-instruction
@@ -16,7 +16,9 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-014.md
 base_sha: e5d956a4032f1cea7d8f3d00000c074e153435ed
 branch: qa-review-sg-015
-head_sha: a5d2d2fa4b94fe27b9767b68a6a6423b6027654f
+head_sha: 197f42d7c7c14fde71ce135cfbf59c7adc44fc41
+integration_commit: d0388e90472e56c0eb807b6cb14761f25626824e
+integrated_at: "2026-07-19T18:57:01Z"
 allowed_paths:
   - tests/e2e/**
   - docs/coordination/tasks/SG-015.yaml
@@ -50,6 +52,7 @@ required_commands:
 claim: "CLAIM: antigravity / Gemini 3.5 Flash (High) / qa-review-sg-015 / 2026-07-20T03:00:26+09:00"
 claimed_at: "2026-07-20T03:00:26+09:00"
 submitted_at: "2026-07-20T03:06:40+09:00"
+verified_at: "2026-07-19T18:57:01Z"
 handoff: docs/coordination/handoffs/SG-015.md
 findings:
   - id: DF-SG015-01
