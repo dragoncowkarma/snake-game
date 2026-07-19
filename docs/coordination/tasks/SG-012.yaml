@@ -1,7 +1,7 @@
 id: SG-012
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: Codex integrator
 approved_at: "2026-07-19T00:00:00Z"
 approval_gate: direct-human-instruction
@@ -24,6 +24,9 @@ predecessor_evidence:
 base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
 branch: agent/codex/SG-012-phaser-integration
 head_sha: 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3
+integration_base_sha: ef76675a2ea6f0aaad16e3c5d0814ab4645c68d7
+integration_commit: 05cddcd3dbfea9eab6d8319911900580474630b4
+integrated_at: "2026-07-19T11:23:56Z"
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -281,3 +284,12 @@ status_history:
       independently. SG-012-AC04 and the remaining acceptance criteria are
       satisfied; no blocking findings remain. Local push/PR/deploy/merge
       decisions are left to the Codex integrator.
+  - status: merged
+    at: "2026-07-19T11:23:56Z"
+    by: Codex integrator
+    basis: >-
+      Final reviewed head 3393cb765deaafdc6bdbdf0f6d2d99b0a667e1b3 and its
+      round-3 APPROVE record were merged on top of
+      ef76675a2ea6f0aaad16e3c5d0814ab4645c68d7 as integration commit
+      05cddcd3dbfea9eab6d8319911900580474630b4. SG-014 preflight confirmed the
+      implementation head, review record, and merge commit are main ancestors.
