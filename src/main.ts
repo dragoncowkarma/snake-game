@@ -1,16 +1,15 @@
+import type { RandomSource } from './domain/index.ts';
+
+import './styles.css';
+
 export const APP_TITLE = 'Snake Game';
 export const APP_BOOT_STATUS = 'Project scaffold ready';
 
-export function mountApp(root: HTMLElement): void {
-  const document = root.ownerDocument;
-  const heading = document.createElement('h1');
-  const status = document.createElement('p');
+/** Defers WebGL-only Phaser imports until the actual browser entry point runs. */
+export async function mountApp(root: HTMLElement, randomSource?: RandomSource): Promise<void> {
+  const { mountPhaserGame } = await import('./game/bootstrap.ts');
 
-  heading.textContent = APP_TITLE;
-  status.textContent = APP_BOOT_STATUS;
-
-  root.replaceChildren(heading, status);
-  root.dataset['appState'] = 'ready';
+  mountPhaserGame(root, randomSource);
 }
 
 export function findAppRoot(document: Document): HTMLElement {
@@ -24,5 +23,5 @@ export function findAppRoot(document: Document): HTMLElement {
 }
 
 if (typeof document !== 'undefined') {
-  mountApp(findAppRoot(document));
+  void mountApp(findAppRoot(document));
 }
