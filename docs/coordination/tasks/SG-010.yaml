@@ -1,7 +1,7 @@
 id: SG-010
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 source_of_truth: offline
 offline_checked_at: "2026-07-19T08:31:05Z"
 offline_reason: >-
@@ -60,6 +60,44 @@ base_scope: human-selected-local-main
 branch: agent/codex/SG-010-simulation
 head_sha: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
 review_requested_at: "2026-07-19T08:47:20Z"
+verified_at: "2026-07-19T09:02:51Z"
+verified_by: independent-review-provided-by-human-user
+independent_review:
+  result: APPROVE
+  reviewed_head: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
+  platform_evidence: >-
+    The human supplied a complete independent adversarial review in chat against
+    the implementation head named by this packet. The review text does not state
+    the exact reviewer platform/model/runtime identity beyond Node 22.18.0, so no
+    Claude model identity or setting equivalence is fabricated.
+  environment: Node 22.18.0
+  command_evidence: >-
+    The reviewer independently reran format, lint, typecheck, build, 69/69 Vitest,
+    Chromium E2E 1/1, the forbidden-import scan, scope diff, and git diff --check;
+    every command passed and the review worktree was clean.
+  adversarial_probe: >-
+    A temporary probe, deleted after execution, ran 60 greedy games with 1,780 food
+    events, maximum length 58, and normal tickMs minimum 90 while checking cell
+    uniqueness, score, length, food non-overlap, and speed invariants on every tick.
+    A separate 300 randomized-game probe found zero multi-event termination, zero
+    collision-tick RNG consumption, and correct terminal no-op behavior.
+  limitations: >-
+    Independent commands used Node 22.18.0 rather than required Node 24. The
+    implementation record already supplies clean Node 24.14.0 evidence on the same
+    implementation SHA, so this environment deviation does not leave a verification
+    gap.
+  non_blocking_findings:
+    - >-
+      The submitted 100-tick replay consumes RNG only for initial reset and eats no
+      food, so that single replay does not exercise post-growth RNG determinism.
+      Food/spawn/won determinism is covered by focused SG-010 tests and the independent
+      long-play probe. Strengthen a future SG-011 independent test with at least one
+      foodEaten event and more than one RNG upper-bound call; do not change the reviewed
+      SG-010 implementation head solely for this non-blocking coverage improvement.
+    - >-
+      foodEaten.cell shares the new head object while gameEnded defensively copies its
+      cells. All public types are readonly and the reviewer found no mutation defect,
+      so this is a consistency nit only and requires no SG-010 change.
 claim: "CLAIM: codex / current GPT-5 runtime; setting not exposed / agent/codex/SG-010-simulation / 2026-07-19T08:31:05Z"
 claimed_at: "2026-07-19T08:31:05Z"
 status_history:
@@ -83,6 +121,15 @@ status_history:
       tests, production build, Chromium smoke 1/1, forbidden import/global scan,
       scope audit, and diff checks. Awaiting designated independent Claude review;
       this implementation session does not mark the task verified or merged.
+  - status: verified
+    at: "2026-07-19T09:02:51Z"
+    by: codex-integrator
+    basis: >-
+      The human supplied an independent APPROVE review for implementation head
+      03f99aa0d7e9d8864fcba513608292f262f3c7e8. All required commands passed
+      independently and temporary greedy/random adversarial probes found zero
+      correctness defects. The one replay-coverage recommendation is non-blocking,
+      is preserved for SG-011, and does not justify changing the reviewed head.
 allowed_paths:
   - src/domain/**
   - docs/coordination/tasks/SG-010.yaml
