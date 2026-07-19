@@ -1,7 +1,7 @@
 id: SG-007
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 source_of_truth: offline
 offline_checked_at: "2026-07-19T07:49:31Z"
 offline_reason: >-
@@ -57,6 +57,40 @@ base_scope: local_and_remote_main
 branch: agent/codex/SG-007-domain-foundation
 head_sha: 1d8d936b0316fe15f3785e73ba605f049cca3660
 review_requested_at: "2026-07-19T08:00:13Z"
+verified_at: "2026-07-19T08:12:29Z"
+verified_by: independent-review-provided-by-human-user
+independent_review:
+  result: APPROVE
+  reviewed_head: 192fd31dddc3e7629a222d921de5bd6901dbaa82
+  platform_evidence: >-
+    A Claude review worktree named claude/sg-007-review-1773f0 exists at the
+    reviewed head, and the human supplied the complete independent review result in
+    chat. The exact reviewer model/runtime was not stated, so no model identity or
+    equivalence is fabricated.
+  environment: Node 22.18.0
+  evidence: >-
+    The reviewer independently reran npm ci, format, lint, typecheck, 40/40 unit
+    tests, and build; compared all nine changed paths to the allowlist; found zero
+    forbidden imports/globals, whitespace errors, or package/lockfile changes;
+    mechanically compared the public type and policy source with CONTRACTS.md; and
+    ran a temporary exhaustive property test over all 397 free-cell indexes plus
+    invalid RNG values and deep freshness/config-reference isolation. The temporary
+    test was removed and the review worktree was reported clean.
+  limitations: >-
+    Review commands ran on Node 22.18.0 rather than required Node 24, and the reviewer
+    did not rerun test:e2e because the new domain is not imported by the application.
+    The implementation record supplies clean Node 24.14.0 evidence and Chromium E2E
+    1/1 on the same product implementation.
+  non_blocking_findings:
+    - >-
+      food-spawner.ts uses a statically unreachable `?? null` after validating the
+      selected index. Because null means full-board/won to SG-010, replace that dead
+      fallback with an explicit invariant failure when SG-010 builds on this helper.
+    - >-
+      src/ui/contracts.ts still says src/domain does not exist. This path was
+      correctly forbidden for SG-007; a future UI/integration packet should delete
+      the mirror and import the domain types. Mechanical comparison found zero
+      current semantic drift across the ten shared types.
 claim: "CLAIM: codex / gpt-5 high / agent/codex/SG-007-domain-foundation / 2026-07-19T07:49:31Z"
 claimed_at: "2026-07-19T07:49:31Z"
 status_history:
@@ -80,6 +114,16 @@ status_history:
       Chromium production smoke 1/1, import-boundary scan, scope audit, and diff
       checks. Awaiting the designated independent Claude review; not verified or
       merged by this implementation session.
+  - status: verified
+    at: "2026-07-19T08:12:29Z"
+    by: codex-integrator
+    basis: >-
+      The human supplied an independent APPROVE review against reviewed head
+      192fd31dddc3e7629a222d921de5bd6901dbaa82. Independent commands and exhaustive
+      397-index property checks found no contract violation or blocking defect.
+      Reviewer Node 22/no-E2E limitations are covered by the implementation record's
+      clean Node 24.14.0 and Chromium E2E evidence. Two findings are non-blocking and
+      preserved for SG-010/UI integration; no reviewed product code was changed.
 allowed_paths:
   - src/domain/**
   - src/config/**
