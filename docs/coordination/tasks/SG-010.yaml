@@ -61,15 +61,19 @@ branch: agent/codex/SG-010-simulation
 head_sha: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
 review_requested_at: "2026-07-19T08:47:20Z"
 verified_at: "2026-07-19T09:02:51Z"
-verified_by: independent-review-provided-by-human-user
+verified_by: claude-opus-4.8-review-relayed-by-human-user
 independent_review:
   result: APPROVE
   reviewed_head: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
   platform_evidence: >-
-    The human supplied a complete independent adversarial review in chat against
-    the implementation head named by this packet. The review text does not state
-    the exact reviewer platform/model/runtime identity beyond Node 22.18.0, so no
-    Claude model identity or setting equivalence is fabricated.
+    The human subsequently attested that the independent adversarial review was
+    performed by the packet-designated Claude Opus 4.8 session and relayed through
+    the human in chat. This Codex session cannot independently authenticate that
+    session identity or confirm its reasoning-setting label, so the reviewer model
+    is recorded as human-attested and no setting equivalence is claimed.
+  reviewer_platform: claude
+  reviewer_model: opus-4.8
+  reviewer_identity_basis: human-attested; not independently authenticated by codex
   environment: Node 22.18.0
   command_evidence: >-
     The reviewer independently reran format, lint, typecheck, build, 69/69 Vitest,
