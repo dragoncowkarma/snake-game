@@ -1,7 +1,7 @@
 id: SG-010
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 source_of_truth: offline
 offline_checked_at: "2026-07-19T08:31:05Z"
 offline_reason: >-
@@ -58,6 +58,8 @@ dependency_evidence:
 base_sha: a9267a79cc755d049838d158cca31bad87f71528
 base_scope: human-selected-local-main
 branch: agent/codex/SG-010-simulation
+head_sha: 03f99aa0d7e9d8864fcba513608292f262f3c7e8
+review_requested_at: "2026-07-19T08:47:20Z"
 claim: "CLAIM: codex / current GPT-5 runtime; setting not exposed / agent/codex/SG-010-simulation / 2026-07-19T08:31:05Z"
 claimed_at: "2026-07-19T08:31:05Z"
 status_history:
@@ -72,6 +74,15 @@ status_history:
     by: codex
     basis: >-
       Atomic claim on the dedicated SG-010 branch before product-source edits.
+  - status: review
+    at: "2026-07-19T08:47:20Z"
+    by: codex
+    basis: >-
+      Implementation 03f99aa0d7e9d8864fcba513608292f262f3c7e8 passed
+      Node 24 clean-install-backed format, lint, strict typecheck, 69/69 unit
+      tests, production build, Chromium smoke 1/1, forbidden import/global scan,
+      scope audit, and diff checks. Awaiting designated independent Claude review;
+      this implementation session does not mark the task verified or merged.
 allowed_paths:
   - src/domain/**
   - docs/coordination/tasks/SG-010.yaml
