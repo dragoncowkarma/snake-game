@@ -35,6 +35,17 @@ head_sha: 995e6469171508e7d99a68102f8d76404625a473
 integration_base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
 integration_commit: 7422812f737bb62ddd458a025a1bfd203f5c5120
 integrated_at: "2026-07-19T16:34:15Z"
+completion_merge_commit: bcd9d08d5f8818c9d8a3199d9168031b83d7c341
+final_local_main_verified_at: "2026-07-19T16:40:17Z"
+final_local_main_validation: >-
+  A separate detached clean checkout of local main
+  bcd9d08d5f8818c9d8a3199d9168031b83d7c341 passed Codex bundled Node 24.14.0
+  npm ci, npm run verify (format, lint, typecheck, 121/121 unit, 97.59%
+  statements and 96.61% branches, build, Chromium 2/2), and
+  PLAYWRIGHT_BASE_PATH=snake-game npm run test:e2e (Chromium 2/2). Final
+  base-to-main scope, whitespace, packet, review ancestry, and generated-artifact
+  audits passed. The closeout commit after this verification changes only this
+  packet, the handoff, and STATUS to persist the already-observed result.
 allowed_paths:
   - src/game/**
   - src/main.ts
