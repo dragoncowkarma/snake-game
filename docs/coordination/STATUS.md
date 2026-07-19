@@ -1,6 +1,6 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-19T10:30:14Z
+- 마지막 동기화: 2026-07-19T10:37:48Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축·Wave 2 도메인 코어 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
@@ -8,7 +8,7 @@
 - 현재 활성 작업: 없음
 - 현재 검증 대기: 없음
 - 현재 결정 필요: 없음 — SG-013 packet 작성 전 필요했던 SG-006 범위 정합화는 사람 직접 승인으로 해소했다(§SG-013 기록, `docs/TASKS.md` SG-013 행).
-- 다음 작업 후보: SG-009, SG-011, SG-012. 각각 최신 `main` 기준의 versioned GitHub Issue 또는 승인된 offline packet과 claim이 필요하다.
+- 다음 작업 후보: SG-011, SG-012. 각각 최신 `main` 기준의 versioned GitHub Issue 또는 승인된 offline packet과 claim이 필요하다.
 
 ## H0b 종료 기록
 
@@ -23,6 +23,7 @@
 - SG-006: accessible DOM shell implementation SHA `e146c47`과 verification record `56521b760b5aebac0d850a0b32922fc0d71b5c8b`는 지정 Antigravity 리뷰와 Codex 통합 재검증(format, lint, typecheck, 29/29 unit, build, Chromium E2E 1/1)을 통과했다. local integration merge `42d91eeb4221b38ea2c49c06320da57a838cb060`으로 `main`에 통합됐고 원격 push·공개 배포는 수행하지 않았다. 당시 선행 구현한 SG-013의 focus/aria-live/Command-routing 경계는 SG-013 축소 범위 packet과 `docs/TASKS.md` 행에서 정합화를 완료했다.
 - SG-007: deterministic domain foundation implementation SHA `1d8d936b0316fe15f3785e73ba605f049cca3660`은 승인된 타입/정책, 단일 설정, injected RNG, menu/ready reset, row-major free-cell 선택을 구현했다. 독립 APPROVE 리뷰가 397개 index 전수 property 검증과 계약 대조를 통과시켰고, Codex 통합 재검증(Node 24 format, lint, typecheck, 40/40 unit, build, Chromium E2E 1/1) 뒤 local merge `a66716c4e7f12f45dba4cb5ed4b836d4cf783af5`로 `main`에 통합됐다. 원격 push·배포는 수행하지 않았다. 당시 남긴 `food-spawner.ts` invariant와 enqueue/step 후속은 SG-010이 완료했으며, UI/통합 packet은 `src/ui/contracts.ts` mirror를 실제 domain import로 교체해야 한다.
 - SG-008: fixture/evidence foundation implementation SHA `c857f2bc08bf84ab4e12e7222664e46cb8686d4f`는 24개 fixture, EV-FAIL-01 schema, Mulberry32 seeded RNG, scripted RNG, E2E listener helper를 추가했다. Codex 리뷰에서 이전 EPERM artifact path, FX_PLAY_R 상태, stale SHA metadata, Playwright outputDir 재현 절차 문제가 모두 해소됐음을 확인했다. SG-008 구현 head는 57/57 unit tests와 필수 검증을 통과했고, 최신 `main`(SG-007 포함) 위 local integration merge `522fcb7ebb3460b5dce858cc23bae825866e9681`도 format, lint, typecheck, 68/68 unit, build, 25 schema generation, Chromium E2E 1/1, diff check를 통과했다. 원격 push·공개 배포는 수행하지 않았다.
+- SG-009: private Pages-preview artifact implementation SHA `331a9545a1634ca5b80594a2fba6e6290b7df25e`는 PR quality의 top-level `contents: read`를 유지하며 repository-derived Vite base build·preview 뒤 `dist`만 `actions/upload-artifact@v4.6.2` full-SHA pin으로 업로드한다. 지정 Antigravity 독립 리뷰 commit `b9fe277aeeefe0593fb70dc0c4d5e7408da51399`은 Node 24 clean install, 97/97 unit, Chromium base-path preview, action pin과 generated artifact 비추적을 PASS로 검증했다. Codex는 local integration merge `7f65009018ee1fbb478ed478c64ce33f55e6c72a`를 완료했고 원격 push·Pages API·공개 배포는 수행하지 않았다.
 - SG-010: deterministic simulation implementation SHA `03f99aa0d7e9d8864fcba513608292f262f3c7e8`은 READY Right 예외와 2칸 queue, 마지막 예약 방향 검증, 한 tick 1~10 순서, 비성장 tail 예외, 충돌 event, 성장·점수·속도, free-cell 음식과 만석 승리를 순수 TypeScript로 구현했다. 사람을 거쳐 전달된 지정 Claude Opus 4.8 독립 리뷰는 계약 대조와 greedy 60판/1,780 food 및 random 300판 probe에서 정확성 결함 0건으로 APPROVE했다. SG-008 포함 최신 local `main` 위 integration merge `d114bf81a706c5c7af932144d22cdaa2436bf24f`는 Node 24 format, lint, typecheck, 97/97 unit, build, Chromium E2E 1/1, domain import/scope/diff 검사를 통과했다. 제출 100틱 replay가 성장 후 RNG를 실행하지 않는 비차단 보강점은 SG-011에 이관하며 원격 push·배포는 수행하지 않았다.
 - SG-013: 사람이 직접 승인한 축소 범위에서 `src/ui/contracts.ts`의 수동 타입 미러를 실제 `src/domain/index.ts` type-only re-export로 교체하고, 실제 `reset`/`enqueueDirection`/`step` 산출물로 focus 전이와 aria-live 증거를 보강했다. 구현 SHA `3a443185e8f4775fc27032f6ae6638abf8fb3fc7`과 검증 기록 `664cd480739a671d7cc371f964691fe3391f3972`는 지정 Antigravity 독립 리뷰를 통과했다. Codex는 local `main` `cf811f293918a4b7eed38b5cb44c3673950959cb` 위 integration merge `8391960c9fd01315db55053bf7c1d12459f6c702`에서 Node 24 format, lint, typecheck, 101/101 unit, build, Chromium E2E 1/1, scope와 whitespace 검사를 통과시켰다. E2E는 별도 SG-012 preview가 4173을 점유해 uncommitted 4174 치환으로 실행한 뒤 설정을 원복했고 최종 diff는 0이다. 원격 push·공개 배포는 수행하지 않았다. `src/ui/contracts.ts`의 최종 삭제는 3개 `tests/**`와 5개 `src/ui/**` consumer를 함께 바꾸는 후속 cross-owner 정리다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
@@ -47,14 +48,14 @@ Wave 0 closeout의 루트 명령 부재는 SG-005가 해소했다. 현재 local 
 
 ## 다음 관문
 
-SG-005~SG-008, SG-010, SG-013은 merged다. SG-009, SG-011, SG-012는 새 packet에 최신 base SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담고 claim한 뒤에만 `ready`가 된다. SG-011은 SG-010 독립 리뷰가 남긴 음식 섭취 포함 replay(`foodEaten >= 1`, RNG upper-bound calls `> 1`) 보강을 포함한다. SG-013 후속 shim 삭제는 cross-owner 정리 또는 SG-014 통합 범위에서 처리하며 현재 완료를 막지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
+SG-005~SG-010, SG-013은 merged다. SG-011과 SG-012는 새 packet에 최신 `main` SHA와 허용/금지 경로, 수용 기준, 실제 검증 명령을 담고 claim한 뒤에만 `ready`가 된다. SG-011은 SG-010 독립 리뷰가 남긴 음식 섭취 포함 replay(`foodEaten >= 1`, RNG upper-bound calls `> 1`) 보강을 포함한다. SG-013 후속 shim 삭제는 cross-owner 정리 또는 SG-014 통합 범위에서 처리하며 현재 완료를 막지 않는다. 공개 배포 권한은 H3a까지 닫혀 있다.
 
 ## 작업 스냅샷
 
 | Wave | 상태 | 비고 |
 |---|---|---|
 | 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
-| 1. 기반 구축 | in_progress | SG-005·SG-006·SG-007·SG-008 merged; SG-009 packet 준비 대기 |
+| 1. 기반 구축 | complete | SG-005·SG-006·SG-007·SG-008·SG-009 merged; private artifact 경로는 준비됐고 공개 배포는 H3a까지 금지 |
 | 2. 수직 슬라이스 | in_progress | SG-010 순수 simulation·SG-013 축소 UI 연동 merged; SG-011/012 packet 준비 대기 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
