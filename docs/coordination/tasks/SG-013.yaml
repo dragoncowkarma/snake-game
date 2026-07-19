@@ -1,0 +1,270 @@
+id: SG-013
+spec_version: "1.0-plan"
+task_revision: 1
+status: merged
+source_of_truth: offline
+offline_checked_at: "2026-07-19T10:30:14Z"
+offline_reason: >-
+  A fresh read-only fetch and GitHub CLI check found zero open Issues and zero open
+  pull requests. Remote main remains 0fae00a65d662592b28f5daf59edcfc21584ac65,
+  while local main is cf811f293918a4b7eed38b5cb44c3673950959cb. No SG-013
+  GitHub source exists, so this packet remains the only SG-013 source of truth.
+approval_gate: direct-human-instruction
+approval_basis: >-
+  STATUS.md recorded an explicit block: "SG-013은 SG-006과의 범위 정합화가 끝나기 전
+  packet화하지 않는다" (do not packetize SG-013 before its scope overlap with SG-006 is
+  reconciled), and "현재 결정 필요: SG-013 packet 작성 전 SG-006에서 선행 구현한
+  focus/aria-live/Command-routing 범위를 TASKS.md와 DECISIONS.md에 정합화." No
+  docs/coordination/tasks/SG-013.yaml or GitHub Issue existed prior to this file, and
+  the initiating prompt's approval fields were unfilled template placeholders. Per
+  AGENTS.md section 3, the assigned Claude session paused before any implementation
+  and asked the human directly in chat (AskUserQuestion) rather than fabricating
+  approval or silently proceeding, offering: (a) direct approval of a reduced SG-013
+  scope that treats SG-006's already-shipped DOM shell/focus/aria-live/Command-routing
+  as satisfying TASKS.md's original SG-013 description, redefining remaining SG-013
+  work as wiring that shell to the real src/domain (SG-007/SG-010, merged) and closing
+  the real-gameplay evidence gap SG-006's handoff explicitly left open; (b) a
+  docs-only reconciliation packet with no code change; (c) stopping entirely to wait
+  for the Codex coordination lead. The human selected (a) ("축소 범위로 직접 승인").
+  This also authorizes, as a one-time exception mirroring SG-006's
+  tests/e2e/scaffold.spec.ts precedent, editing docs/TASKS.md's SG-013 row and
+  docs/coordination/STATUS.md (both normally outside a `src/ui/**`/`src/styles.css`
+  implementation packet's allowed paths and not solely Claude-owned) to record this
+  scope reconciliation, since STATUS.md itself named that reconciliation as the
+  blocking precondition and it is not achievable without touching those files.
+approved_by: human-user (direct chat instruction, in-session, via AskUserQuestion)
+approved_at: "2026-07-19"
+approved_at_note: >-
+  Date only; this environment does not expose a verifiable wall-clock time, so no
+  fabricated ISO time-of-day is recorded. Date matches the session's system-provided
+  current date.
+reconciliation_note: >-
+  docs/TASKS.md's SG-013 row and docs/coordination/STATUS.md were updated in this same
+  packet (see allowed_paths exception above) to state that SG-006 pre-implemented the
+  DOM-shell/focus/aria-live/Command-routing behavior TASKS.md originally described for
+  SG-013, and that this SG-013 revision's actual scope is real-domain wiring plus
+  closing SG-006's flagged real-gameplay evidence gap. docs/coordination/DECISIONS.md
+  was deliberately left unmodified: no new product meaning, public contract, or ADR-
+  level decision is introduced (the same "no new ADR needed" reasoning SG-003 revision
+  2 used), so this is recorded as an operational STATUS.md/TASKS.md note rather than a
+  new D-00N entry.
+priority: P1
+owner: claude
+model: claude-sonnet-5
+reasoning_or_workload: high
+reviewer: antigravity (gemini-3.1-pro-high per docs/TASKS.md)
+depends_on:
+  - SG-006
+  - SG-010
+dependency_evidence:
+  SG-006: >-
+    Merged via local integration commit 42d91eeb4221b38ea2c49c06320da57a838cb060
+    (docs/coordination/tasks/SG-006.yaml status: merged). Shipped src/ui/{app,state,
+    render,main}.ts and src/styles.css: the full menu/ready/playing/paused/gameOver/
+    won DOM shell, focus-transition manager, keydown-to-Command translator, and
+    aria-live announcer, driven only by hand-authored GameState/DomainEvent fixtures
+    because src/domain/** did not exist yet.
+  SG-010: >-
+    Merged via local integration commit d114bf81a706c5c7af932144d22cdaa2436bf24f
+    (docs/coordination/STATUS.md). src/domain/{reset,snake-simulation,food-spawner,
+    command-policy,types,index}.ts now implement docs/coordination/CONTRACTS.md
+    section 1's exact public shape (reset/enqueueDirection/step), making it possible
+    for src/ui/** to import the real module and drive SG-006's shell with real
+    domain-produced snapshots and events instead of fixtures.
+base_sha: cf811f293918a4b7eed38b5cb44c3673950959cb
+base_scope: local_main
+branch: claude/sg-013-ui-implementation-bd0257
+head_sha: 3a443185e8f4775fc27032f6ae6638abf8fb3fc7
+verification_record_sha: 664cd480739a671d7cc371f964691fe3391f3972
+verified_at: "2026-07-19"
+verified_by: antigravity
+merged_at: "2026-07-19T10:30:14Z"
+merge_commit: 8391960c9fd01315db55053bf7c1d12459f6c702
+integration_base: cf811f293918a4b7eed38b5cb44c3673950959cb
+integration_validation: >-
+  The independently verified SG-013 branch was merged without conflict onto local
+  main cf811f293918a4b7eed38b5cb44c3673950959cb as integration commit
+  8391960c9fd01315db55053bf7c1d12459f6c702. On bundled Node 24.14.0, Codex reran
+  format, lint, strict typecheck, 101/101 unit tests across six files, production
+  build, and Chromium E2E 1/1. The configured E2E port 4173 was occupied by a clean
+  SG-012 review preview, so the passing E2E rerun used a temporary uncommitted 4174
+  port substitution; tooling.config.ts was immediately restored and has zero final
+  diff. Scope and whitespace checks passed. No remote push or deployment occurred.
+claim: "CLAIM: claude / sonnet-5 high / claude/sg-013-ui-implementation-bd0257 / 2026-07-19"
+claimed_at: "2026-07-19"
+status_history:
+  - status: blocked
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      No SG-013.yaml/handoff existed; STATUS.md explicitly forbade packetizing SG-013
+      before SG-006/SG-013 scope reconciliation. Per AGENTS.md section 3 and the
+      initiating prompt's own escalation rule, the session stopped before writing any
+      code and asked the human directly (AskUserQuestion) instead of fabricating
+      approval fields or proceeding on an unresolved blocking decision.
+  - status: in_progress
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      Human selected "축소 범위로 직접 승인" (direct approval of the reduced scope
+      described in approval_basis) in-session.
+  - status: review
+    at: "2026-07-19"
+    by: claude
+    basis: >-
+      Implementation passed format:check, lint, typecheck, 101/101 unit tests (97
+      pre-existing + 4 new real-domain-driven), build, and the unchanged Playwright
+      production smoke (1/1). Manual real-domain-driven browser QA at the dev server
+      (§handoff reproduction procedure) confirmed the shell's focus transitions,
+      aria-live announcements, and HUD updates react correctly to actual reset()/
+      enqueueDirection()/step() output, not hand-authored fixtures, closing the gap
+      SG-006's handoff left open. Awaiting the designated non-Claude reviewer
+      (Antigravity) or human verification before advancing to verified/merged; this
+      session does not self-approve past review.
+  - status: verified
+    at: "2026-07-19"
+    by: antigravity
+    basis: >-
+      Verification suite (format, lint, typecheck, test, build, e2e) passed
+      successfully. The DOM shell correctly uses the domain type re-exports and
+      interfaces with the domain state. Approved for integration.
+  - status: merged
+    at: "2026-07-19T10:30:14Z"
+    by: codex-integrator
+    basis: >-
+      The verified SG-013 branch was merged without conflict onto local main
+      cf811f293918a4b7eed38b5cb44c3673950959cb as
+      8391960c9fd01315db55053bf7c1d12459f6c702. The integration result passed Node
+      24 format, lint, typecheck, 101/101 unit tests, build, Chromium E2E 1/1, scope,
+      and whitespace checks. The E2E rerun used temporary port 4174 because a clean
+      SG-012 review preview occupied configured port 4173; the port substitution was
+      reverted with zero final diff. No remote push or deployment was performed.
+allowed_paths:
+  - src/ui/**
+  - src/styles.css
+  - docs/TASKS.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-013.yaml
+  - docs/coordination/handoffs/SG-013.md
+allowed_paths_note: >-
+  docs/TASKS.md and docs/coordination/STATUS.md are outside a normal SG-013
+  implementation packet's allowed paths (TASKS.md's SG-013 row lists only
+  `src/ui/**`, `src/styles.css`) and are not solely Claude-owned per AGENTS.md
+  section 5. They are included here only under the one-time exception recorded in
+  approval_basis/reconciliation_note, scoped strictly to the SG-006/SG-013 boundary
+  note; no other content in either file was changed.
+forbidden_paths:
+  - README.md
+  - LICENSE
+  - AGENTS.md
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/QA_PLAN.md
+  - docs/coordination/tasks/SG-001.yaml
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/tasks/SG-005.yaml
+  - docs/coordination/tasks/SG-006.yaml
+  - docs/coordination/tasks/SG-007.yaml
+  - docs/coordination/tasks/SG-008.yaml
+  - docs/coordination/tasks/SG-010.yaml
+  - docs/coordination/handoffs/SG-001.md
+  - docs/coordination/handoffs/SG-002.md
+  - docs/coordination/handoffs/SG-003.md
+  - docs/coordination/handoffs/SG-004.md
+  - docs/coordination/handoffs/SG-005.md
+  - docs/coordination/handoffs/SG-006.md
+  - docs/coordination/handoffs/SG-007.md
+  - docs/coordination/handoffs/SG-008.md
+  - docs/coordination/handoffs/SG-010.md
+  - spikes/**
+  - src/main.ts
+  - src/main.test.ts
+  - src/domain/**
+  - src/game/**
+  - src/config/**
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - tooling.config.ts
+  - eslint.config.js
+  - .prettierrc.json
+  - .prettierignore
+  - .nvmrc
+  - .gitignore
+  - playwright.config.ts
+  - dist/**
+  - node_modules/**
+  - coverage/**
+  - playwright-report/**
+  - test-results/**
+  - all paths not explicitly listed in allowed_paths
+scope_boundary: >-
+  Game rules, Phaser Scene code, domain state transitions, and the application
+  command router (which CONTRACTS.md §4/§7 places between input adapters and the
+  domain, and which AGENTS.md file ownership assigns to src/game/**/src/main.ts,
+  Codex-owned) are out of scope and are not implemented here. src/ui/main.ts's
+  `dispatchStub` is intentionally left as a console-logging stub, unchanged from
+  SG-006 — wiring a real command router is SG-012/SG-014. This revision only (1)
+  replaces src/ui/contracts.ts's hand-maintained type mirror with a type-only
+  re-export of the real src/domain/index.ts (SG-007/SG-010), and (2) adds
+  src/ui/state.domain-integration.test.ts plus a manual browser reproduction that
+  drive SG-006's existing state.ts/app.ts/render.ts with snapshots and events
+  produced by the real reset()/enqueueDirection()/step() functions, closing the
+  gap SG-006's handoff flagged ("실제 게임플레이로 focus/aria-live/Command 라우팅을
+  구동한 종단 증거"). No behavior in app.ts, state.ts, or render.ts was changed;
+  only their import source for public types moved from the mirror to the re-export.
+acceptance_ids:
+  - id: SG-013-AC01
+    maps_to: [AC-U06, AC-U07]
+    text: >-
+      state.ts's focusTargetForTransition and announcementFor, already unit-tested
+      against hand-authored GameState/DomainEvent literals in SG-006, additionally
+      produce the contractually correct focus target and announcement text when fed
+      states/events produced by the real domain reset()/enqueueDirection()/step()
+      across a ready->playing start, a movement-only tick, a foodEaten tick, and an
+      11-tick wall-collision sequence into gameOver (including the terminal-phase
+      no-re-announce case).
+  - id: SG-013-AC02
+    maps_to: [AC-U06, AC-U07]
+    text: >-
+      In a real browser (Chromium, dev server, not jsdom), SG-006's actual DOM shell
+      (createGameShell from src/ui/app.ts), driven by the same real domain output as
+      SG-013-AC01, moves document.activeElement to the board on ready/playing entry
+      and to Restart on gameOver entry, updates the #status aria-live region text
+      exactly at those same real-domain-driven event points, and updates the visible
+      HUD score text from the real domain score — with zero console errors.
+  - id: SG-013-AC03
+    maps_to: ["type-safety boundary (docs/coordination/CONTRACTS.md §9)"]
+    text: >-
+      src/ui/contracts.ts contains no duplicated type declarations; it re-exports
+      exclusively from src/domain/index.ts, so the UI-layer public type shape and the
+      real domain public type shape cannot drift out of sync.
+      tests/fixtures/fixtures.ts, tests/fixtures.test.ts, and
+      tests/helpers/ev-fail-01.ts (Antigravity-owned, outside this packet's allowed
+      paths) continue to resolve and typecheck against this path unmodified.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+  - git diff --name-only cf811f293918a4b7eed38b5cb44c3673950959cb..HEAD
+required_environment:
+  node: 24.x LTS
+  package_manager: npm with committed package-lock.json (unchanged by this packet)
+  browser: Chromium installed by Playwright; a manually started `vite` dev server for
+    the real-domain-driven browser reproduction (no new devDependency added)
+completion_guard: >-
+  Claude may move this task to review only after all scoped checks pass and the
+  handoff records actual exit codes and AC evidence. The designated non-Claude
+  reviewer (Antigravity) or the human must independently verify before this advances
+  to verified/merged; this session does not self-approve past review.
+handoff: docs/coordination/handoffs/SG-013.md

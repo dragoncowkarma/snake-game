@@ -1,56 +1,21 @@
 /**
- * Type-only mirror of docs/coordination/CONTRACTS.md section 1 (SG-003 revision 2,
- * accepted H0b). src/domain/** does not exist yet (SG-007 is not implemented), so
- * this UI layer cannot import the real module. No field, name, or shape here departs
- * from the accepted contract; no runtime logic (reset/enqueueDirection/step) is
- * duplicated. Delete this file and import from the real domain module once SG-007
- * lands.
+ * Re-exports the real src/domain public contract (SG-003 §1, implemented by SG-007/
+ * SG-010) for src/ui/** and tests/** consumers that import from this path. This used
+ * to be a hand-maintained type-only mirror of docs/coordination/CONTRACTS.md written
+ * before src/domain/** existed; SG-013 replaces the duplicated declarations with a
+ * single re-export so the two definitions cannot drift. Kept as a module (rather than
+ * updating every import site to '../domain/index.ts') because tests/fixtures.ts,
+ * tests/fixtures.test.ts, and tests/helpers/ev-fail-01.ts (Antigravity-owned, outside
+ * this task's allowed paths) import this exact path.
  */
-
-export type Phase = 'menu' | 'ready' | 'playing' | 'paused' | 'gameOver' | 'won';
-
-export type Direction = 'up' | 'down' | 'left' | 'right';
-export type Difficulty = 'slow' | 'normal';
-export type EndReason = 'wall' | 'self';
-
-export interface Cell {
-  readonly x: number;
-  readonly y: number;
-}
-
-export type DirectionQueue = readonly [] | readonly [Direction] | readonly [Direction, Direction];
-
-export interface GameState {
-  readonly phase: Phase;
-  readonly snake: readonly [Cell, ...Cell[]];
-  readonly direction: Direction;
-  readonly queuedDirections: DirectionQueue;
-  readonly food: Cell | null;
-  readonly score: number;
-  readonly foodsEaten: number;
-  readonly tickMs: number;
-  readonly difficulty: Difficulty;
-  readonly endReason: EndReason | null;
-}
-
-export type Command =
-  | { readonly type: 'selectDifficulty'; readonly difficulty: Difficulty }
-  | { readonly type: 'start' }
-  | { readonly type: 'direction'; readonly direction: Direction }
-  | { readonly type: 'pause' }
-  | { readonly type: 'resume' }
-  | { readonly type: 'restart' }
-  | { readonly type: 'returnToMenu' }
-  | { readonly type: 'toggleMute' };
-
-export type CommandType = Command['type'];
-
-export type DomainEvent =
-  | { readonly type: 'foodEaten'; readonly cell: Cell; readonly score: number }
-  | {
-      readonly type: 'gameEnded';
-      readonly reason: EndReason;
-      readonly headCell: Cell;
-      readonly attemptedCell: Cell;
-    }
-  | { readonly type: 'gameWon'; readonly score: number };
+export type {
+  Cell,
+  Command,
+  CommandType,
+  Difficulty,
+  Direction,
+  DomainEvent,
+  EndReason,
+  GameState,
+  Phase,
+} from '../domain/index.ts';
