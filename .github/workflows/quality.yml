@@ -56,3 +56,10 @@ jobs:
           PLAYWRIGHT_BASE_PATH: ${{ steps.repository_base.outputs.base_path }}
           PLAYWRIGHT_USE_EXISTING_BUILD: '1'
         run: npm run test:e2e
+
+      - name: Upload private production artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pages-preview
+          path: dist
+          if-no-files-found: error
