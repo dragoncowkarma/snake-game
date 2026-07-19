@@ -28,18 +28,30 @@ export function mountPhaserGame(
   const document = root.ownerDocument;
   const application = new ApplicationRouter(randomSource);
   const shell = createGameShell(root, (command) => application.dispatch(command));
-  const unsubscribeShell = application.subscribe((state, events) => {
-    shell.applySnapshot(state, events);
-  });
   const board = root.querySelector<HTMLElement>('#board');
 
   if (board === null) {
-    unsubscribeShell();
     shell.destroy();
     throw new Error('The game shell did not create its #board focus target');
   }
 
-  const game = new Phaser.Game({
+  let game: Phaser.Game | null = null;
+  let boardWasHidden = true;
+  const unsubscribeShell = application.subscribe((state, events) => {
+    shell.applySnapshot(state, events);
+
+    const boardIsHidden = state.phase === 'menu';
+
+    if (game !== null && boardWasHidden && !boardIsHidden) {
+      // Phaser initially mounts while MENU hides its parent. Refresh only when the
+      // container becomes measurable so FIT does not retain a 0×0 display size.
+      game.scale.refresh();
+    }
+
+    boardWasHidden = boardIsHidden;
+  });
+
+  game = new Phaser.Game({
     type: Phaser.WEBGL,
     backgroundColor: '#16213a',
     pixelArt: true,
@@ -63,7 +75,7 @@ export function mountPhaserGame(
     window: document.defaultView ?? window,
     document,
     pause: () => application.dispatch({ type: 'pause' }),
-    relayout: () => game.scale.refresh(),
+    relayout: () => game?.scale.refresh(),
   });
 
   return {
