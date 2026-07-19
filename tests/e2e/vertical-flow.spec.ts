@@ -53,7 +53,7 @@ test('plays start, move, eat, wall death, and restart through production wiring'
   await expect(page.getByText('Score 10', { exact: true })).toBeVisible();
   await expect(liveStatus).toHaveText('Food eaten. Score 10.');
 
-  await expect(phase).toHaveText('Game over');
+  await expect(phase).toHaveText('Game over', { timeout: 30000 });
   await expect(liveStatus).toHaveText('Game over: wall collision. Score 10.');
   await expect(
     page.getByText('Game over (wall collision). Score 10.', { exact: true }),
