@@ -1,7 +1,7 @@
 id: SG-014
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: human-user
 approved_at: "2026-07-19T15:37:09Z"
 approval_gate: direct-human-instruction
@@ -32,6 +32,9 @@ base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
 branch: agent/codex/SG-014-vertical-integration
 implementation_head_sha: 0b00f65d5258f0b21f69d9e6925289a06ae9ee34
 head_sha: 995e6469171508e7d99a68102f8d76404625a473
+integration_base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
+integration_commit: 7422812f737bb62ddd458a025a1bfd203f5c5120
+integrated_at: "2026-07-19T16:34:15Z"
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -260,3 +263,13 @@ status_history:
       reviewed the one-line test timeout change and repeated Node 24 full verify
       plus root/Pages-base E2E in both the working tree and a detached clean
       checkout. Result: APPROVE, no blocking findings; ready for main integration.
+  - status: merged
+    at: "2026-07-19T16:34:15Z"
+    by: Codex integrator
+    basis: >-
+      Verified branch tip 8e2eac0004d5e6b949619faddbf3a0fe962546f5,
+      containing reviewed product/test head 995e6469171508e7d99a68102f8d76404625a473
+      and both independent APPROVE commits, was merged without conflict on top of
+      clean local main 05cddcd3dbfea9eab6d8319911900580474630b4 as
+      7422812f737bb62ddd458a025a1bfd203f5c5120. Remote push and deployment were
+      not performed.
