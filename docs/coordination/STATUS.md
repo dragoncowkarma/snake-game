@@ -1,12 +1,12 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-19T15:51:10Z
+- 마지막 동기화: 2026-07-19T16:31:56Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 통합 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음
-- 현재 검증 대기: SG-014 구현 SHA `0b00f65d5258f0b21f69d9e6925289a06ae9ee34` — Antigravity + Claude 독립 리뷰
+- 현재 활성 작업: SG-014 — verified SHA `995e6469171508e7d99a68102f8d76404625a473`, main 통합 대기
+- 현재 검증 대기: 없음 — Claude + Antigravity APPROVE, Codex Node 24 clean verify PASS
 - 현재 결정 필요: 없음 — SG-013 packet 작성 전 필요했던 SG-006 범위 정합화는 사람 직접 승인으로 해소했다(§SG-013 기록, `docs/TASKS.md` SG-013 행).
 - 다음 작업 후보: SG-014 독립 리뷰·통합 뒤 SG-015. 새 versioned Issue 또는 승인된 offline packet과 claim이 필요하다.
 
@@ -50,10 +50,10 @@ Wave 0 closeout의 루트 명령 부재는 SG-005가 해소했다. 현재 local 
 
 ## 다음 관문
 
-SG-005~SG-013은 merged다. SG-014 구현 SHA
-`0b00f65d5258f0b21f69d9e6925289a06ae9ee34`는 core+Scene+UI vertical E2E와 별도 clean checkout의
-Node 24 전체 verify, root 및 `/snake-game/` production E2E를 통과해 `review` 상태다. 지정
-Antigravity·Claude 독립 리뷰 둘 다 승인하기 전에는 merge하지 않는다. SG-013 후속 type re-export
+SG-005~SG-013은 merged다. SG-014 최종 reviewed SHA
+`995e6469171508e7d99a68102f8d76404625a473`는 Claude·Antigravity APPROVE와 Codex Node 24 clean
+verify, root 및 `/snake-game/` production E2E를 모두 통과해 `verified`다. 최신 main에 통합한 뒤
+실제 merge diff와 packet/handoff/STATUS를 `merged`로 동기화한다. SG-013 후속 type re-export
 shim 삭제는 SG-014 수용 기준에 필요하지 않아 이번 packet의 금지 경로로 유지한다. 공개 배포 권한은
 H3a까지 닫혀 있다.
 
@@ -63,7 +63,7 @@ H3a까지 닫혀 있다.
 |---|---|---|
 | 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
 | 1. 기반 구축 | complete | SG-005·SG-006·SG-007·SG-008·SG-009 merged; private artifact 경로는 준비됐고 공개 배포는 H3a까지 금지 |
-| 2. 수직 슬라이스 | in_progress | SG-010~SG-013 merged; SG-014 clean verify PASS, 독립 리뷰 대기 |
+| 2. 수직 슬라이스 | in_progress | SG-010~SG-013 merged; SG-014 두 독립 리뷰·clean verify PASS, main 통합 대기 |
 | 3. 통합·기능 완성 | pending | H1/H2 사람 검토 포함 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
 | 5. 배포·릴리스 | pending | H3a 공개 배포 승인, H3b 결과 수락 |

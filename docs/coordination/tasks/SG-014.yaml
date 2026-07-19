@@ -1,7 +1,7 @@
 id: SG-014
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-19T15:37:09Z"
 approval_gate: direct-human-instruction
@@ -30,7 +30,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-013.md
 base_sha: 05cddcd3dbfea9eab6d8319911900580474630b4
 branch: agent/codex/SG-014-vertical-integration
-head_sha: 0b00f65d5258f0b21f69d9e6925289a06ae9ee34
+implementation_head_sha: 0b00f65d5258f0b21f69d9e6925289a06ae9ee34
+head_sha: 995e6469171508e7d99a68102f8d76404625a473
 allowed_paths:
   - src/game/**
   - src/main.ts
@@ -109,6 +110,7 @@ required_commands:
 claim: "CLAIM: codex / GPT-5 runtime; exact alias and setting label not exposed / agent/codex/SG-014-vertical-integration / 2026-07-19T15:37:09Z"
 claimed_at: "2026-07-19T15:37:09Z"
 submitted_at: "2026-07-19T15:51:10Z"
+verified_at: "2026-07-19T16:31:56Z"
 handoff: docs/coordination/handoffs/SG-014.md
 independent_review_claude:
   result: APPROVE
@@ -190,6 +192,26 @@ independent_review_antigravity:
       the default 10s expect timeout. Added a custom 30-second timeout to the
       expect(phase).toHaveText('Game over') assertion in vertical-flow.spec.ts,
       which successfully resolved the timeout (test passed in ~26s under throttle).
+codex_integration_review:
+  result: APPROVE
+  reviewed_head: 995e6469171508e7d99a68102f8d76404625a473
+  reviewed_at: "2026-07-19T16:31:56Z"
+  test_change_review: >-
+    Compared the Antigravity remediation against f92ced6 and confirmed the only
+    executable change raises the maximum wait for the observable Game Over phase
+    from Playwright's default 10 seconds to 30 seconds. It adds no sleep,
+    waitForTimeout, product hook, selector logic, or production/config change;
+    passing environments return as soon as the phase changes.
+  node24_validation: >-
+    On Codex bundled Node 24.14.0, the reviewed composite passed npm run verify
+    and PLAYWRIGHT_BASE_PATH=snake-game npm run test:e2e in the implementation
+    worktree. A separate detached clean checkout of the same SHA passed npm ci,
+    the full verify chain (121/121 unit, 97.59% statements and 96.61% branches,
+    build, Chromium 2/2), and Pages-base Chromium 2/2. Scope, whitespace, YAML,
+    review ancestry, and generated-artifact audits also passed.
+  recommendation: >-
+    Both required independent reviews are APPROVE and their commits are ancestors
+    of the reviewed head. SG-014 is verified and ready for Codex main integration.
 status_history:
   - status: ready
     at: "2026-07-19T15:37:09Z"
@@ -228,3 +250,13 @@ status_history:
       git ancestry. Result: APPROVE, no blocking findings (see
       independent_review_claude above). Status stays review — Antigravity's
       required independent review is still outstanding.
+  - status: verified
+    at: "2026-07-19T16:31:56Z"
+    by: Codex integrator
+    basis: >-
+      Integrated Claude APPROVE f520264ac45249b229f6337d7803e27195e46865 and
+      Antigravity APPROVE/remediation e3dee624b5c1630d89b3f237a338d68e6fd9f606
+      into reviewed head 995e6469171508e7d99a68102f8d76404625a473. Codex
+      reviewed the one-line test timeout change and repeated Node 24 full verify
+      plus root/Pages-base E2E in both the working tree and a detached clean
+      checkout. Result: APPROVE, no blocking findings; ready for main integration.
