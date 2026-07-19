@@ -156,6 +156,7 @@ required_commands:
   - npm run lint
   - npm run typecheck
   - npm run test
+  - npm run test:coverage
   - npm run build
   - npm run test:e2e
   - git diff --check
