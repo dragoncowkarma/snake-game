@@ -1,0 +1,144 @@
+id: SG-016
+spec_version: "1.0-plan"
+task_revision: 1
+status: verified
+approved_by: human-user
+approved_at: "2026-07-20T07:45:04Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human directly authorized creation and execution of this exact revision-1
+  offline packet on the current H1 closeout baseline. The authorization is limited
+  to the accepted SG-016 scope: lifecycle pause adapters, versioned local score and
+  preference persistence with a memory fallback, and optional Web Audio feedback.
+  It does not authorize a public-contract or product-meaning change, dependency,
+  deployment, main-direct-push, or DOM UI implementation owned by SG-017.
+owner: codex
+model: "Codex GPT-5 runtime"
+reasoning_or_workload: high
+reviewers:
+  - Claude Sonnet 5 high
+depends_on:
+  - SG-014
+  - SG-015
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-014.md
+  - docs/coordination/handoffs/SG-015.md
+base_sha: 5ba28f663cd4a164f78af42ca6834460cc3c9b40
+branch: agent/codex/SG-016-lifecycle-storage-audio
+implementation_head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+allowed_paths:
+  - src/adapters/**
+  - src/game/application-router.ts
+  - src/game/application-router.test.ts
+  - src/game/bootstrap.ts
+  - src/game/lifecycle-controller.ts
+  - src/game/lifecycle-controller.test.ts
+  - docs/coordination/tasks/SG-016.yaml
+  - docs/coordination/handoffs/SG-016.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/domain/**
+  - src/config/**
+  - src/ui/**
+  - src/styles.css
+  - src/main.ts
+  - index.html
+  - tests/e2e/**
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - dist/**
+acceptance_ids:
+  - >-
+    SG-016-AC01 / AC-L01: blur, hidden document, and a true portrait-landscape
+    orientation transition issue the same pause command while ordinary resize only
+    relayouts; none of those automatic pauses can resume gameplay.
+  - >-
+    SG-016-AC02 / AC-L02 / AC-L03: every accepted pause preserves only the current
+    direction and game snapshot, clears the direction queue and scheduler
+    accumulator, ignores pause-time input and delta, requires explicit resume, and
+    preserves logical state across ordinary resize.
+  - >-
+    SG-016-AC03: a versioned, difficulty-qualified localStorage adapter persists only
+    slow/normal high scores, mute preference, and last difficulty; unavailable
+    storage, malformed JSON, and invalid values use memory fallback without
+    interrupting game progress.
+  - >-
+    SG-016-AC04 / AC-R01: injected read/write storage failures and corrupted values
+    are caught at the adapter boundary and do not prevent reset, direction, stepping,
+    pausing, resuming, or score recording.
+  - >-
+    SG-016-AC05 / AC-R02: synthesized Web Audio begins only after a user-gesture
+    command, short food/end feedback obeys mute, and absent/throwing/rejected audio
+    APIs remain a no-op without blocking game progress.
+  - AC-L01
+  - AC-L02
+  - AC-L03
+  - AC-R01
+  - AC-R02
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+claim: "CLAIM: codex / Codex GPT-5 runtime / agent/codex/SG-016-lifecycle-storage-audio / 2026-07-20T07:45:04Z"
+claimed_at: "2026-07-20T07:45:04Z"
+submitted_at: "2026-07-20T08:00:00Z"
+handoff: docs/coordination/handoffs/SG-016.md
+status_history:
+  - status: ready
+    at: "2026-07-20T07:45:04Z"
+    by: human-user
+    basis: direct authorization to create the exact offline packet
+  - status: in_progress
+    at: "2026-07-20T07:45:04Z"
+    by: codex
+    basis: claimed on the dedicated branch before implementation edits
+  - status: review
+    at: "2026-07-20T08:00:00Z"
+    by: codex
+    basis: >-
+      Implementation head a94d4eb passed Node 24 format, lint, typecheck, 128 unit
+      tests, build, and Chromium production E2E 7/7. Claude independent review is
+      required before verification or merge.
+  - status: review
+    at: "2026-07-20T09:14:38Z"
+    by: claude
+    basis: >-
+      Independent review found that lifecycle-initiated pause entered the shared
+      user-gesture dispatch wrapper, allowing an autoplay rejection to permanently
+      disable optional audio before a real gesture. The reviewer approved the
+      minimal bootstrap correction that dispatches automatic pause directly.
+  - status: verified
+    at: "2026-07-20T09:14:38Z"
+    by: codex
+    basis: >-
+      Fix head 7858b34 passed Node 24 format, lint, typecheck, 128 unit tests,
+      build, production Chromium E2E 7/7, and diff whitespace audit. Required
+      Claude independent review is APPROVE; local integration/merge remains pending.
+independent_review_claude:
+  result: APPROVE
+  reviewed_head: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+  reviewed_at: "2026-07-20T09:14:38Z"
+  finding: >-
+    Lifecycle blur/hidden/orientation pause must bypass the gesture-aware command
+    wrapper so non-gesture autoplay rejection cannot strand AudioFeedback in no-op.
+  remediation: >-
+    bootstrap lifecycle.pause calls application.dispatch({ type: 'pause' }) directly;
+    board and shell user commands still use the shared wrapper for audio activation,
+    mute persistence, and difficulty preference updates.
+  validation: >-
+    Node 24 format, lint, typecheck, 128 unit tests, build, and diff check passed.
+    Reviewer could not bind localhost in its sandbox; Codex independently reran the
+    full production Chromium suite after the correction and recorded 7/7 PASS.

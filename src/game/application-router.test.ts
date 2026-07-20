@@ -29,14 +29,17 @@ describe('ApplicationRouter', () => {
     application.dispatch({ type: 'pause' });
 
     expect(application.snapshot.phase).toBe('paused');
+    expect(application.snapshot.direction).toBe('right');
     expect(application.snapshot.queuedDirections).toEqual([]);
     expect(application.accumulator).toBe(0);
+    expect(application.dispatch({ type: 'direction', direction: 'up' })).toBe(false);
     expect(application.advance(250)).toBe(0);
 
     application.dispatch({ type: 'resume' });
     expect(application.snapshot.phase).toBe('playing');
     expect(application.snapshot.queuedDirections).toEqual([]);
     expect(application.accumulator).toBe(0);
+    expect(application.advance(application.snapshot.tickMs - 1)).toBe(0);
   });
 
   it('keeps a single subscriber across twenty restart cycles', () => {

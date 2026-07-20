@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 
+import { AudioFeedback, type AudioContextFactory } from '../adapters/audio-feedback.ts';
+import { GamePreferences, type StorageLike } from '../adapters/game-preferences.ts';
 import type { RandomSource } from '../domain/index.ts';
 import { createGameShell } from '../ui/app.ts';
 
@@ -15,6 +17,22 @@ class BrowserRandomSource implements RandomSource {
   }
 }
 
+function browserStorage(ownerWindow: Window): StorageLike | null {
+  try {
+    return ownerWindow.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function browserAudioContext(ownerWindow: Window): AudioContextFactory | null {
+  const AudioContextConstructor = (
+    ownerWindow as Window & { readonly AudioContext?: typeof AudioContext }
+  ).AudioContext;
+
+  return AudioContextConstructor === undefined ? null : () => new AudioContextConstructor();
+}
+
 export interface MountedGame {
   readonly application: ApplicationRouter;
   destroy(): void;
@@ -26,10 +44,36 @@ export function mountPhaserGame(
   randomSource: RandomSource = new BrowserRandomSource(),
 ): MountedGame {
   const document = root.ownerDocument;
-  const application = new ApplicationRouter(randomSource);
-  const shell = createGameShell(root, (command) => application.dispatch(command));
-  const board = root.querySelector<HTMLElement>('#board');
   const ownerWindow = document.defaultView ?? window;
+  const preferences = new GamePreferences(browserStorage(ownerWindow));
+  const audio = new AudioFeedback({
+    contextFactory: browserAudioContext(ownerWindow),
+    initiallyMuted: preferences.snapshot.muted,
+  });
+  const application = new ApplicationRouter(randomSource);
+  const dispatch = (command: Parameters<ApplicationRouter['dispatch']>[0]): boolean => {
+    // This synchronous call creates/resumes an AudioContext only while handling a
+    // genuine browser command. Rejection is contained by AudioFeedback.
+    void audio.activateFromUserGesture();
+
+    const handled = application.dispatch(command);
+
+    if (!handled) {
+      return false;
+    }
+
+    if (command.type === 'selectDifficulty') {
+      preferences.setLastDifficulty(command.difficulty);
+    }
+
+    if (command.type === 'toggleMute') {
+      preferences.setMuted(audio.toggleMuted());
+    }
+
+    return true;
+  };
+  const shell = createGameShell(root, dispatch);
+  const board = root.querySelector<HTMLElement>('#board');
 
   if (board === null) {
     shell.destroy();
@@ -55,6 +99,8 @@ export function mountPhaserGame(
     });
   };
   const unsubscribeShell = application.subscribe((state, events) => {
+    preferences.recordScore(state.difficulty, state.score);
+    audio.handleEvents(events);
     shell.applySnapshot(state, events);
 
     if (game === null && pendingGameMount === null && state.phase !== 'menu') {
@@ -71,12 +117,17 @@ export function mountPhaserGame(
     board,
     document,
     readPhase: () => application.snapshot.phase,
-    dispatch: (command) => application.dispatch(command),
+    dispatch,
   });
   const lifecycle = new LifecycleController({
     window: ownerWindow,
     document,
-    pause: () => application.dispatch({ type: 'pause' }),
+    // blur, hidden, and orientation changes are never user gestures. They must not
+    // attempt AudioContext activation, because an autoplay rejection would disable
+    // optional feedback before a real board key or button click can activate it.
+    pause: () => {
+      application.dispatch({ type: 'pause' });
+    },
     relayout: () => game?.scale.refresh(),
   });
 
