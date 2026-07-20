@@ -1,7 +1,7 @@
 id: SG-017
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 approved_by: human-user
 approved_at: "2026-07-20T09:42:13Z"
 approval_gate: direct-human-instruction
@@ -33,8 +33,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-016.md
 base_sha: cb7869958dd5782d2a05df165e2fe7eaeabbfc78
 branch: claude/sg-017-ui-implementation-2aeace
-implementation_head_sha: null
-head_sha: null
+implementation_head_sha: 0d763bfb165513bc0287e2ed6a35ef23863658aa
+head_sha: 0d763bfb165513bc0287e2ed6a35ef23863658aa
 allowed_paths:
   - src/ui/**
   - src/styles.css
@@ -133,3 +133,15 @@ status_history:
     at: "2026-07-20T09:42:13Z"
     by: claude
     basis: claimed on the existing dedicated branch before any implementation edits
+  - status: review
+    at: "2026-07-20T10:26:25Z"
+    by: claude
+    basis: >-
+      Implementation head 0d763bfb165513bc0287e2ed6a35ef23863658aa passed Node 24
+      format, lint, typecheck, 128 unit tests, coverage (97.59% stmts / 96.61%
+      branches, unchanged from SG-011 baseline), build, and Chromium production E2E
+      7/7 (including the previously test.fail-marked DF-SG015-01 case, now genuinely
+      passing). Manual Claude Browser reproduction against the real
+      mountPhaserGame/GamePreferences wiring confirmed persisted best-score binding
+      across a simulated reload and terminal-only new-best display. Required
+      independent Antigravity review has not run yet; no local main merge performed.

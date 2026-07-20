@@ -1,14 +1,14 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-19T19:21:46Z
-- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료
+- 마지막 동기화: 2026-07-20T10:26:25Z
+- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-016 merged, SG-017 packet 승인 대기
-- 현재 검증 대기: 없음 — DF-SG015-01(medium)은 H1에서 사람이 Wave 3(SG-016/SG-017) 이관 결함으로 수용
+- 현재 활성 작업: 없음 — SG-017 구현 완료, `review` 상태로 지정 독립 리뷰(Antigravity Gemini 3.1 Pro high) 대기 중; local `main` 병합은 아직 수행하지 않았다
+- 현재 검증 대기: SG-017 head `0d763bfb165513bc0287e2ed6a35ef23863658aa`의 독립 리뷰와, 통과 시 Codex 통합 재검증·병합
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-017 — offline packet 승인과 claim 뒤 착수
+- 다음 작업 후보: SG-017 독립 리뷰 → 통합; 이후 SG-018(Antigravity, Playwright 확장)
 
 ## H0b 종료 기록
 
