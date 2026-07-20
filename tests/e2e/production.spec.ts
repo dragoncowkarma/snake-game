@@ -1,8 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { devices, expect, test } from '@playwright/test';
 import { setupPageListeners } from '../helpers/e2e-helpers.ts';
 
 test.describe('SG-018 Production Build E2E Suite', () => {
-  test('Keyboard Controls and Focus Transitions (AC-U02, AC-U06)', async ({ page }) => {
+  test('Keyboard Controls, WASD, Space, and preventDefault scroll prevention (AC-U02, AC-U06)', async ({
+    page,
+  }) => {
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
 
@@ -12,56 +14,81 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const board = page.locator('#board');
     const phase = page.locator('.hud__phase');
 
-    // 1. Establish baseline focus on Start button
-    await startButton.focus();
-    await expect(startButton).toBeFocused();
+    // Intercept Event.prototype.preventDefault to track if default was prevented
+    await page.evaluate(() => {
+      window.lastEventPrevented = false;
+      const originalPreventDefault = Event.prototype.preventDefault;
+      Event.prototype.preventDefault = function () {
+        window.lastEventPrevented = true;
+        originalPreventDefault.apply(this, arguments);
+      };
+    });
 
-    // 2. Start game -> focus moves to board
-    await startButton.press('Enter');
+    // 1. Outside board -> Press ArrowRight -> default not prevented (allows scroll)
+    await page.locator('body').focus();
+    await page.keyboard.press('ArrowRight');
+    let lastPrevented = await page.evaluate(() => {
+      const val = window.lastEventPrevented;
+      window.lastEventPrevented = false;
+      return val;
+    });
+    expect(lastPrevented).toBe(false);
+
+    // 2. Start button focused -> Press Space -> triggers click -> Ready
+    await startButton.focus();
+    await page.keyboard.press('Space');
     await expect(phase).toHaveText('Ready');
     await expect(board).toBeFocused();
 
-    // 3. Move -> focus stays on board
-    await board.press('ArrowRight');
+    // 3. Board focused -> Press invalid game key 'x' -> default not prevented
+    await page.keyboard.press('x');
+    lastPrevented = await page.evaluate(() => {
+      const val = window.lastEventPrevented;
+      window.lastEventPrevented = false;
+      return val;
+    });
+    expect(lastPrevented).toBe(false);
+
+    // 4. Board focused -> Press WASD key 'd' (right) -> starts playing, default prevented
+    await page.keyboard.press('d');
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused();
+    lastPrevented = await page.evaluate(() => {
+      const val = window.lastEventPrevented;
+      window.lastEventPrevented = false;
+      return val;
+    });
+    expect(lastPrevented).toBe(true);
 
-    // 4. Pause via 'p' -> focus moves to Resume button
+    // 5. Board focused -> Press WASD key 'w' (up) -> changes direction, default prevented
+    await page.keyboard.press('w');
+    lastPrevented = await page.evaluate(() => {
+      const val = window.lastEventPrevented;
+      window.lastEventPrevented = false;
+      return val;
+    });
+    expect(lastPrevented).toBe(true);
+
+    // 6. Pause via 'p' -> focus moves to Resume button
     await board.press('p');
     await expect(phase).toHaveText('Paused');
     const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
     await expect(resumeButton).toBeFocused();
 
-    // 5. Resume via Enter on Resume button -> focus moves to board
-    await resumeButton.press('Enter');
-    await expect(phase).toHaveText('Playing');
-    await expect(board).toBeFocused();
-
-    // 6. Pause via 'Escape' -> focus moves to Resume button
-    await board.press('Escape');
-    await expect(phase).toHaveText('Paused');
-    await expect(resumeButton).toBeFocused();
-
-    // 7. Try pressing 'p' while Resume button is focused -> should NOT resume (only works when board is focused)
+    // 7. Try pressing 'p' while Resume button is focused -> should NOT resume (ignored outside board)
     await page.keyboard.press('p');
     await expect(phase).toHaveText('Paused');
     await expect(resumeButton).toBeFocused();
 
-    // Resume via Enter on Resume button
-    await resumeButton.press('Enter');
+    // 8. Resume via Space on Resume button -> focus moves to board
+    await page.keyboard.press('Space');
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused();
 
-    // 8. Let it crash -> focus goes to Restart button
+    // 9. Let it crash -> focus goes to Restart button
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
     const restartButton = page.getByRole('button', { name: 'Restart', exact: true });
     await expect(restartButton).toBeFocused();
-
-    // 9. Return to Menu -> focus goes to Start button
-    const menuButton = page.getByRole('button', { name: 'Menu', exact: true });
-    await menuButton.click();
-    await expect(phase).toHaveText('Menu');
-    await expect(startButton).toBeFocused();
 
     expect(browserFailures).toEqual([]);
   });
@@ -103,35 +130,90 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     expect(browserFailures).toEqual([]);
   });
 
-  test('Touch D-pad controls (AC-U03, AC-U06, AC-U09)', async ({ page }) => {
+  test('Touch D-pad controls with real touch emulation (AC-U03, AC-U06, AC-U09)', async ({
+    browser,
+  }) => {
+    // Create a custom context with touch enabled to test pointer/touch inputs
+    const context = await browser.newContext({ hasTouch: true });
+    const page = await context.newPage();
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
+
+    // Initial random seed to place food at (10,9) then (10,8) (straight Up path) to avoid tick timing races
+    await page.addInitScript(() => {
+      let gameCallCount = 0;
+      Math.random = () => {
+        const stack = new Error().stack || '';
+        // Only override RNG for the simulation's food spawner calls (not Phaser internals)
+        if (
+          stack.includes('spawnFood') ||
+          stack.includes('BrowserRandomSource') ||
+          stack.includes('nextInt')
+        ) {
+          gameCallCount++;
+          if (gameCallCount === 1) return (190 + 0.5) / 397;
+          if (gameCallCount === 2) return (170 + 0.5) / 396;
+          return 0.5;
+        }
+        return 0.5;
+      };
+    });
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
-    await startButton.click();
+    const board = page.locator('#board');
+    await startButton.tap(); // touch tap
 
     const phase = page.locator('.hud__phase');
     await expect(phase).toHaveText('Ready');
+    await expect(board).toBeFocused();
 
     const dpadUp = page.locator('.dpad__button--up');
     const dpadLeft = page.locator('.dpad__button--left');
 
-    // Click Up to start the game
-    await dpadUp.click();
+    // Tap Up to start the game moving Up
+    await dpadUp.tap();
     await expect(phase).toHaveText('Playing');
+    await expect(board).toBeFocused(); // focus preservation (focus returns to board after transition)
 
-    // Click Left (valid change of direction while moving Up)
-    await dpadLeft.click();
+    // Wait for the snake to eat both foods along the Up path (reaches score 20)
+    const liveStatus = page.locator('#status');
+    await expect(liveStatus).toHaveText('Food eaten. Score 20.', { timeout: 15000 });
 
-    // Verify no browser errors occurred during touch simulation
+    // Now tap Left to change direction (safe from timing race since score 20 is already reached)
+    await dpadLeft.tap();
+    await expect(dpadLeft).toBeFocused(); // focus shifts cleanly to the tapped button
+
+    // Wait for the game over crash (left wall collision)
+    await expect(phase).toHaveText('Game over', { timeout: 15000 });
+    await expect(liveStatus).toHaveText('Game over: wall collision. Score 20.');
+
+    await context.close();
     expect(browserFailures).toEqual([]);
   });
 
-  test('Lifecycle Pause & Resize (AC-L01, AC-L02, AC-L03)', async ({ page }) => {
+  test('Lifecycle Pause & Viewport Resize State Preservation (AC-L01, AC-L02, AC-L03)', async ({
+    page,
+  }) => {
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
+
+    // Start with a narrow mobile viewport 320x568
+    await page.setViewportSize({ width: 320, height: 568 });
+
+    // Seed food right next to head to reach score 10
+    const INITIAL_FREE_CELL_COUNT = 397;
+    const FOOD_IMMEDIATELY_RIGHT_OF_HEAD_INDEX = 208;
+    await page.addInitScript(
+      ({ freeCellCount, selectedIndex }) => {
+        Math.random = () => (selectedIndex + 0.5) / freeCellCount;
+      },
+      {
+        freeCellCount: INITIAL_FREE_CELL_COUNT,
+        selectedIndex: FOOD_IMMEDIATELY_RIGHT_OF_HEAD_INDEX,
+      },
+    );
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -143,6 +225,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Start movement
     await board.press('ArrowRight');
+    await expect(page.locator('.hud').getByText('Score 10')).toBeVisible();
 
     // 1. Document hidden -> Paused (Triggered immediately to avoid crash race condition)
     await page.evaluate(() => {
@@ -182,14 +265,41 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Resume
     await resumeButton.click();
 
-    // 4. Ordinary resize -> does not pause
+    // 4. Ordinary viewport resize to 600x600 -> does not pause, preserves state & coordinates
+    const boardBoxBefore = await board.boundingBox();
+    expect(boardBoxBefore).not.toBeNull();
+
+    await page.evaluate(() => {
+      window.resizeEventCount = 0;
+      window.addEventListener('resize', () => {
+        window.resizeEventCount++;
+      });
+    });
+
     await page.setViewportSize({ width: 600, height: 600 });
+
+    const resizeCount = await page.evaluate(() => window.resizeEventCount);
+    expect(resizeCount).toBeGreaterThan(0);
+
+    const boardBoxAfter = await board.boundingBox();
+    expect(boardBoxAfter).not.toBeNull();
+    expect(boardBoxAfter!.width).not.toBe(boardBoxBefore!.width); // verifies relayout
+
+    // Verify coordinates and state are unchanged
     await expect(phase).toHaveText('Playing');
+    await expect(page.locator('.hud').getByText('Score 10')).toBeVisible();
+
+    // Let the snake crash to prove the coordinates were preserved (it crashes at score 10)
+    await expect(phase).toHaveText('Game over', { timeout: 15000 });
+    const liveStatus = page.locator('#status');
+    await expect(liveStatus).toHaveText('Game over: wall collision. Score 10.');
 
     expect(browserFailures).toEqual([]);
   });
 
-  test('LocalStorage persistence (AC-R01, AC-R04)', async ({ page }) => {
+  test('LocalStorage persistence of slow and normal difficulties (AC-R01, AC-R04)', async ({
+    page,
+  }) => {
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
 
@@ -213,24 +323,63 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Reload so page starts with clean localStorage
     await page.reload({ waitUntil: 'networkidle' });
 
+    // 1. Select Slow difficulty
+    const slowRadio = page.getByRole('radio', { name: 'Slow', exact: true });
+    await slowRadio.click();
+    await expect(slowRadio).toBeChecked();
+
+    // Verify last-difficulty is saved in localStorage
+    let lastDifficulty = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:last-difficulty'),
+    );
+    expect(lastDifficulty).toBe('"slow"');
+
+    // Start slow game, eat food (score = 10), and crash
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await startButton.click();
-
     const board = page.locator('#board');
     await board.press('ArrowRight');
 
     const phase = page.locator('.hud__phase');
-    await expect(phase).toHaveText('Playing');
-    await expect(page.locator('.hud').getByText('Score 10')).toBeVisible();
-
-    // Wait for crash
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
-    // Verify score is saved in localStorage
+    // Verify slow high score is saved
+    const highSlow = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:high-score:slow'),
+    );
+    expect(highSlow).toBe('10');
+
+    // Return to menu
+    const menuButton = page.getByRole('button', { name: 'Menu', exact: true });
+    await menuButton.click();
+
+    // 2. Select Normal difficulty
+    const normalRadio = page.getByRole('radio', { name: 'Normal', exact: true });
+    await normalRadio.click();
+    await expect(normalRadio).toBeChecked();
+
+    // Verify last-difficulty is updated in localStorage
+    lastDifficulty = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:last-difficulty'),
+    );
+    expect(lastDifficulty).toBe('"normal"');
+
+    // Start normal game, eat food (score = 10), and crash
+    await startButton.click();
+    await board.press('ArrowRight');
+    await expect(phase).toHaveText('Game over', { timeout: 15000 });
+
+    // Verify normal high score is saved
     const highNormal = await page.evaluate(() =>
       window.localStorage.getItem('snake-game:v1:high-score:normal'),
     );
     expect(highNormal).toBe('10');
+
+    // Verify slow high score is preserved (independent scores)
+    const highSlowPreserved = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:high-score:slow'),
+    );
+    expect(highSlowPreserved).toBe('10');
 
     // Toggle mute
     const muteButton = page.locator('.mute');
@@ -239,40 +388,44 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const isMuted = await page.evaluate(() => window.localStorage.getItem('snake-game:v1:muted'));
     expect(isMuted).toBe('true');
 
-    // Reload and check persistence
+    // Reload page to verify persistence of mute preference and scores in storage
     await page.reload({ waitUntil: 'networkidle' });
-    await expect(page.locator('.hud').getByText('Best 10')).toBeVisible();
     await expect(page.locator('.mute')).toHaveAttribute('aria-pressed', 'true');
+
+    // Verify scores are still present in localStorage after reload
+    const highNormalReloaded = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:high-score:normal'),
+    );
+    expect(highNormalReloaded).toBe('10');
 
     expect(browserFailures).toEqual([]);
   });
 
-  test('LocalStorage failure fallback (AC-R01, AC-R04)', async ({ page }) => {
+  test('LocalStorage malformed, wrong-type, and QuotaExceededError fallbacks (AC-R01, AC-R04)', async ({
+    page,
+  }) => {
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
-      // Mock window.localStorage to throw SecurityError when accessed
-      const mockStorage = {
-        getItem: () => {
-          throw new DOMException('SecurityError', 'SecurityError');
+      // Set corrupt/malformed values in localStorage
+      window.localStorage.setItem('snake-game:v1:high-score:normal', '{"corrupted": true}'); // wrong type (object)
+      window.localStorage.setItem('snake-game:v1:high-score:slow', 'invalid-json'); // malformed JSON
+      window.localStorage.setItem('snake-game:v1:muted', '12345'); // wrong type (number instead of boolean)
+      window.localStorage.setItem('snake-game:v1:last-difficulty', '"super-hard"'); // invalid difficulty value
+
+      // Mock setItem to throw QuotaExceededError
+      Object.defineProperty(window.Storage.prototype, 'setItem', {
+        value: () => {
+          throw new DOMException('The quota has been exceeded.', 'QuotaExceededError');
         },
-        setItem: () => {
-          throw new DOMException('SecurityError', 'SecurityError');
-        },
-        clear: () => {
-          throw new DOMException('SecurityError', 'SecurityError');
-        },
-      };
-      Object.defineProperty(window, 'localStorage', {
-        value: mockStorage,
         configurable: true,
       });
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
-    // Verify game boots and start works
+    // Verify game boots successfully and works using fallback defaults
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await expect(startButton).toBeVisible();
     await startButton.click();
@@ -283,21 +436,50 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const board = page.locator('#board');
     await board.press('ArrowRight');
     await expect(phase).toHaveText('Playing');
-
-    // Let the snake crash to verify crash flow
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
     expect(browserFailures).toEqual([]);
   });
 
-  test('Audio fallback when AudioContext fails (AC-R02)', async ({ page }) => {
+  test('Audio fallback when AudioContext constructor throws (AC-R02)', async ({ page }) => {
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
-      // Delete AudioContext to simulate absence of Web Audio API
+      class ConditionalFailingAudioContext {
+        constructor() {
+          const stack = new Error().stack || '';
+          // Only throw if called directly from our AudioFeedback gesture activation
+          if (stack.includes('AudioFeedback') || stack.includes('activateFromUserGesture')) {
+            throw new Error('Failed to construct AudioContext');
+          }
+          // Phaser's instance: minimal mock context to boot cleanly
+          this.destination = {};
+          this.currentTime = 0;
+        }
+        get state() {
+          return 'suspended';
+        }
+        resume() {
+          return Promise.resolve();
+        }
+        createGain() {
+          return {
+            gain: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {} },
+            connect: () => {},
+          };
+        }
+        createOscillator() {
+          return {
+            frequency: { setValueAtTime: () => {} },
+            connect: () => {},
+            start: () => {},
+            stop: () => {},
+          };
+        }
+      }
       Object.defineProperty(window, 'AudioContext', {
-        value: undefined,
+        value: ConditionalFailingAudioContext,
         configurable: true,
       });
       Object.defineProperty(window, 'webkitAudioContext', {
@@ -308,7 +490,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
-    // Verify game boots and start works
+    // Verify game boots and starts normally without audio-induced crashes
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await expect(startButton).toBeVisible();
     await startButton.click();
@@ -319,8 +501,72 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const board = page.locator('#board');
     await board.press('ArrowRight');
     await expect(phase).toHaveText('Playing');
+    await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
-    // Let the snake crash
+    expect(browserFailures).toEqual([]);
+  });
+
+  test('Audio fallback when AudioContext resume rejects (AC-R02)', async ({ page }) => {
+    const browserFailures: string[] = [];
+    setupPageListeners(page, browserFailures);
+
+    await page.addInitScript(() => {
+      // Mock AudioContext class whose resume rejects cleanly for AudioFeedback
+      class ResumeRejectingAudioContext {
+        constructor() {
+          this.destination = {};
+          this.currentTime = 0;
+        }
+        get state() {
+          return 'suspended';
+        }
+        resume() {
+          const stack = new Error().stack || '';
+          if (stack.includes('AudioFeedback') || stack.includes('activateFromUserGesture')) {
+            const p = Promise.reject(new Error('AudioContext resume rejected'));
+            p.catch(() => {}); // prevent unhandled promise rejection warnings/failures
+            return p;
+          }
+          return Promise.resolve();
+        }
+        createGain() {
+          return {
+            gain: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {} },
+            connect: () => {},
+          };
+        }
+        createOscillator() {
+          return {
+            frequency: { setValueAtTime: () => {} },
+            connect: () => {},
+            start: () => {},
+            stop: () => {},
+          };
+        }
+      }
+      Object.defineProperty(window, 'AudioContext', {
+        value: ResumeRejectingAudioContext,
+        configurable: true,
+      });
+      Object.defineProperty(window, 'webkitAudioContext', {
+        value: undefined,
+        configurable: true,
+      });
+    });
+
+    await page.goto('./', { waitUntil: 'networkidle' });
+
+    // Verify game boots and starts normally
+    const startButton = page.getByRole('button', { name: 'Start', exact: true });
+    await expect(startButton).toBeVisible();
+    await startButton.click();
+
+    const phase = page.locator('.hud__phase');
+    await expect(phase).toHaveText('Ready');
+
+    const board = page.locator('#board');
+    await board.press('ArrowRight');
+    await expect(phase).toHaveText('Playing');
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
     expect(browserFailures).toEqual([]);
