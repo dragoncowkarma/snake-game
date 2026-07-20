@@ -5,10 +5,10 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-016 verified, local integration/merge 대기
+- 현재 활성 작업: 없음 — SG-016 merged, SG-017 packet 승인 대기
 - 현재 검증 대기: 없음 — DF-SG015-01(medium)은 H1에서 사람이 Wave 3(SG-016/SG-017) 이관 결함으로 수용
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-017 — SG-016 local integration/merge 뒤 착수
+- 다음 작업 후보: SG-017 — offline packet 승인과 claim 뒤 착수
 
 ## H0b 종료 기록
 

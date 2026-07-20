@@ -1,7 +1,7 @@
 id: SG-016
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: human-user
 approved_at: "2026-07-20T07:45:04Z"
 approval_gate: direct-human-instruction
@@ -27,6 +27,8 @@ base_sha: 5ba28f663cd4a164f78af42ca6834460cc3c9b40
 branch: agent/codex/SG-016-lifecycle-storage-audio
 implementation_head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
 head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+integration_commit: 28c233cad80ad70ace543917bd2ce210296b1df0
+integrated_at: "2026-07-20T09:20:00Z"
 allowed_paths:
   - src/adapters/**
   - src/game/application-router.ts
@@ -127,6 +129,12 @@ status_history:
       Fix head 7858b34 passed Node 24 format, lint, typecheck, 128 unit tests,
       build, production Chromium E2E 7/7, and diff whitespace audit. Required
       Claude independent review is APPROVE; local integration/merge remains pending.
+  - status: merged
+    at: "2026-07-20T09:20:00Z"
+    by: codex
+    basis: >-
+      Clean local main merged verified branch head 0157f39 with no conflicts as
+      integration commit 28c233c. No remote push or deployment was performed.
 independent_review_claude:
   result: APPROVE
   reviewed_head: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
