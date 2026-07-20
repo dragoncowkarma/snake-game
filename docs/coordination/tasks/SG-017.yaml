@@ -198,3 +198,40 @@ status_history:
       tests, coverage, build, Chromium E2E 7/7, all on Node 24), no separate post-
       merge verification run exists as an independent artifact — this is recorded
       transparently rather than assumed. No remote push or deployment was performed.
+      CORRECTION: the sandbox classifier block on npm ci/verify in the primary
+      worktree was transient, not permanent (see the next status_history entry) — a
+      real post-merge verification run in the primary worktree was completed
+      afterward and superseded this entry's "no separate post-merge run" statement.
+  - status: merged
+    at: "2026-07-20T11:48:57Z"
+    by: claude
+    basis: >-
+      CORRECTS THE PRECEDING ENTRY. The sandbox classifier allowed npm ci/npm run
+      verify in the primary worktree on retry. The background run was piped through
+      `| tail -100`, and the task-notification system reported that pipeline's exit
+      code (tail's, always 0) as "completed (exit code 0)" — this was wrongly relayed
+      to the human as a clean verify pass. Re-running `npm run test` alone (no pipe)
+      showed the real exit code was 1: 19 test files failed to parse, all of them
+      pre-existing `spikes/phaser-4.2.1/e2e/spike.spec.cts` Playwright spec files
+      living inside OTHER, unrelated `.claude/worktrees/*` checkouts
+      (sg-013-ui-implementation-bd0257, sg-014-review-b643af, sg-016-review-e54951,
+      wave-2-completion-793b29) that happen to be nested inside the primary
+      worktree's own directory tree. package.json's `test` script excludes
+      `spikes/**` (anchored at repo root only, not `**/spikes/**`), so it never
+      excluded these nested copies; 796/796 real test assertions that did run all
+      passed, and zero of the 19 failing files touch anything SG-017 changed. This is
+      a pre-existing, unrelated tooling defect (flagged separately, out of this
+      packet's scope, not fixed here since it requires editing vite.config.ts/
+      package.json, both forbidden paths for this packet). To get real evidence for
+      the merged tree, each required command was re-run individually with true
+      (unmasked) exit codes from the primary worktree: `npm run format:check` (0),
+      `npm run lint` (0), `npm run typecheck` (0), a properly-scoped
+      `npx vitest run --exclude "tests/e2e/**" --exclude "spikes/**" --exclude
+      ".claude/worktrees/**" --exclude ".codex/worktrees/**" --exclude ".gemini/**"`
+      (0; 12 files / 128 tests passed, matching the branch-tip result exactly),
+      `npm run build` (0), and `npm run test:e2e` (0; 7/7 Chromium PASS, unaffected
+      since Playwright's testDir is explicitly scoped to ./tests/e2e). All on Node
+      24.18.0. The literal `npm run test`/`npm run verify` npm scripts will still
+      fail with exit 1 if invoked from the primary worktree until the separately-
+      flagged glob-anchoring defect is fixed; this is expected and not a SG-017
+      regression.
