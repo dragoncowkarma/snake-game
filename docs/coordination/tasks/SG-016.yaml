@@ -1,7 +1,7 @@
 id: SG-016
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-20T07:45:04Z"
 approval_gate: direct-human-instruction
@@ -25,8 +25,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-015.md
 base_sha: 5ba28f663cd4a164f78af42ca6834460cc3c9b40
 branch: agent/codex/SG-016-lifecycle-storage-audio
-implementation_head_sha: a94d4eb31d0cf468e7889ede68f3e26e57d0fdc8
-head_sha: a94d4eb31d0cf468e7889ede68f3e26e57d0fdc8
+implementation_head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+head_sha: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
 allowed_paths:
   - src/adapters/**
   - src/game/application-router.ts
@@ -112,3 +112,33 @@ status_history:
       Implementation head a94d4eb passed Node 24 format, lint, typecheck, 128 unit
       tests, build, and Chromium production E2E 7/7. Claude independent review is
       required before verification or merge.
+  - status: review
+    at: "2026-07-20T09:14:38Z"
+    by: claude
+    basis: >-
+      Independent review found that lifecycle-initiated pause entered the shared
+      user-gesture dispatch wrapper, allowing an autoplay rejection to permanently
+      disable optional audio before a real gesture. The reviewer approved the
+      minimal bootstrap correction that dispatches automatic pause directly.
+  - status: verified
+    at: "2026-07-20T09:14:38Z"
+    by: codex
+    basis: >-
+      Fix head 7858b34 passed Node 24 format, lint, typecheck, 128 unit tests,
+      build, production Chromium E2E 7/7, and diff whitespace audit. Required
+      Claude independent review is APPROVE; local integration/merge remains pending.
+independent_review_claude:
+  result: APPROVE
+  reviewed_head: 7858b342a4cd5457ac48cc4ab8ec8a66159949a5
+  reviewed_at: "2026-07-20T09:14:38Z"
+  finding: >-
+    Lifecycle blur/hidden/orientation pause must bypass the gesture-aware command
+    wrapper so non-gesture autoplay rejection cannot strand AudioFeedback in no-op.
+  remediation: >-
+    bootstrap lifecycle.pause calls application.dispatch({ type: 'pause' }) directly;
+    board and shell user commands still use the shared wrapper for audio activation,
+    mute persistence, and difficulty preference updates.
+  validation: >-
+    Node 24 format, lint, typecheck, 128 unit tests, build, and diff check passed.
+    Reviewer could not bind localhost in its sandbox; Codex independently reran the
+    full production Chromium suite after the correction and recorded 7/7 PASS.
