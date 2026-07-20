@@ -1,7 +1,7 @@
 id: SG-017
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: human-user
 approved_at: "2026-07-20T09:42:13Z"
 approval_gate: direct-human-instruction
@@ -34,7 +34,10 @@ predecessor_evidence:
 base_sha: cb7869958dd5782d2a05df165e2fe7eaeabbfc78
 branch: claude/sg-017-ui-implementation-2aeace
 implementation_head_sha: 0d763bfb165513bc0287e2ed6a35ef23863658aa
-head_sha: 0d763bfb165513bc0287e2ed6a35ef23863658aa
+head_sha: ea82d2e14055f3867f5ba63feacf9d0d4d23943d
+integration_base: cb7869958dd5782d2a05df165e2fe7eaeabbfc78
+integration_commit: 526fe5cebf4a7af06d67f7bf75558a37411cc452
+integrated_at: "2026-07-20T10:58:02Z"
 allowed_paths:
   - src/ui/**
   - src/styles.css
@@ -174,3 +177,24 @@ status_history:
       (default Codex) step, not this Claude UI-implementer session's; status is
       advanced to `verified` but not `merged` here. No local main merge, remote push,
       or deployment was performed by this session.
+  - status: merged
+    at: "2026-07-20T10:58:02Z"
+    by: claude
+    basis: >-
+      The human directly instructed "머지" (merge) after reviewing the recorded
+      Antigravity APPROVE, overriding the role-separation default this session had
+      flagged (normally the coordination lead/Codex merges). `main` was at the exact
+      base_sha (cb7869958dd5782d2a05df165e2fe7eaeabbfc78) with zero divergence since
+      this branch was cut, so `git merge --no-ff claude/sg-017-ui-implementation-2aeace`
+      from the primary worktree (/Volumes/NO NAME/workspace/snake-game, where `main`
+      is checked out — this worktree cannot check out a branch checked out elsewhere)
+      completed with the 'ort' strategy and zero conflicts as integration_commit
+      526fe5cebf4a7af06d67f7bf75558a37411cc452. `git diff --quiet` between the merge
+      commit and branch tip ea82d2e14055f3867f5ba63feacf9d0d4d23943d confirmed byte-
+      identical trees. Re-running `npm ci`/`npm run verify` in that primary worktree
+      was blocked by this session's sandbox classifier (outside the declared worktree
+      root); since the merge introduced no new tree content beyond what this session
+      already verified clean on the branch tip (format, lint, typecheck, 128 unit
+      tests, coverage, build, Chromium E2E 7/7, all on Node 24), no separate post-
+      merge verification run exists as an independent artifact — this is recorded
+      transparently rather than assumed. No remote push or deployment was performed.

@@ -1,14 +1,14 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-20T10:47:17Z
+- 마지막 동기화: 2026-07-20T10:58:02Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-017 구현 `verified`(지정 독립 리뷰어 Antigravity Gemini 3.1 Pro high APPROVE, head `0d763bfb165513bc0287e2ed6a35ef23863658aa`); local `main` 병합은 조정 책임자(Codex) 몫으로 남아 있고 이 세션은 수행하지 않았다
-- 현재 검증 대기: Codex 통합 재검증과 local `main` 병합. Antigravity 리뷰는 이 세션 채팅으로 전달된 텍스트로만 수신돼 저장소 native 증거(별도 브랜치/커밋/PR 코멘트)가 없다는 점을 `docs/coordination/tasks/SG-017.yaml`의 `independent_review_antigravity.evidence_form_caveat`에 남겼다 — 통합자가 필요하면 재현 가능한 재검증을 추가로 요구할 수 있다
+- 현재 활성 작업: 없음 — SG-017 `merged`(사람이 채팅으로 "머지" 직접 지시; 일반적으로는 조정 책임자/Codex가 병합하지만 이번은 사람의 명시적 재지정으로 Claude 세션이 병합 수행). integration commit `526fe5cebf4a7af06d67f7bf75558a37411cc452`, `main` `cb78699` 기준 충돌 0건
+- 현재 검증 대기: primary worktree에서 `npm ci`/`npm run verify` 재실행이 이 세션의 샌드박스 classifier에 막혔다. 병합이 `git diff --quiet`로 확인된 무변경(tree identical to already-verified branch tip) 병합이라 새 코드 상태에 대한 위험은 낮지만, Codex(또는 다른 세션)의 독립 재검증이 아직 저장소 native 증거로 존재하지 않는다. Antigravity 리뷰도 이 세션 채팅으로만 전달돼 `docs/coordination/tasks/SG-017.yaml`의 `independent_review_antigravity.evidence_form_caveat`에 그 한계를 남겼다
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-017 Codex 통합·병합; 이후 SG-018(Antigravity, Playwright 확장)
+- 다음 작업 후보: 여유가 있다면 merged 상태에서 clean checkout 재검증(Codex 또는 별도 세션); 이후 SG-018(Antigravity, Playwright 확장)
 
 ## H0b 종료 기록
 
