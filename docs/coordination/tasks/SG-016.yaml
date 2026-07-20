@@ -1,7 +1,7 @@
 id: SG-016
 spec_version: "1.0-plan"
 task_revision: 1
-status: in_progress
+status: review
 approved_by: human-user
 approved_at: "2026-07-20T07:45:04Z"
 approval_gate: direct-human-instruction
@@ -25,8 +25,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-015.md
 base_sha: 5ba28f663cd4a164f78af42ca6834460cc3c9b40
 branch: agent/codex/SG-016-lifecycle-storage-audio
-implementation_head_sha: ""
-head_sha: ""
+implementation_head_sha: a94d4eb31d0cf468e7889ede68f3e26e57d0fdc8
+head_sha: a94d4eb31d0cf468e7889ede68f3e26e57d0fdc8
 allowed_paths:
   - src/adapters/**
   - src/game/application-router.ts
@@ -94,6 +94,7 @@ required_commands:
   - git diff --check
 claim: "CLAIM: codex / Codex GPT-5 runtime / agent/codex/SG-016-lifecycle-storage-audio / 2026-07-20T07:45:04Z"
 claimed_at: "2026-07-20T07:45:04Z"
+submitted_at: "2026-07-20T08:00:00Z"
 handoff: docs/coordination/handoffs/SG-016.md
 status_history:
   - status: ready
@@ -104,3 +105,10 @@ status_history:
     at: "2026-07-20T07:45:04Z"
     by: codex
     basis: claimed on the dedicated branch before implementation edits
+  - status: review
+    at: "2026-07-20T08:00:00Z"
+    by: codex
+    basis: >-
+      Implementation head a94d4eb passed Node 24 format, lint, typecheck, 128 unit
+      tests, build, and Chromium production E2E 7/7. Claude independent review is
+      required before verification or merge.
