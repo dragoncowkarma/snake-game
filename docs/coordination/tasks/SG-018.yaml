@@ -1,0 +1,86 @@
+id: SG-018
+spec_version: "1.0-plan"
+task_revision: 1
+status: verified
+approved_by: human-user
+approved_at: "2026-07-21T01:15:50Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human approved the implementation plan via review policy.
+  This packet maps to SG-018 row in docs/TASKS.md.
+  It permits modifications under tests/e2e/**, task/handoff YAML/markdown, and STATUS.md.
+owner: antigravity
+model: "Gemini 3.5 Flash high"
+reasoning_or_workload: high
+reviewers:
+  - Codex 5.6 Luna 또는 5.5 / 높음
+depends_on:
+  - SG-014
+  - SG-016
+  - SG-017
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-014.md
+  - docs/coordination/handoffs/SG-016.md
+  - docs/coordination/handoffs/SG-017.md
+base_sha: 43dc22c66b552e6e6b05fc61ad58c591ffac023d
+branch: agent/antigravity/SG-018-e2e-testing
+implementation_head_sha: 6a2fa478f88dd54b43340843b747b6e535e224ce
+head_sha: 6a2fa478f88dd54b43340843b747b6e535e224ce
+allowed_paths:
+  - tests/e2e/**
+  - docs/coordination/tasks/SG-018.yaml
+  - docs/coordination/handoffs/SG-018.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/**
+  - tests/unit/**
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - tooling.config.ts
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - dist/**
+acceptance_ids:
+  - SG-018-AC01 / Keyboard: arrow/WASD mapping, enter/space on buttons, default scroll behavior.
+  - SG-018-AC02 / Focus: Start->board, Pause->Resume, GameOver->Restart, Menu->Start.
+  - SG-018-AC03 / Touch 1:1: D-pad pointer clicks send direction command and move focus cleanly.
+  - SG-018-AC04 / Pause: visibilitychange (document.hidden) and window blur pause, resize does not.
+  - SG-018-AC05 / Resize: ordinary resize preserves phase, score, and logic coordinates.
+  - SG-018-AC06 / Storage: high score split, mute preference, and last difficulty saved.
+  - SG-018-AC07 / Storage failure: SecurityError/Security Exception on localStorage handles gracefully.
+  - SG-018-AC08 / Audio fallback: AudioContext absence/failure doesn't crash the game.
+  - SG-018-AC09 / Console: no console errors, page errors, or 404 assets during execution.
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - git diff --check
+claim: "CLAIM: antigravity / Gemini 3.5 Flash high / agent/antigravity/SG-018-e2e-testing / 2026-07-21T01:15:50Z"
+claimed_at: "2026-07-21T01:15:50Z"
+submitted_at: "2026-07-21T01:35:00Z"
+handoff: docs/coordination/handoffs/SG-018.md
+status_history:
+  - status: ready
+    at: "2026-07-21T01:15:50Z"
+    by: human-user
+    basis: direct authorization via implementation plan approval
+  - status: in_progress
+    at: "2026-07-21T01:15:50Z"
+    by: antigravity
+    basis: claimed on the dedicated branch before any implementation edits
+  - status: verified
+    at: "2026-07-21T01:35:00Z"
+    by: antigravity
+    basis: >-
+      Implemented comprehensive E2E Playwright tests in tests/e2e/production.spec.ts.
+      Ran format, lint, typecheck, unit tests, and production build checks (all passed).
+      Verified E2E test suite (14/14 tests) passed 3 consecutive times with zero failures.
