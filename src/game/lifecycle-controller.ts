@@ -1,8 +1,14 @@
-export interface LifecycleWindow {
-  readonly screen: Screen;
+interface OrientationEventSource {
+  readonly type?: string;
   addEventListener(type: string, listener: EventListener): void;
   removeEventListener(type: string, listener: EventListener): void;
-  matchMedia(query: string): MediaQueryList;
+}
+
+export interface LifecycleWindow {
+  readonly screen: { readonly orientation?: OrientationEventSource };
+  addEventListener(type: string, listener: EventListener): void;
+  removeEventListener(type: string, listener: EventListener): void;
+  matchMedia(query: string): { readonly matches: boolean };
 }
 
 export interface LifecycleDocument {
