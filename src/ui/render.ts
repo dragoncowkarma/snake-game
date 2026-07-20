@@ -28,6 +28,7 @@ export interface ShellElements {
   readonly best: HTMLElement;
   readonly phaseLabel: HTMLElement;
   readonly result: HTMLElement;
+  readonly bestNote: HTMLElement;
   readonly board: HTMLElement;
   readonly difficultyInputs: readonly HTMLInputElement[];
   readonly startButton: HTMLButtonElement;
@@ -111,7 +112,14 @@ export function createShell(root: HTMLElement): ShellElements {
   const result = el(document, 'p', { className: 'hud__result' });
 
   result.hidden = true;
-  hud.append(scoreLine, bestLine, phaseLabel, result);
+
+  // A separate element (not appended into `result`'s own text) so the collision/win
+  // reason sentence itself never changes shape based on whether this run set a new
+  // record; only the terminal screen ever shows it (DEVELOPMENT_PLAN section 3.5).
+  const bestNote = el(document, 'p', { className: 'hud__best-note', text: 'New best!' });
+
+  bestNote.hidden = true;
+  hud.append(scoreLine, bestLine, phaseLabel, result, bestNote);
 
   const boardWrap = el(document, 'section', { className: 'board-wrap' });
   const board = el(document, 'div', { className: 'board' });
@@ -206,6 +214,7 @@ export function createShell(root: HTMLElement): ShellElements {
     best,
     phaseLabel,
     result,
+    bestNote,
     board,
     difficultyInputs,
     startButton,
@@ -239,7 +248,7 @@ function setHidden(element: HTMLElement, hidden: boolean): void {
 export function renderSnapshot(
   elements: ShellElements,
   state: GameState,
-  meta: { readonly best: number; readonly muted: boolean },
+  meta: { readonly best: number; readonly muted: boolean; readonly isNewBest: boolean },
 ): void {
   elements.score.textContent = String(state.score);
   elements.best.textContent = String(Math.max(meta.best, state.score));
@@ -266,8 +275,16 @@ export function renderSnapshot(
 
     elements.result.textContent = reasonText;
     elements.result.hidden = false;
+
+    // A separate element, not appended to `result`'s own sentence, so the
+    // collision/win reason text never changes shape based on whether this run set a
+    // new record; only the terminal screen ever shows it (DEVELOPMENT_PLAN section
+    // 3.5: "최고 점수 갱신은 게임 종료 화면에서만 강조한다"). Textual, not color-only
+    // (AC-U04 spirit).
+    elements.bestNote.hidden = !meta.isNewBest;
   } else {
     elements.result.hidden = true;
+    elements.bestNote.hidden = true;
   }
 
   elements.muteButton.setAttribute('aria-pressed', String(meta.muted));
