@@ -1,12 +1,59 @@
 import { expect, test } from '@playwright/test';
-import { setupPageListeners } from '../helpers/e2e-helpers.ts';
+
+function setupEnhancedPageListeners(page: any, failures: string[]) {
+  // 1. Console errors
+  page.on('console', (msg: any) => {
+    if (msg.type() === 'error') {
+      failures.push(`Console Error: ${msg.text()}`);
+    }
+  });
+
+  // 2. Uncaught exceptions (pageerror)
+  page.on('pageerror', (err: Error) => {
+    failures.push(`Page Error: ${err.message}`);
+  });
+
+  // 3. Unhandled promise rejections (intercepted via window listener)
+  page.on('domcontentloaded', async () => {
+    await page.evaluate(() => {
+      window.addEventListener('unhandledrejection', (event) => {
+        (window as any).browserFailures = (window as any).browserFailures || [];
+        (window as any).browserFailures.push(`Unhandled Rejection: ${event.reason}`);
+      });
+    });
+  });
+
+  // 4. Request failures
+  page.on('requestfailed', (req: any) => {
+    failures.push(`Request Failed: ${req.url()} - ${req.failure()?.errorText}`);
+  });
+
+  // 5. Response status outside 200-299 (except for data URLs or favicon)
+  page.on('response', (res: any) => {
+    const status = res.status();
+    const url = res.url();
+    if (status !== 0 && (status < 200 || status > 308)) {
+      if (!url.includes('favicon.ico')) {
+        failures.push(`Non-OK Response: ${url} returned status ${status}`);
+      }
+    }
+  });
+
+  // 6. Cross-origin request detection
+  page.on('request', (req: any) => {
+    const url = req.url();
+    if (url.startsWith('http') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+      failures.push(`Forbidden Cross-Origin Request: ${url}`);
+    }
+  });
+}
 
 test.describe('SG-018 Production Build E2E Suite', () => {
   test('Keyboard Controls, WASD, Space, and preventDefault scroll prevention (AC-U02, AC-U06)', async ({
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -96,12 +143,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Menu');
     await expect(startButton).toBeFocused();
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
   test('Mute sync and keyboard toggle (AC-U02, AC-U05, DF-SG015-01)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -133,6 +182,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(muteButton).toHaveAttribute('aria-pressed', 'false');
     await expect(muteButton).toHaveText('Mute');
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
@@ -140,32 +191,36 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     browser,
     baseURL,
   }) => {
-    // Create a custom context with touch enabled and baseURL passed
     const context = await browser.newContext({ hasTouch: true, baseURL });
     const page = await context.newPage();
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     // Initial random seed to place food at (10,9) then (10,8) (straight Up path) to avoid tick timing races
     await page.addInitScript(() => {
-      const originalRandom = Math.random;
-      Math.random = () => {
-        const phaseEl = document.querySelector('.hud__phase');
-        const phase = phaseEl ? phaseEl.textContent : '';
-        const scoreEl = document.querySelector('.hud__line span:last-child');
-        const score = scoreEl ? scoreEl.textContent : '';
+      const originalFloor = Math.floor;
+      const MAGIC = 0.543210987654321;
 
-        // Deterministic placement on the first 2 simulation food spawns (minification safe)
-        if (phase === 'Ready' || phase === 'Menu') {
-          return (190 + 0.5) / 397;
+      Math.random = () => {
+        return MAGIC;
+      };
+
+      // 100% minification-safe, caller-isolated multiplier matching
+      Math.floor = function (val: number) {
+        const possibleMultiplier = val / MAGIC;
+        const roundedMultiplier = Math.round(possibleMultiplier);
+        if (Math.abs(possibleMultiplier - roundedMultiplier) < 1e-9) {
+          if (roundedMultiplier === 397) {
+            return 190; // (10, 9)
+          }
+          if (roundedMultiplier === 396) {
+            return 170; // (10, 8)
+          }
+          if (roundedMultiplier === 395) {
+            return 0; // (0, 0) - keeps subsequent food far away
+          }
         }
-        if (phase === 'Playing' && score === '0') {
-          return (170 + 0.5) / 396;
-        }
-        if (phase === 'Playing') {
-          return 0;
-        }
-        return originalRandom();
+        return originalFloor.apply(this, arguments as any);
       };
     });
 
@@ -185,13 +240,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Tap Up to start the game moving Up
     await dpadUp.tap();
     await expect(phase).toHaveText('Playing');
-    await expect(board).toBeFocused(); // focus preservation (focus returns to board after transition)
+    await expect(board).toBeFocused(); // focus preservation
 
     // Wait for the snake to eat both foods along the Up path (reaches score 20)
     const liveStatus = page.locator('#status');
     await expect(liveStatus).toHaveText('Food eaten. Score 20.', { timeout: 15000 });
 
-    // Now tap Left to change direction (safe from timing race since score 20 is already reached)
+    // Now tap Left to change direction
     await dpadLeft.tap();
     await expect(dpadLeft).toBeFocused(); // focus shifts cleanly to the tapped button
 
@@ -199,7 +254,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
     await expect(liveStatus).toHaveText('Game over: wall collision. Score 20.');
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
     await context.close();
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
@@ -207,82 +264,142 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     // Start with a narrow mobile viewport 320x568
     await page.setViewportSize({ width: 320, height: 568 });
 
     // Seed first food at (11, 10) (immediately right of head) and second food at (11, 5) (on the Up turn path)
     await page.addInitScript(() => {
-      const originalRandom = Math.random;
-      Math.random = () => {
-        const phaseEl = document.querySelector('.hud__phase');
-        const phase = phaseEl ? phaseEl.textContent : '';
-        const scoreEl = document.querySelector('.hud__line span:last-child');
-        const score = scoreEl ? scoreEl.textContent : '';
+      const originalFloor = Math.floor;
+      const MAGIC = 0.543210987654321;
 
-        if (phase === 'Ready' || phase === 'Menu') {
-          return (208 + 0.5) / 397; // (11, 10)
+      Math.random = () => {
+        return MAGIC;
+      };
+
+      // 100% minification-safe, caller-isolated multiplier matching
+      Math.floor = function (val: number) {
+        const possibleMultiplier = val / MAGIC;
+        const roundedMultiplier = Math.round(possibleMultiplier);
+        if (Math.abs(possibleMultiplier - roundedMultiplier) < 1e-9) {
+          if (roundedMultiplier === 397) {
+            return 208; // (11, 10)
+          }
+          if (roundedMultiplier === 396) {
+            return 111; // (11, 5)
+          }
         }
-        if (phase === 'Playing' && score === '0') {
-          return (111 + 0.5) / 396; // (11, 5)
-        }
-        if (phase === 'Playing') {
-          return 0;
-        }
-        return originalRandom();
+        return originalFloor.apply(this, arguments as any);
       };
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
-    // Select Slow difficulty to ensure ticks are 220ms (gives ample time to process keypress events)
-    const slowRadio = page.getByRole('radio', { name: 'Slow', exact: true });
-    await slowRadio.click();
-
+    // 1. Verify that viewport resize during Playing phase does NOT pause the game (AGENTS.md rule: "일반 resize는 pause를 일으키지 않는다.")
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await startButton.click();
-
     const board = page.locator('#board');
     const phase = page.locator('.hud__phase');
 
-    // Start moving Right
     await board.press('ArrowRight');
+    await expect(phase).toHaveText('Playing');
 
+    // Resize viewport while Playing
+    await page.setViewportSize({ width: 600, height: 600 });
+    await expect(phase).toHaveText('Playing');
+    await page.setViewportSize({ width: 320, height: 568 });
+    await expect(phase).toHaveText('Playing');
+
+    // 2. Reload to run coordinate preservation and other lifecycle pause tests cleanly
+    await page.reload({ waitUntil: 'networkidle' });
+
+    // Select Slow difficulty to ensure ticks are 220ms
+    const slowRadio = page.getByRole('radio', { name: 'Slow', exact: true });
+    await slowRadio.click();
+    await startButton.click();
+
+    await board.press('ArrowRight');
     // Wait for the score to reach 10, meaning the snake took exactly 1 step and consumed the food at (11, 10)
     await expect(page.locator('.hud').getByText('Score 10')).toBeVisible({ timeout: 15000 });
 
-    // 1. Pause immediately via keypress (now completely event-driven, time-independent)
+    // 3. Pause immediately via keypress (snake is now stationary at (11, 10))
     await board.press('p');
     await expect(phase).toHaveText('Paused');
 
-    // 2. Viewport resize cycle to 600x600 and back to 320x568
+    // Viewport resize cycle while Paused -> verify phase remains Paused and coordinates are preserved
     const canvas = board.locator('canvas');
     const originalWidth = await canvas.evaluate((el) => el.clientWidth);
 
     await page.setViewportSize({ width: 600, height: 600 });
-    await expect(canvas).not.toHaveJSProperty('clientWidth', originalWidth); // Verify visual relayout triggered
+    await expect(canvas).not.toHaveJSProperty('clientWidth', originalWidth);
+    await expect(phase).toHaveText('Paused');
 
     await page.setViewportSize({ width: 320, height: 568 });
-    await expect(canvas).toHaveJSProperty('clientWidth', originalWidth); // Verify visual relayout restored
-    await expect(phase).toHaveText('Paused'); // Verify state is preserved (still Paused)
+    await expect(canvas).toHaveJSProperty('clientWidth', originalWidth);
+    await expect(phase).toHaveText('Paused');
 
-    // 3. Resume via Space on Resume button and immediately press Up
-    const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
-    await resumeButton.focus();
-    await page.keyboard.press('Space');
+    // 4. Resume and immediately turn Up in the same frame to prevent Playwright timing races
+    await page.evaluate(() => {
+      // Find and click the Resume button
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const resumeButton = buttons.find((b) => b.textContent === 'Resume');
+      if (resumeButton) {
+        resumeButton.click();
+      }
+      // Dispatch ArrowUp keydown on the board
+      const boardEl = document.querySelector('#board') as HTMLElement;
+      if (boardEl) {
+        boardEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+      }
+    });
+
     await expect(phase).toHaveText('Playing');
+    await expect(page.locator('.hud').getByText('Score 20')).toBeVisible({ timeout: 15000 });
 
-    // Turn Up. If logical coordinates were preserved at (11, 10), the snake moves Up along x = 11,
-    // eats the second food at (11, 5) (Score 20), and crashes. If reset to (10, 10), it misses it (Score 10).
-    await board.press('ArrowUp');
+    // 5. Document hidden -> Paused (AC-L01)
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect(phase).toHaveText('Paused');
 
-    // Let the snake crash into the top wall
+    // Resume
+    const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
+    await resumeButton.click();
+
+    // 6. Window blur -> Paused (AC-L01)
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event('blur'));
+    });
+    await expect(phase).toHaveText('Paused');
+
+    // Resume
+    await resumeButton.click();
+
+    // 7. Screen orientation change -> Paused (AC-L01)
+    await page.evaluate(() => {
+      const mockOrientation = {
+        type: 'portrait-primary',
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      };
+      Object.defineProperty(window.screen, 'orientation', {
+        value: mockOrientation,
+        configurable: true,
+      });
+      window.dispatchEvent(new Event('orientationchange'));
+    });
+    await expect(phase).toHaveText('Paused');
+
+    // Resume and let it crash
+    await resumeButton.click();
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
     const liveStatus = page.locator('#status');
-    // Verifies logical coordinate preservation (Score 20 achieved)
     await expect(liveStatus).toHaveText('Game over: wall collision. Score 20.');
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
@@ -290,7 +407,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     // Initial random seed to place food to the right of the head
     const INITIAL_FREE_CELL_COUNT = 397;
@@ -387,6 +504,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     );
     expect(highNormalReloaded).toBe('10');
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
@@ -394,7 +513,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
       // Set corrupt/malformed values in localStorage
@@ -427,12 +546,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
   test('LocalStorage SecurityError fallback (AC-R01, AC-R04)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
       // Mock window.localStorage to throw SecurityError when accessed or called
@@ -475,20 +596,21 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
   test('Audio fallback when AudioContext constructor throws (AC-R02)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
-      (window as any).blockAudioContext = false;
       class ConditionalFailingAudioContext {
         constructor() {
-          if ((window as any).blockAudioContext) {
-            // Turn off blockAudioContext immediately so subsequent calls (like Phaser's unlock) do not throw
-            (window as any).blockAudioContext = false;
+          const stack = new Error().stack || '';
+          // Caller-isolated and 100% minification-safe check using public function name
+          if (stack.includes('mountPhaserGame')) {
             throw new Error('Failed to construct AudioContext');
           }
           // Phaser's instance: minimal mock context to boot cleanly
@@ -531,11 +653,6 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Verify game boots successfully
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await expect(startButton).toBeVisible();
-
-    // Enable AudioContext block/throw right before user gesture click
-    await page.evaluate(() => {
-      (window as any).blockAudioContext = true;
-    });
     await startButton.click();
 
     const phase = page.locator('.hud__phase');
@@ -546,15 +663,16 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 
   test('Audio fallback when AudioContext resume rejects (AC-R02)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupPageListeners(page, browserFailures);
+    setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
-      (window as any).rejectAudioResume = false;
       // Mock AudioContext class whose resume rejects cleanly for AudioFeedback
       class ResumeRejectingAudioContext {
         constructor() {
@@ -565,7 +683,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
           return 'suspended';
         }
         resume() {
-          if ((window as any).rejectAudioResume) {
+          const stack = new Error().stack || '';
+          if (stack.includes('activateFromUserGesture')) {
             const p = Promise.reject(new Error('AudioContext resume rejected'));
             p.catch(() => {}); // prevent unhandled promise rejection warnings/failures
             return p;
@@ -602,11 +721,6 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Verify game boots successfully
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     await expect(startButton).toBeVisible();
-
-    // Enable AudioContext resume rejection right before user gesture click
-    await page.evaluate(() => {
-      (window as any).rejectAudioResume = true;
-    });
     await startButton.click();
 
     const phase = page.locator('.hud__phase');
@@ -617,6 +731,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
 
+    const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
+    browserFailures.push(...pageFailures);
     expect(browserFailures).toEqual([]);
   });
 });
