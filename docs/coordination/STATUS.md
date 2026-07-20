@@ -5,7 +5,7 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-018 `verified` (Antigravity, Playwright E2E 확장, branch: agent/antigravity/SG-018-e2e-testing, head SHA: `04477e7be08e25819f2535d698523c6860b9d55c`)
+- 현재 활성 작업: 없음 — SG-018 `verified` (Antigravity, Playwright E2E 확장, branch: agent/antigravity/SG-018-e2e-testing, head SHA: `30dcfa5da493714895ca52713b5bf81bded927f1`)
 - 현재 검증 대기: 없음 — primary worktree에서 `npm run format:check`/`lint`/`typecheck`/제외 범위를 바로잡은 vitest(12 files·128 tests)/`build`/`test:e2e`(Chromium 7/7)를 마스킹되지 않은 실제 종료 코드로 개별 재확인해 모두 exit 0을 얻었다. **정정**: 이전에 파이프(`| tail`)로 가려진 종료 코드를 근거로 "verify 통과"라고 보고한 것은 오류였다 — 실제로는 `npm run test`/`npm run verify` 스크립트 원문이 primary worktree에서 exit 1을 낸다. 원인은 SG-017과 무관한 사전 결함: `package.json`의 `test` exclude 패턴(`spikes/**`)이 저장소 루트에만 anchor돼, primary worktree 안에 중첩된 다른 `.claude/worktrees/*` 체크아웃의 낡은 Playwright 스파이크 파일을 걸러내지 못한다(실제 테스트 796/796 PASS, 실패한 19개는 전부 무관한 외부 파일). 별도 out-of-scope 작업으로 flag했다(task_b1729792). Antigravity 리뷰는 이 세션 채팅으로만 전달돼 `docs/coordination/tasks/SG-017.yaml`의 `independent_review_antigravity.evidence_form_caveat`에 그 한계를 남겼다
 - 현재 결정 필요: 없음
 - 다음 작업 후보: `vite.config.ts`/`package.json`의 vitest exclude glob anchoring 수정(Codex, task_b1729792); 이후 SG-018(Antigravity, Playwright 확장)
