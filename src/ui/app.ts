@@ -15,9 +15,40 @@ import {
   translateKeydown,
 } from './state.ts';
 
+/**
+ * Presentation-only fields the shell renders alongside a GameState snapshot but that
+ * the domain does not own: audio mute preference (CONTRACTS.md section 3 fixes
+ * `toggleMute` as shell-handled, not a GameState field) and the persisted per-
+ * difficulty high score (SG-016 GamePreferences). `isNewBest` highlights a just-ended
+ * run's score on the terminal screen only (DEVELOPMENT_PLAN section 3.5); the caller
+ * is responsible for only setting it true on a gameOver/won snapshot.
+ */
+export interface ShellMeta {
+  readonly muted: boolean;
+  readonly best: number;
+  readonly isNewBest: boolean;
+}
+
+const DEFAULT_SHELL_META: ShellMeta = { muted: false, best: 0, isNewBest: false };
+
 export interface GameShellHandle {
-  /** Feeds a new domain snapshot + the events that produced it into the shell. */
-  applySnapshot(state: GameState, events: readonly DomainEvent[]): void;
+  /**
+   * Feeds a new domain snapshot + the events that produced it into the shell.
+   * `metaPatch` merges into the shell's current ShellMeta before rendering; omit it
+   * when only the domain snapshot changed.
+   */
+  applySnapshot(
+    state: GameState,
+    events: readonly DomainEvent[],
+    metaPatch?: Partial<ShellMeta>,
+  ): void;
+  /**
+   * Re-renders the last known snapshot with a merged ShellMeta patch, without moving
+   * focus or announcing anything. Callers use this for state that changes outside a
+   * domain snapshot/event pair — e.g. the audio adapter's authoritative mute value
+   * after a `toggleMute` command, which CONTRACTS.md section 3 keeps out of GameState.
+   */
+  updateMeta(metaPatch: Partial<ShellMeta>): void;
   /** Removes every listener this shell attached. Safe to call once. */
   destroy(): void;
 }
@@ -61,12 +92,13 @@ function focusElementFor(
 export function createGameShell(
   root: HTMLElement,
   dispatch: (command: Command) => void,
+  initialMeta: ShellMeta = DEFAULT_SHELL_META,
 ): GameShellHandle {
   const document = root.ownerDocument;
   const elements = createShell(root);
   let previousPhase: Phase | null = null;
-  let muted = false;
-  let best = 0;
+  let meta: ShellMeta = initialMeta;
+  let lastState: GameState = INITIAL_MENU_SNAPSHOT;
 
   const cleanups: Array<() => void> = [];
 
@@ -81,10 +113,12 @@ export function createGameShell(
 
   for (const action of actionElements(elements)) {
     if (action.kind === 'mute') {
+      // The click here and the board's keyboard 'm' shortcut both call the same
+      // dispatch function; neither path flips a locally-owned boolean. The visible
+      // mute state comes only from updateMeta({ muted }), fed by the caller with the
+      // audio adapter's authoritative value after dispatch handles `toggleMute`. This
+      // keeps both activation paths in sync (closes DF-SG015-01).
       on(action.element, 'click', () => {
-        muted = !muted;
-        elements.muteButton.setAttribute('aria-pressed', String(muted));
-        elements.muteButton.textContent = muted ? 'Unmute' : 'Mute';
         dispatch({ type: 'toggleMute' });
       });
 
@@ -119,12 +153,14 @@ export function createGameShell(
 
   on(document, 'keydown', keydownListener);
 
-  function applySnapshot(state: GameState, events: readonly DomainEvent[]): void {
-    renderSnapshot(elements, state, { best, muted });
-
-    if (state.phase === 'gameOver' || state.phase === 'won') {
-      best = Math.max(best, state.score);
-    }
+  function applySnapshot(
+    state: GameState,
+    events: readonly DomainEvent[],
+    metaPatch?: Partial<ShellMeta>,
+  ): void {
+    meta = { ...meta, ...metaPatch };
+    lastState = state;
+    renderSnapshot(elements, state, meta);
 
     const announcement = announcementFor(previousPhase, state, events);
 
@@ -138,10 +174,16 @@ export function createGameShell(
     previousPhase = state.phase;
   }
 
+  function updateMeta(metaPatch: Partial<ShellMeta>): void {
+    meta = { ...meta, ...metaPatch };
+    renderSnapshot(elements, lastState, meta);
+  }
+
   applySnapshot(INITIAL_MENU_SNAPSHOT, []);
 
   return {
     applySnapshot,
+    updateMeta,
     destroy(): void {
       for (const cleanup of cleanups.splice(0)) {
         cleanup();

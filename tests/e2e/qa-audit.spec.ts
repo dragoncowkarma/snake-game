@@ -131,21 +131,22 @@ test.describe('SG-015 Independent QA Audit Suite', () => {
     expect(browserFailures).toEqual([]);
   });
 
-  test('Audit keyboard mute shortcut toggle (AC-U02, AC-U05) [EXPECTED FAIL]', async ({ page }) => {
-    // Keyboard mute shortcut 'm' is currently broken in Wave 2.
-    // Marking as expected to fail to allow verify command suite to pass.
-    test.fail(
-      true,
-      'Keyboard mute shortcut "m" does not toggle the visual mute state (DF-SG015-01)',
-    );
-
+  test('Audit keyboard mute shortcut toggle (AC-U02, AC-U05)', async ({ page }) => {
+    // DF-SG015-01 (keyboard 'm' did not update the visible mute state) was fixed by
+    // SG-017: both the Mute button click and the board's 'm' shortcut now dispatch the
+    // same toggleMute command, and the shell's mute display is driven exclusively by
+    // the audio adapter's authoritative isMuted value via GameShellHandle.updateMeta.
     const browserFailures: string[] = [];
     setupPageListeners(page, browserFailures);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
-    const muteButton = page.getByRole('button', { name: 'Mute', exact: true });
+    // A role+name locator is re-queried live on every assertion; once the toggle
+    // changes the button's accessible name from "Mute" to "Unmute" that query would
+    // stop matching this same button. `.mute` is the button's stable class (render.ts
+    // createShell), so it keeps resolving to the one mute control across the toggle.
+    const muteButton = page.locator('.mute');
     const board = page.locator('#board');
 
     await startButton.click();

@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { AudioFeedback, type AudioContextFactory } from '../adapters/audio-feedback.ts';
 import { GamePreferences, type StorageLike } from '../adapters/game-preferences.ts';
 import type { RandomSource } from '../domain/index.ts';
-import { createGameShell } from '../ui/app.ts';
+import { createGameShell, type GameShellHandle } from '../ui/app.ts';
 
 import { ApplicationRouter } from './application-router.ts';
 import { BOARD_LOGICAL_SIZE } from './board-renderer.ts';
@@ -51,6 +51,13 @@ export function mountPhaserGame(
     initiallyMuted: preferences.snapshot.muted,
   });
   const application = new ApplicationRouter(randomSource);
+  // `dispatch` needs to call back into the shell to feed the audio adapter's
+  // authoritative mute state after a `toggleMute` command (CONTRACTS.md section 3
+  // keeps mute preference out of GameState, so no snapshot/event reports it), but the
+  // shell's own constructor requires `dispatch`. `shellRef.current` is populated
+  // synchronously right after `createGameShell` returns, before any listener it
+  // attached can invoke `dispatch`.
+  const shellRef: { current: GameShellHandle | null } = { current: null };
   const dispatch = (command: Parameters<ApplicationRouter['dispatch']>[0]): boolean => {
     // This synchronous call creates/resumes an AudioContext only while handling a
     // genuine browser command. Rejection is contained by AudioFeedback.
@@ -68,11 +75,18 @@ export function mountPhaserGame(
 
     if (command.type === 'toggleMute') {
       preferences.setMuted(audio.toggleMuted());
+      shellRef.current?.updateMeta({ muted: audio.isMuted });
     }
 
     return true;
   };
-  const shell = createGameShell(root, dispatch);
+  const shell = createGameShell(root, dispatch, {
+    muted: preferences.snapshot.muted,
+    best: preferences.bestScore(application.snapshot.difficulty),
+    isNewBest: false,
+  });
+
+  shellRef.current = shell;
   const board = root.querySelector<HTMLElement>('#board');
 
   if (board === null) {
@@ -99,9 +113,18 @@ export function mountPhaserGame(
     });
   };
   const unsubscribeShell = application.subscribe((state, events) => {
-    preferences.recordScore(state.difficulty, state.score);
+    // Recording (and detecting a new record) only at the terminal phase matches
+    // DEVELOPMENT_PLAN section 3.5 ("최고 점수 갱신은 게임 종료 화면에서만 강조한다"):
+    // the final score of a run is always >= any mid-play score, so gating recordScore
+    // here changes nothing about the persisted value, only when "new best" is true.
+    const isTerminal = state.phase === 'gameOver' || state.phase === 'won';
+    const isNewBest = isTerminal && preferences.recordScore(state.difficulty, state.score);
+
     audio.handleEvents(events);
-    shell.applySnapshot(state, events);
+    shell.applySnapshot(state, events, {
+      best: preferences.bestScore(state.difficulty),
+      isNewBest,
+    });
 
     if (game === null && pendingGameMount === null && state.phase !== 'menu') {
       // Phaser must be constructed after the shell has committed the visible board

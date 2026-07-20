@@ -1,0 +1,135 @@
+id: SG-017
+spec_version: "1.0-plan"
+task_revision: 1
+status: in_progress
+approved_by: human-user
+approved_at: "2026-07-20T09:42:13Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  STATUS.md recorded SG-017 as "packet 승인 대기" (packet awaiting approval) with no
+  docs/coordination/tasks/SG-017.yaml and no GitHub Issue/PR (0 open, confirmed via
+  `gh issue list`/`gh pr list`). AGENTS.md section 3 requires approval fields
+  (revision/approved_by/approved_at/status: ready) before starting, and this session's
+  initial prompt template arrived with those fields as unfilled placeholders. Per
+  AGENTS.md ("승인 필드가 없거나... 시작하지 마라") the agent stopped before touching any
+  code and asked the human directly via AskUserQuestion whether to author and execute
+  this exact revision-1 offline packet under the TASKS.md SG-017 row scope (allowed
+  paths src/ui/**, styles, copy docs; depends_on SG-013, SG-016; AC-U06~U09). The human
+  selected "직접 승인하고 진행" (direct authorization to proceed), the same
+  approval_gate pattern already used for SG-016. This authorizes only the SG-017 scope
+  already defined in the accepted docs/TASKS.md row; it does not authorize a
+  public-contract or product-meaning change, a new dependency, deployment, or
+  main-direct-push.
+owner: claude
+model: "Claude Sonnet 5 high"
+reasoning_or_workload: high
+reviewers:
+  - Antigravity Gemini 3.1 Pro high
+depends_on:
+  - SG-013
+  - SG-016
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-013.md
+  - docs/coordination/handoffs/SG-016.md
+base_sha: cb7869958dd5782d2a05df165e2fe7eaeabbfc78
+branch: claude/sg-017-ui-implementation-2aeace
+implementation_head_sha: null
+head_sha: null
+allowed_paths:
+  - src/ui/**
+  - src/styles.css
+  - src/game/bootstrap.ts
+  - tests/e2e/qa-audit.spec.ts
+  - docs/coordination/tasks/SG-017.yaml
+  - docs/coordination/handoffs/SG-017.md
+  - docs/coordination/STATUS.md
+allowed_paths_note: >-
+  src/game/bootstrap.ts and tests/e2e/qa-audit.spec.ts sit outside SG-017's default
+  ownership table row (src/ui/**, styles, copy docs) but are included as narrow,
+  justified one-time exceptions, following the same precedent SG-013 recorded for
+  STATUS.md/TASKS.md: (1) src/ui/**'s new GameShellHandle.updateMeta/ShellMeta surface
+  is inert unless the single production integrator (mountPhaserGame in bootstrap.ts)
+  actually calls it after toggleMute and after each snapshot; without touching that one
+  file the DF-SG015-01 fix and persisted-best binding cannot reach production, and the
+  edit is limited to wiring calls into the existing dispatch/subscribe closures, not new
+  game rules, Phaser Scene code, or adapter logic. (2) tests/e2e/qa-audit.spec.ts's one
+  `test.fail(true, ...)` marker on the DF-SG015-01 case exists specifically to let
+  `npm run test:e2e`/`npm run verify` pass while that defect is open; fixing the defect
+  without removing that marker would flip the suite red (Playwright reports an
+  expected-to-fail test that passes as a failure), so leaving the file untouched is not
+  an option once the underlying bug is fixed. No other line in either file is changed.
+forbidden_paths:
+  - src/domain/**
+  - src/config/**
+  - src/game/application-router.ts
+  - src/game/game-scene.ts
+  - src/game/board-renderer.ts
+  - src/game/fixed-step-scheduler.ts
+  - src/game/input-controller.ts
+  - src/game/lifecycle-controller.ts
+  - src/adapters/**
+  - tests/unit/**
+  - tests/fixtures/**
+  - tests/helpers/**
+  - tests/e2e/vertical-flow.spec.ts
+  - tests/e2e/scaffold.spec.ts
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - tooling.config.ts
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - dist/**
+acceptance_ids:
+  - >-
+    SG-017-AC01 / AC-U06: focus restoration (board after start/resume-shaped entry,
+    Resume after pause, Restart after gameOver/won, Start after menu) remains correct
+    after the ShellMeta/updateMeta refactor of createGameShell; no regression in
+    focusTargetForTransition usage.
+  - >-
+    SG-017-AC02 / AC-U07, DF-SG015-01: score/best/phase/end-reason stay in the DOM and
+    at most one aria-live announcement fires per meaningful change; the keyboard 'm'
+    mute shortcut and the Mute button both drive the exact same visible mute state
+    (aria-pressed, textContent) via the audio adapter's authoritative isMuted value,
+    closing DF-SG015-01.
+  - >-
+    SG-017-AC03 / "최고 기록" UI, DEVELOPMENT_PLAN section 3.5: the persisted
+    per-difficulty high score (GamePreferences, SG-016) is bound to the HUD Best line
+    on every snapshot and on difficulty selection, and a new best achieved during the
+    run that just ended is textually highlighted only on the terminal (gameOver/won)
+    screen, never mid-play.
+  - >-
+    SG-017-AC04 / AC-U08, AC-U09: no new colors, layout, or touch-target sizing were
+    introduced; the new best-score emphasis reuses already-validated tokens (bold
+    weight + existing --sg-text foreground, no new hue) so no new contrast validation
+    is required, and no change touches touch-action/safe-area/44px rules.
+  - AC-U06
+  - AC-U07
+  - AC-U08
+  - AC-U09
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - npm run test:e2e
+  - npm run verify
+  - git diff --check
+claim: "CLAIM: claude / Claude Sonnet 5 high / claude/sg-017-ui-implementation-2aeace / 2026-07-20T09:42:13Z"
+claimed_at: "2026-07-20T09:42:13Z"
+handoff: docs/coordination/handoffs/SG-017.md
+status_history:
+  - status: ready
+    at: "2026-07-20T09:42:13Z"
+    by: human-user
+    basis: direct authorization via AskUserQuestion to create and execute this exact revision-1 offline packet
+  - status: in_progress
+    at: "2026-07-20T09:42:13Z"
+    by: claude
+    basis: claimed on the existing dedicated branch before any implementation edits

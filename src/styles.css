@@ -121,6 +121,23 @@ body {
   color: var(--sg-text);
 }
 
+/*
+ * "New best" note, shown only on the terminal (gameOver/won) screen, as a separate
+ * line from the collision/win reason sentence. Distinguished by weight and border,
+ * not a new hue, so it reuses the already-validated --sg-text/--sg-surface-border
+ * contrast pair instead of requiring separate contrast verification
+ * (DEVELOPMENT_PLAN section 3.5, AC-U04 color-independent intent).
+ */
+.hud__best-note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sg-text);
+  border-left: var(--sg-focus-width) solid var(--sg-surface-border);
+  padding-left: var(--sg-space-2);
+}
+
 .board-wrap {
   display: flex;
   justify-content: center;
