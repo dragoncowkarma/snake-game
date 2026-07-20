@@ -122,7 +122,12 @@ export function mountPhaserGame(
   const lifecycle = new LifecycleController({
     window: ownerWindow,
     document,
-    pause: () => dispatch({ type: 'pause' }),
+    // blur, hidden, and orientation changes are never user gestures. They must not
+    // attempt AudioContext activation, because an autoplay rejection would disable
+    // optional feedback before a real board key or button click can activate it.
+    pause: () => {
+      application.dispatch({ type: 'pause' });
+    },
     relayout: () => game?.scale.refresh(),
   });
 
