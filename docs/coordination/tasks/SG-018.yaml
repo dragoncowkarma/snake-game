@@ -24,8 +24,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-017.md
 base_sha: 43dc22c66b552e6e6b05fc61ad58c591ffac023d
 branch: agent/antigravity/SG-018-e2e-testing
-implementation_head_sha: a49ca905f23c23165422263d8005aae35ae0cdc7
-head_sha: a49ca905f23c23165422263d8005aae35ae0cdc7
+implementation_head_sha: 1a95f394c417e3eb1ae911f10503612dee1ff5a0
+head_sha: 1a95f394c417e3eb1ae911f10503612dee1ff5a0
 allowed_paths:
   - tests/e2e/**
   - docs/coordination/tasks/SG-018.yaml
@@ -78,11 +78,11 @@ status_history:
     by: antigravity
     basis: claimed on the dedicated branch before any implementation edits
   - status: review-ready
-    at: "2026-07-21T16:36:00Z"
+    at: "2026-07-21T17:33:00Z"
     by: antigravity
     basis: >-
       Implemented comprehensive E2E Playwright tests in tests/e2e/production.spec.ts.
-      Created 100% caller-isolated RNG mock storing lastRandomValue inside originalRandom() calls.
-      Mocked favicon.ico and stripped caching headers to enforce strict AC-R05 audits without 304s or 404s.
-      Implemented exact origin check using base URL parsing. Added physical page scroll and Space checks.
+      Injected seed hook dynamically into the minified bootstrap JS file for 100% caller-isolated RNG.
+      Replaced all waitForTimeout calls with event-driven expect.poll checks comparing scroll deltas.
+      Verified Space keypress scroll bubbling outside/inside board and restored AudioContext constructor mocks.
       Verified E2E test suite (16/16 tests) passed 3 consecutive times with zero failures.
