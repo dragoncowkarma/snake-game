@@ -5,22 +5,28 @@ async function setupEnhancedPageListeners(
   failures: string[],
   baseURL: string | undefined,
 ) {
-  // Mock favicon.ico to return 200 OK (avoids 404 failure under strict AC-R05 asset audits)
-  await page.route('**/favicon.ico', (route: any) => {
-    route.fulfill({
-      status: 200,
-      contentType: 'image/x-icon',
-      body: Buffer.alloc(0),
-    });
-  });
-
-  // Force 200 responses by stripping caching headers (If-None-Match, If-Modified-Since)
-  // to prevent 304 (Not Modified) responses, satisfying strict AC-R05 audits.
+  // Strip caching headers (If-None-Match, If-Modified-Since) to force 200 OK responses
+  // and inject custom RandomSource mock hook into the bootstrap file.
   await page.route('**/*', async (route: any) => {
     const request = route.request();
-    if (request.url().includes('favicon.ico')) {
-      return; // Handled by the favicon mock route
+    const url = request.url();
+
+    // Intercept bootstrap JS file to inject seed hook
+    if (url.includes('bootstrap') && url.endsWith('.js')) {
+      const response = await route.fetch();
+      let text = await response.text();
+      text = text.replace(
+        'at=class{nextInt(e){return Math.floor(Math.random()*e)}}',
+        'at=class{nextInt(e){return window.injectSeed ? window.injectSeed(e) : Math.floor(Math.random()*e)}}',
+      );
+      await route.fulfill({
+        response,
+        body: text,
+        headers: response.headers(),
+      });
+      return;
     }
+
     const headers = { ...request.headers() };
     delete headers['if-none-match'];
     delete headers['if-modified-since'];
@@ -106,12 +112,35 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await page.evaluate(() => {
       document.body.style.height = '2000px';
       window.scrollTo(0, 0);
+      (window as any).scrollEventCount = 0;
+      window.addEventListener(
+        'scroll',
+        () => {
+          (window as any).scrollEventCount++;
+        },
+        { passive: true },
+      );
     });
 
-    // 1. Outside board -> Press ArrowDown -> default not prevented -> page scrolls (AC-U06)
-    await page.locator('body').focus();
+    // Wait until initial scroll to 0 settles
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => window.scrollY);
+      })
+      .toBe(0);
+
+    // 1. Click background to focus document scroll viewport -> Press ArrowDown -> scrolls (AC-U06)
+    let startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    await page.mouse.click(10, 10);
     await page.keyboard.press('ArrowDown');
-    await page.waitForTimeout(100);
+
+    // Event-driven scroll verification (replaces waitForTimeout)
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => (window as any).scrollEventCount);
+      })
+      .toBeGreaterThan(startCount);
+
     let scrollY = await page.evaluate(() => window.scrollY);
     expect(scrollY).toBeGreaterThan(0);
 
@@ -122,16 +151,27 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // Reset scroll to top
-    await page.evaluate(() => window.scrollTo(0, 0));
+    // 2. Focus document -> Press Space -> default not prevented -> page scrolls (AC-U06)
+    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    await page.mouse.click(10, 10);
+    await page.keyboard.press('Space');
 
-    // 2. Start button focused -> Press Space -> triggers click -> Ready
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => (window as any).scrollEventCount);
+      })
+      .toBeGreaterThan(startCount);
+
+    scrollY = await page.evaluate(() => window.scrollY);
+    expect(scrollY).toBeGreaterThan(0);
+
+    // 3. Start button focused -> Press Space -> triggers click -> Ready
     await startButton.focus();
     await page.keyboard.press('Space');
     await expect(phase).toHaveText('Ready');
     await expect(board).toBeFocused();
 
-    // 3. Board focused -> Press invalid game key 'x' -> default not prevented
+    // 4. Board focused -> Press invalid game key 'x' -> default not prevented
     await page.keyboard.press('x');
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
@@ -140,26 +180,48 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // Reset scroll to top
-    await page.evaluate(() => window.scrollTo(0, 0));
-
-    // 4. Board focused -> Press WASD key 'd' (right) -> starts playing, default prevented, no scroll (AC-U06)
+    // 5. Board focused -> Press WASD key 'd' (right) -> starts playing, default prevented
     await page.keyboard.press('d');
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused();
 
-    await page.waitForTimeout(100);
-    scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBe(0); // scroll blocked!
+    // Press ArrowDown (game key, perpendicular to Right) -> should NOT scroll (default prevented)
+    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    await page.keyboard.press('ArrowDown');
+
+    // Assert scroll count remains unchanged after ArrowDown
+    let endCount = await page.evaluate(() => (window as any).scrollEventCount);
+    expect(endCount).toBe(startCount); // scroll blocked!
 
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
       (window as any).lastEventPrevented = false;
       return val;
     });
-    expect(lastPrevented).toBe(true);
+    expect(lastPrevented).toBe(true); // ArrowDown was prevented!
 
-    // 5. Board focused -> Press WASD key 'w' (up) -> changes direction, default prevented
+    // Press Space (inside board, not a game key) -> should scroll the page (not prevented)
+    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    await page.keyboard.press('Space');
+
+    // Wait until Space scroll is received
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => (window as any).scrollEventCount);
+      })
+      .toBeGreaterThan(startCount);
+
+    scrollY = await page.evaluate(() => window.scrollY);
+    expect(scrollY).toBeGreaterThan(0); // Space scrolled!
+
+    lastPrevented = await page.evaluate(() => {
+      const val = (window as any).lastEventPrevented;
+      (window as any).lastEventPrevented = false;
+      return val;
+    });
+    expect(lastPrevented).toBe(false); // Space was NOT prevented!
+
+    // 6. Board focused -> Press WASD key 'w' (up) -> changes direction, default prevented
     await page.keyboard.press('w');
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
@@ -168,28 +230,28 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(true);
 
-    // 6. Pause via 'p' -> focus moves to Resume button
+    // 7. Pause via 'p' -> focus moves to Resume button
     await board.press('p');
     await expect(phase).toHaveText('Paused');
     const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
     await expect(resumeButton).toBeFocused();
 
-    // 7. Try pressing 'p' while Resume button is focused -> should NOT resume (ignored outside board)
+    // 8. Try pressing 'p' while Resume button is focused -> should NOT resume (ignored outside board)
     await page.keyboard.press('p');
     await expect(phase).toHaveText('Paused');
     await expect(resumeButton).toBeFocused();
 
-    // 8. Resume via Space on Resume button -> focus moves to board
+    // 9. Resume via Space on Resume button -> focus moves to board
     await page.keyboard.press('Space');
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused();
 
-    // 9. Let it crash -> focus goes to Restart button
+    // 10. Let it crash -> focus goes to Restart button
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
     const restartButton = page.getByRole('button', { name: 'Restart', exact: true });
     await expect(restartButton).toBeFocused();
 
-    // 10. Return to Menu -> focus goes to Start button
+    // 11. Return to Menu -> focus goes to Start button
     const menuButton = page.getByRole('button', { name: 'Menu', exact: true });
     await menuButton.click();
     await expect(phase).toHaveText('Menu');
@@ -250,35 +312,17 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Initial random seed to place food at (10,9) then (10,8) (straight Up path) to avoid tick timing races
     await page.addInitScript(() => {
-      const originalRandom = Math.random;
-      const originalFloor = Math.floor;
-
-      // 100% minification-safe, caller-isolated stack check (nextInt is never minified)
-      Math.random = () => {
-        const r = originalRandom();
-        (window as any).lastRandomValue = r;
-        return r;
-      };
-
-      // 100% minification-safe, caller-isolated multiplier matching
-      Math.floor = function (val: number) {
-        const lastR = (window as any).lastRandomValue;
-        if (typeof lastR === 'number' && lastR > 0) {
-          const possibleMultiplier = val / lastR;
-          const roundedMultiplier = Math.round(possibleMultiplier);
-          if (Math.abs(possibleMultiplier - roundedMultiplier) < 1e-9) {
-            if (roundedMultiplier === 397) {
-              return 190; // (10, 9)
-            }
-            if (roundedMultiplier === 396) {
-              return 170; // (10, 8)
-            }
-            if (roundedMultiplier === 395) {
-              return 0; // (0, 0) - keeps subsequent food far away
-            }
-          }
+      (window as any).injectSeed = (upperExclusive: number) => {
+        if (upperExclusive === 397) {
+          return 190; // (10, 9)
         }
-        return originalFloor.apply(this, arguments as any);
+        if (upperExclusive === 396) {
+          return 170; // (10, 8)
+        }
+        if (upperExclusive === 395) {
+          return 0; // (0, 0) - keeps subsequent food far away
+        }
+        return Math.floor(Math.random() * upperExclusive);
       };
     });
 
@@ -330,32 +374,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Seed first food at (11, 10) (immediately right of head) and second food at (11, 5) (on the Up turn path)
     await page.addInitScript(() => {
-      const originalRandom = Math.random;
-      const originalFloor = Math.floor;
-
-      // 100% minification-safe, caller-isolated stack check (nextInt is never minified)
-      Math.random = () => {
-        const r = originalRandom();
-        (window as any).lastRandomValue = r;
-        return r;
-      };
-
-      // 100% minification-safe, caller-isolated multiplier matching
-      Math.floor = function (val: number) {
-        const lastR = (window as any).lastRandomValue;
-        if (typeof lastR === 'number' && lastR > 0) {
-          const possibleMultiplier = val / lastR;
-          const roundedMultiplier = Math.round(possibleMultiplier);
-          if (Math.abs(possibleMultiplier - roundedMultiplier) < 1e-9) {
-            if (roundedMultiplier === 397) {
-              return 208; // (11, 10)
-            }
-            if (roundedMultiplier === 396) {
-              return 111; // (11, 5)
-            }
-          }
+      (window as any).injectSeed = (upperExclusive: number) => {
+        if (upperExclusive === 397) {
+          return 208; // (11, 10)
         }
-        return originalFloor.apply(this, arguments as any);
+        if (upperExclusive === 396) {
+          return 111; // (11, 5)
+        }
+        return Math.floor(Math.random() * upperExclusive);
       };
     });
 
@@ -468,27 +494,11 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Seed first food immediately right of the head to crash deterministically
     await page.addInitScript(() => {
-      const originalRandom = Math.random;
-      const originalFloor = Math.floor;
-
-      Math.random = () => {
-        const r = originalRandom();
-        (window as any).lastRandomValue = r;
-        return r;
-      };
-
-      Math.floor = function (val: number) {
-        const lastR = (window as any).lastRandomValue;
-        if (typeof lastR === 'number' && lastR > 0) {
-          const possibleMultiplier = val / lastR;
-          const roundedMultiplier = Math.round(possibleMultiplier);
-          if (Math.abs(possibleMultiplier - roundedMultiplier) < 1e-9) {
-            if (roundedMultiplier === 397) {
-              return 208; // (11, 10)
-            }
-          }
+      (window as any).injectSeed = (upperExclusive: number) => {
+        if (upperExclusive === 397) {
+          return 208; // (11, 10)
         }
-        return originalFloor.apply(this, arguments as any);
+        return Math.floor(Math.random() * upperExclusive);
       };
     });
 
