@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-function setupEnhancedPageListeners(page: any, failures: string[]) {
+async function setupEnhancedPageListeners(page: any, failures: string[]) {
   // 1. Console errors
   page.on('console', (msg: any) => {
     if (msg.type() === 'error') {
@@ -13,38 +13,43 @@ function setupEnhancedPageListeners(page: any, failures: string[]) {
     failures.push(`Page Error: ${err.message}`);
   });
 
-  // 3. Unhandled promise rejections (intercepted via window listener)
-  page.on('domcontentloaded', async () => {
-    await page.evaluate(() => {
-      window.addEventListener('unhandledrejection', (event) => {
-        (window as any).browserFailures = (window as any).browserFailures || [];
-        (window as any).browserFailures.push(`Unhandled Rejection: ${event.reason}`);
-      });
-    });
-  });
-
-  // 4. Request failures
+  // 3. Request failures
   page.on('requestfailed', (req: any) => {
     failures.push(`Request Failed: ${req.url()} - ${req.failure()?.errorText}`);
   });
 
-  // 5. Response status outside 200-299 (except for data URLs or favicon)
+  // 4. Response status outside 200-299 (except for data URLs or favicon)
   page.on('response', (res: any) => {
     const status = res.status();
     const url = res.url();
-    if (status !== 0 && (status < 200 || status > 308)) {
+    if (status !== 0 && status !== 304 && (status < 200 || status > 299)) {
       if (!url.includes('favicon.ico')) {
         failures.push(`Non-OK Response: ${url} returned status ${status}`);
       }
     }
   });
 
-  // 6. Cross-origin request detection
+  // 5. Cross-origin request detection with precise origin parsing
   page.on('request', (req: any) => {
     const url = req.url();
-    if (url.startsWith('http') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
-      failures.push(`Forbidden Cross-Origin Request: ${url}`);
+    if (url.startsWith('http')) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') {
+          failures.push(`Forbidden Cross-Origin Request: ${url}`);
+        }
+      } catch (e) {
+        failures.push(`Invalid URL Request: ${url}`);
+      }
     }
+  });
+
+  // 6. Early unhandled rejection listener installed before document loading
+  await page.addInitScript(() => {
+    window.addEventListener('unhandledrejection', (event) => {
+      (window as any).browserFailures = (window as any).browserFailures || [];
+      (window as any).browserFailures.push(`Unhandled Rejection: ${event.reason}`);
+    });
   });
 }
 
@@ -53,7 +58,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -150,7 +155,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('Mute sync and keyboard toggle (AC-U02, AC-U05, DF-SG015-01)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -194,15 +199,21 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const context = await browser.newContext({ hasTouch: true, baseURL });
     const page = await context.newPage();
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     // Initial random seed to place food at (10,9) then (10,8) (straight Up path) to avoid tick timing races
     await page.addInitScript(() => {
+      const originalRandom = Math.random;
       const originalFloor = Math.floor;
       const MAGIC = 0.543210987654321;
 
       Math.random = () => {
-        return MAGIC;
+        const stack = new Error().stack || '';
+        // 100% minification-safe and caller-isolated stack check (nextInt is never minified)
+        if (stack.includes('nextInt')) {
+          return MAGIC;
+        }
+        return originalRandom();
       };
 
       // 100% minification-safe, caller-isolated multiplier matching
@@ -264,18 +275,24 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     // Start with a narrow mobile viewport 320x568
     await page.setViewportSize({ width: 320, height: 568 });
 
     // Seed first food at (11, 10) (immediately right of head) and second food at (11, 5) (on the Up turn path)
     await page.addInitScript(() => {
+      const originalRandom = Math.random;
       const originalFloor = Math.floor;
       const MAGIC = 0.543210987654321;
 
       Math.random = () => {
-        return MAGIC;
+        const stack = new Error().stack || '';
+        // 100% minification-safe and caller-isolated stack check (nextInt is never minified)
+        if (stack.includes('nextInt')) {
+          return MAGIC;
+        }
+        return originalRandom();
       };
 
       // 100% minification-safe, caller-isolated multiplier matching
@@ -339,22 +356,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(canvas).toHaveJSProperty('clientWidth', originalWidth);
     await expect(phase).toHaveText('Paused');
 
-    // 4. Resume and immediately turn Up in the same frame to prevent Playwright timing races
-    await page.evaluate(() => {
-      // Find and click the Resume button
-      const buttons = Array.from(document.querySelectorAll('button'));
-      const resumeButton = buttons.find((b) => b.textContent === 'Resume');
-      if (resumeButton) {
-        resumeButton.click();
-      }
-      // Dispatch ArrowUp keydown on the board
-      const boardEl = document.querySelector('#board') as HTMLElement;
-      if (boardEl) {
-        boardEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
-      }
-    });
-
+    // 4. Resume natively and turn Up using native Playwright keyboard inputs (verifying focus and input flow)
+    await board.focus();
+    await expect(board).toBeFocused();
+    await page.keyboard.press('p');
     await expect(phase).toHaveText('Playing');
+    await page.keyboard.press('ArrowUp');
+
     await expect(page.locator('.hud').getByText('Score 20')).toBeVisible({ timeout: 15000 });
 
     // 5. Document hidden -> Paused (AC-L01)
@@ -407,7 +415,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     // Initial random seed to place food to the right of the head
     const INITIAL_FREE_CELL_COUNT = 397;
@@ -513,7 +521,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     page,
   }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
       // Set corrupt/malformed values in localStorage
@@ -553,7 +561,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('LocalStorage SecurityError fallback (AC-R01, AC-R04)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
       // Mock window.localStorage to throw SecurityError when accessed or called
@@ -603,14 +611,15 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('Audio fallback when AudioContext constructor throws (AC-R02)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
+      let constructorCount = 0;
       class ConditionalFailingAudioContext {
         constructor() {
-          const stack = new Error().stack || '';
-          // Caller-isolated and 100% minification-safe check using public function name
-          if (stack.includes('mountPhaserGame')) {
+          constructorCount++;
+          // Only throw for AudioFeedback's instantiation (the very first call on page load)
+          if (constructorCount === 1) {
             throw new Error('Failed to construct AudioContext');
           }
           // Phaser's instance: minimal mock context to boot cleanly
@@ -670,12 +679,19 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('Audio fallback when AudioContext resume rejects (AC-R02)', async ({ page }) => {
     const browserFailures: string[] = [];
-    setupEnhancedPageListeners(page, browserFailures);
+    await setupEnhancedPageListeners(page, browserFailures);
 
     await page.addInitScript(() => {
-      // Mock AudioContext class whose resume rejects cleanly for AudioFeedback
+      let constructorCount = 0;
       class ResumeRejectingAudioContext {
+        isFeedbackContext: boolean;
+        destination: any;
+        currentTime: number;
+
         constructor() {
+          constructorCount++;
+          // First instance is owned by AudioFeedback, second by Phaser
+          this.isFeedbackContext = constructorCount === 1;
           this.destination = {};
           this.currentTime = 0;
         }
@@ -683,8 +699,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
           return 'suspended';
         }
         resume() {
-          const stack = new Error().stack || '';
-          if (stack.includes('activateFromUserGesture')) {
+          if (this.isFeedbackContext) {
             const p = Promise.reject(new Error('AudioContext resume rejected'));
             p.catch(() => {}); // prevent unhandled promise rejection warnings/failures
             return p;
