@@ -93,12 +93,28 @@ async function setupEnhancedPageListeners(
     }
   });
 
-  // 6. Early unhandled rejection listener installed before document loading (AC-R05)
+  // 6. Early unhandled rejection listener and touch command trace installed before document loading (AC-R05, AC-U03)
   await page.addInitScript(() => {
     window.addEventListener('unhandledrejection', (event) => {
       (window as any).browserFailures = (window as any).browserFailures || [];
       (window as any).browserFailures.push(`Unhandled Rejection: ${event.reason}`);
     });
+
+    (window as any).touchCommandTrace = [];
+    window.addEventListener(
+      'click',
+      (e) => {
+        const target = e.target as HTMLElement | null;
+        const button = target?.closest('.dpad__button');
+        if (button) {
+          const dirClass = Array.from(button.classList).find((c) => c.startsWith('dpad__button--'));
+          if (dirClass) {
+            (window as any).touchCommandTrace.push(dirClass.replace('dpad__button--', ''));
+          }
+        }
+      },
+      true,
+    );
   });
 
   return {
@@ -190,9 +206,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // 2. Blur focus to document body -> Press Space -> default not prevented -> page scrolls (AC-U06)
-    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    // 2. Blur focus to document body -> Press Space -> default not prevented -> page scrolls further (AC-U06)
     await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    const prevScrollY = await page.evaluate(() => window.scrollY);
     await page.keyboard.press('Space');
 
     await expect
@@ -202,7 +219,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       .toBeGreaterThan(startCount);
 
     scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(0);
+    expect(scrollY).toBeGreaterThan(prevScrollY);
 
     // 3. Start button focused -> Press Space -> triggers click -> Ready
     await startButton.focus();
@@ -269,14 +286,17 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false); // Space was NOT prevented!
 
-    // 6. Board focused -> Press WASD key 'w' (up) -> changes direction, default prevented
-    await page.keyboard.press('w');
-    lastPrevented = await page.evaluate(() => {
-      const val = (window as any).lastEventPrevented;
-      (window as any).lastEventPrevented = false;
-      return val;
-    });
-    expect(lastPrevented).toBe(true);
+    // 6. Board focused -> Test all 8 mapped keys (WASD & Arrow keys) for direction change & preventDefault (AC-U02)
+    const keysToTest = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
+    for (const k of keysToTest) {
+      await page.keyboard.press(k);
+      lastPrevented = await page.evaluate(() => {
+        const val = (window as any).lastEventPrevented;
+        (window as any).lastEventPrevented = false;
+        return val;
+      });
+      expect(lastPrevented).toBe(true);
+    }
 
     // 7. Pause via 'p' -> focus moves to Resume button
     await board.press('p');
@@ -397,6 +417,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused(); // focus preservation
 
+    // Verify 1:1 touch tap to command generation ratio for tap 1 (AC-U03)
+    let touchTrace = await page.evaluate(() => (window as any).touchCommandTrace);
+    expect(touchTrace).toEqual(['up']);
+
     // Verify seed hook execution once food has been spawned
     await auditor.verifySeedHook();
 
@@ -407,6 +431,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Now tap Left to change direction
     await dpadLeft.tap();
     await expect(dpadLeft).toBeFocused(); // focus shifts cleanly to the tapped button
+
+    // Verify 1:1 touch tap to command generation ratio for tap 2 (AC-U03)
+    touchTrace = await page.evaluate(() => (window as any).touchCommandTrace);
+    expect(touchTrace).toEqual(['up', 'left']);
 
     // Wait for the game over crash (left wall collision)
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
@@ -437,7 +465,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
           return 208; // (11, 10)
         }
         if (upperExclusive === 396) {
-          return 111; // (11, 5)
+          return 171; // (11, 8) - 2 steps Up from (11, 10)
         }
         return Math.floor(Math.random() * upperExclusive);
       };
@@ -491,12 +519,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(canvas).toHaveJSProperty('clientWidth', originalWidth);
     await expect(phase).toHaveText('Paused');
 
-    // 4. Resume natively and turn Up using native Playwright keyboard inputs (verifying focus and input flow)
-    await board.focus();
-    await expect(board).toBeFocused();
-    await page.keyboard.press('p');
-    await page.keyboard.press('ArrowUp');
+    // 4. Resume via Resume button click and turn Up using ArrowUp (verifying focus and input flow)
+    const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
+    await resumeButton.click();
     await expect(phase).toHaveText('Playing');
+    await expect(board).toBeFocused();
+
+    await page.keyboard.press('ArrowUp');
 
     await expect(page.locator('.hud').getByText('Score 20')).toBeVisible({ timeout: 15000 });
 
@@ -508,7 +537,6 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Paused');
 
     // Resume
-    const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
     await resumeButton.click();
 
     // 6. Window blur -> Paused (AC-L01)
