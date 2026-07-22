@@ -24,8 +24,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-017.md
 base_sha: 43dc22c66b552e6e6b05fc61ad58c591ffac023d
 branch: agent/antigravity/SG-018-e2e-testing
-implementation_head_sha: db6a227f74d02fade79df0800c25651bc1f4c7f1
-head_sha: db6a227f74d02fade79df0800c25651bc1f4c7f1
+implementation_head_sha: 5d2d80268f94a62de94b5c62b2c713902ddd36ec
+head_sha: 5d2d80268f94a62de94b5c62b2c713902ddd36ec
 allowed_paths:
   - tests/e2e/**
   - docs/coordination/tasks/SG-018.yaml
@@ -78,11 +78,11 @@ status_history:
     by: antigravity
     basis: claimed on the dedicated branch before any implementation edits
   - status: review-ready
-    at: "2026-07-22T20:00:00Z"
+    at: "2026-07-23T02:08:00Z"
     by: antigravity
     basis: >-
       Implemented comprehensive E2E Playwright tests in tests/e2e/production.spec.ts.
-      Eliminated all fixed timeouts/setTimeout for 100% event-driven scroll and focus checks.
-      Implemented per-reload window DOM validation checking window.__seedHookInjected.
-      Verified physical Space scroll functionality when focused on document body and board.
+      Decoupled seed hook route interception from filename chunk strings by dynamically inspecting JS file contents.
+      Observed scroll event counts across consecutive animation frames for 100% frame-bound ArrowDown scroll prevention assertion.
+      Audited physical window scroll (scrollEventCount > 0 & scrollY > 0) when pressing Space inside board focus.
       Verified all mandatory static checks (format:check, lint, typecheck, build) and E2E test suite (16/16 tests) passed 3 consecutive times with zero failures.
