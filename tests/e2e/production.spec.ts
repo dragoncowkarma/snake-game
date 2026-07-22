@@ -19,7 +19,7 @@ async function setupEnhancedPageListeners(
     const request = route.request();
     const url = request.url();
 
-    if (options.enableSeedHook && url.includes('bootstrap') && url.endsWith('.js')) {
+    if (options.enableSeedHook && url.endsWith('.js') && !url.includes('node_modules')) {
       const response = await route.fetch();
       let text = await response.text();
 
@@ -168,9 +168,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       })
       .toBe(0);
 
-    // 1. Click background to focus document scroll viewport -> Press ArrowDown -> scrolls (AC-U06)
+    // 1. Blur focus to document body -> Press ArrowDown -> scrolls (AC-U06)
     let startCount = await page.evaluate(() => (window as any).scrollEventCount);
-    await page.mouse.click(10, 10);
+    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
     await page.keyboard.press('ArrowDown');
 
     // Event-driven scroll verification (replaces waitForTimeout)
@@ -190,9 +190,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // 2. Focus document -> Press Space -> default not prevented -> page scrolls (AC-U06)
+    // 2. Blur focus to document body -> Press Space -> default not prevented -> page scrolls (AC-U06)
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
-    await page.mouse.click(10, 10);
+    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
     await page.keyboard.press('Space');
 
     await expect
@@ -228,9 +228,19 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
     await page.keyboard.press('ArrowDown');
 
-    // Assert scroll count remains unchanged after ArrowDown (zero timeout)
+    // Observe across two animation frames to guarantee zero delayed scroll events
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              resolve();
+            });
+          });
+        }),
+    );
     const endCount = await page.evaluate(() => (window as any).scrollEventCount);
-    expect(endCount).toBe(startCount); // scroll blocked!
+    expect(endCount).toBe(startCount); // scroll blocked across animation frames!
 
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
@@ -239,8 +249,19 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(true); // ArrowDown was prevented!
 
-    // Press Space (inside board, not a game key) -> default not prevented (AC-U06)
+    // Press Space (inside board, not a game key) -> physically scrolls page & default not prevented (AC-U06)
+    startCount = await page.evaluate(() => (window as any).scrollEventCount);
     await page.keyboard.press('Space');
+
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => (window as any).scrollEventCount);
+      })
+      .toBeGreaterThan(startCount);
+
+    scrollY = await page.evaluate(() => window.scrollY);
+    expect(scrollY).toBeGreaterThan(0); // Space physically scrolled window!
+
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
       (window as any).lastEventPrevented = false;
