@@ -24,8 +24,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-017.md
 base_sha: 43dc22c66b552e6e6b05fc61ad58c591ffac023d
 branch: agent/antigravity/SG-018-e2e-testing
-implementation_head_sha: 1a95f394c417e3eb1ae911f10503612dee1ff5a0
-head_sha: 1a95f394c417e3eb1ae911f10503612dee1ff5a0
+implementation_head_sha: dd018f7909969d8f5e0258c30037a327754b9e66
+head_sha: dd018f7909969d8f5e0258c30037a327754b9e66
 allowed_paths:
   - tests/e2e/**
   - docs/coordination/tasks/SG-018.yaml
@@ -78,11 +78,11 @@ status_history:
     by: antigravity
     basis: claimed on the dedicated branch before any implementation edits
   - status: review-ready
-    at: "2026-07-21T17:33:00Z"
+    at: "2026-07-22T18:53:00Z"
     by: antigravity
     basis: >-
       Implemented comprehensive E2E Playwright tests in tests/e2e/production.spec.ts.
-      Injected seed hook dynamically into the minified bootstrap JS file for 100% caller-isolated RNG.
-      Replaced all waitForTimeout calls with event-driven expect.poll checks comparing scroll deltas.
-      Verified Space keypress scroll bubbling outside/inside board and restored AudioContext constructor mocks.
+      Enforced minification-resilient regex for seed hook replacement with mandatory verifySeedHook assertion.
+      Separated unmodified production dist asset tests from seed-injected tests.
+      Added frame-bound event-driven scroll prevention verification avoiding timing races.
       Verified E2E test suite (16/16 tests) passed 3 consecutive times with zero failures.
