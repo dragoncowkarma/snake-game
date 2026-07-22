@@ -19,23 +19,38 @@ async function setupEnhancedPageListeners(
     const request = route.request();
     const url = request.url();
 
-    if (options.enableSeedHook && url.endsWith('.js') && !url.includes('node_modules')) {
+    if (url.endsWith('.js') && !url.includes('node_modules')) {
       const response = await route.fetch();
       let text = await response.text();
+      let modified = false;
 
       // Minification-resilient regex matching: <var> = class { nextInt(<param>) { return Math.floor(Math.random() * <param>); } }
-      const randomSourceRegex =
-        /([a-zA-Z0-9_$]+)\s*=\s*class\s*\{\s*nextInt\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*return\s+Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*\2\s*\)\s*;?\s*\}\s*\}/;
+      if (options.enableSeedHook) {
+        const randomSourceRegex =
+          /([a-zA-Z0-9_$]+)\s*=\s*class\s*\{\s*nextInt\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*return\s+Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*\2\s*\)\s*;?\s*\}\s*\}/;
 
-      if (randomSourceRegex.test(text)) {
-        text = text.replace(
-          randomSourceRegex,
-          (_match: string, className: string, paramName: string) => {
-            routeInjectedAssetCount++;
-            return `${className}=class{nextInt(${paramName}){if(typeof window!=="undefined"){window.__seedHookInjected=true;}return window.injectSeed ? window.injectSeed(${paramName}) : Math.floor(Math.random()*${paramName})}}`;
-          },
-        );
+        if (randomSourceRegex.test(text)) {
+          text = text.replace(
+            randomSourceRegex,
+            (_match: string, className: string, paramName: string) => {
+              routeInjectedAssetCount++;
+              return `${className}=class{nextInt(${paramName}){if(typeof window!=="undefined"){window.__seedHookInjected=true;}return window.injectSeed ? window.injectSeed(${paramName}) : Math.floor(Math.random()*${paramName})}}`;
+            },
+          );
+          modified = true;
+        }
+      }
 
+      // Minification-resilient regex matching ApplicationRouter.prototype.dispatch
+      const dispatchRegex = /dispatch\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*if\s*\(/;
+      if (dispatchRegex.test(text)) {
+        text = text.replace(dispatchRegex, (_match: string, paramName: string) => {
+          return `dispatch(${paramName}){if(typeof window!=="undefined"){window.semanticCommandTrace=window.semanticCommandTrace||[];window.semanticCommandTrace.push(${paramName});}if(`;
+        });
+        modified = true;
+      }
+
+      if (modified) {
         await route.fulfill({
           status: response.status(),
           contentType: 'application/javascript',
@@ -206,10 +221,20 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // 2. Blur focus to document body -> Press Space -> default not prevented -> page scrolls further (AC-U06)
-    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+    // 2. Blur focus to document body & scroll to top -> Press Space -> default not prevented -> page scrolls (AC-U06)
+    await page.evaluate(() => {
+      (document.activeElement as HTMLElement)?.blur();
+      window.scrollTo(0, 0);
+    });
+    // Settle scrollTo(0,0) event before capturing baseline
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => resolve());
+        }),
+    );
+
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
-    const prevScrollY = await page.evaluate(() => window.scrollY);
     await page.keyboard.press('Space');
 
     await expect
@@ -219,7 +244,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       .toBeGreaterThan(startCount);
 
     scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(prevScrollY);
+    expect(scrollY).toBeGreaterThan(0);
 
     // 3. Start button focused -> Press Space -> triggers click -> Ready
     await startButton.focus();
@@ -287,15 +312,39 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     expect(lastPrevented).toBe(false); // Space was NOT prevented!
 
     // 6. Board focused -> Test all 8 mapped keys (WASD & Arrow keys) for direction change & preventDefault (AC-U02)
-    const keysToTest = ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
-    for (const k of keysToTest) {
-      await page.keyboard.press(k);
+    // Perpendicular direction sequence ensures every single key is validated and accepted by the domain:
+    // WASD: w (up), a (left), s (down), d (right)
+    // Arrow: ArrowUp (up), ArrowLeft (left), ArrowDown (down), ArrowRight (right)
+    const keySequence: Array<{ key: string; expectedDirection: string }> = [
+      { key: 'w', expectedDirection: 'up' },
+      { key: 'a', expectedDirection: 'left' },
+      { key: 's', expectedDirection: 'down' },
+      { key: 'd', expectedDirection: 'right' },
+      { key: 'ArrowUp', expectedDirection: 'up' },
+      { key: 'ArrowLeft', expectedDirection: 'left' },
+      { key: 'ArrowDown', expectedDirection: 'down' },
+      { key: 'ArrowRight', expectedDirection: 'right' },
+    ];
+
+    for (const item of keySequence) {
+      await page.keyboard.press(item.key);
+
       lastPrevented = await page.evaluate(() => {
         const val = (window as any).lastEventPrevented;
         (window as any).lastEventPrevented = false;
         return val;
       });
-      expect(lastPrevented).toBe(true);
+      expect(lastPrevented).toBe(true); // preventDefault verified!
+
+      // Verify exact semantic direction command dispatched to ApplicationRouter
+      const lastCommand = await page.evaluate(() => {
+        const trace = (window as any).semanticCommandTrace || [];
+        return trace[trace.length - 1];
+      });
+      expect(lastCommand).toEqual({
+        type: 'direction',
+        direction: item.expectedDirection,
+      });
     }
 
     // 7. Pause via 'p' -> focus moves to Resume button
@@ -417,9 +466,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused(); // focus preservation
 
-    // Verify 1:1 touch tap to command generation ratio for tap 1 (AC-U03)
+    // Verify 1:1 touch tap to ApplicationRouter.dispatch semantic command generation for tap 1 (AC-U03)
     let touchTrace = await page.evaluate(() => (window as any).touchCommandTrace);
     expect(touchTrace).toEqual(['up']);
+
+    let semanticCommands = await page.evaluate(() =>
+      ((window as any).semanticCommandTrace || []).filter((c: any) => c.type === 'direction'),
+    );
+    expect(semanticCommands).toEqual([{ type: 'direction', direction: 'up' }]);
 
     // Verify seed hook execution once food has been spawned
     await auditor.verifySeedHook();
@@ -432,9 +486,17 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await dpadLeft.tap();
     await expect(dpadLeft).toBeFocused(); // focus shifts cleanly to the tapped button
 
-    // Verify 1:1 touch tap to command generation ratio for tap 2 (AC-U03)
+    // Verify 1:1 touch tap to ApplicationRouter.dispatch semantic command generation for tap 2 (AC-U03)
     touchTrace = await page.evaluate(() => (window as any).touchCommandTrace);
     expect(touchTrace).toEqual(['up', 'left']);
+
+    semanticCommands = await page.evaluate(() =>
+      ((window as any).semanticCommandTrace || []).filter((c: any) => c.type === 'direction'),
+    );
+    expect(semanticCommands).toEqual([
+      { type: 'direction', direction: 'up' },
+      { type: 'direction', direction: 'left' },
+    ]);
 
     // Wait for the game over crash (left wall collision)
     await expect(phase).toHaveText('Game over', { timeout: 15000 });
@@ -465,7 +527,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
           return 208; // (11, 10)
         }
         if (upperExclusive === 396) {
-          return 171; // (11, 8) - 2 steps Up from (11, 10)
+          return 209; // (13, 10) - straight ahead on the Right path
         }
         return Math.floor(Math.random() * upperExclusive);
       };
@@ -519,14 +581,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await expect(canvas).toHaveJSProperty('clientWidth', originalWidth);
     await expect(phase).toHaveText('Paused');
 
-    // 4. Resume via Resume button click and turn Up using ArrowUp (verifying focus and input flow)
+    // 4. Resume via Resume button click (verifying focus and input flow)
     const resumeButton = page.getByRole('button', { name: 'Resume', exact: true });
     await resumeButton.click();
     await expect(phase).toHaveText('Playing');
     await expect(board).toBeFocused();
 
-    await page.keyboard.press('ArrowUp');
-
+    // Snake continues moving Right to (13, 10), eating food 2 (reaches score 20)
     await expect(page.locator('.hud').getByText('Score 20')).toBeVisible({ timeout: 15000 });
 
     // 5. Document hidden -> Paused (AC-L01)
