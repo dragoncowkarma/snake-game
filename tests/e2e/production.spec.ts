@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call */
 import { expect, test } from '@playwright/test';
 
 interface SetupOptions {
@@ -27,10 +28,13 @@ async function setupEnhancedPageListeners(
         /([a-zA-Z0-9_$]+)\s*=\s*class\s*\{\s*nextInt\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*return\s+Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*\2\s*\)\s*;?\s*\}\s*\}/;
 
       if (randomSourceRegex.test(text)) {
-        text = text.replace(randomSourceRegex, (match, className, paramName) => {
-          routeInjectedAssetCount++;
-          return `${className}=class{nextInt(${paramName}){if(typeof window!=="undefined"){window.__seedHookInjected=true;}return window.injectSeed ? window.injectSeed(${paramName}) : Math.floor(Math.random()*${paramName})}}`;
-        });
+        text = text.replace(
+          randomSourceRegex,
+          (_match: string, className: string, paramName: string) => {
+            routeInjectedAssetCount++;
+            return `${className}=class{nextInt(${paramName}){if(typeof window!=="undefined"){window.__seedHookInjected=true;}return window.injectSeed ? window.injectSeed(${paramName}) : Math.floor(Math.random()*${paramName})}}`;
+          },
+        );
 
         await route.fulfill({
           status: response.status(),
@@ -83,7 +87,7 @@ async function setupEnhancedPageListeners(
         if (parsed.origin !== baseParsed.origin) {
           failures.push(`Forbidden Cross-Origin Request: ${url}`);
         }
-      } catch (e) {
+      } catch {
         failures.push(`Invalid URL Request: ${url}`);
       }
     }
@@ -132,15 +136,16 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const board = page.locator('#board');
     const phase = page.locator('.hud__phase');
 
-    // Intercept Event.prototype.preventDefault to track if default was prevented
+    /* eslint-disable @typescript-eslint/unbound-method */
     await page.evaluate(() => {
       (window as any).lastEventPrevented = false;
       const originalPreventDefault = Event.prototype.preventDefault;
-      Event.prototype.preventDefault = function () {
+      Event.prototype.preventDefault = function (...args: any[]) {
         (window as any).lastEventPrevented = true;
-        originalPreventDefault.apply(this, arguments);
+        originalPreventDefault.apply(this, args as unknown as []);
       };
     });
+    /* eslint-enable @typescript-eslint/unbound-method */
 
     // Make the page scrollable (5000px height) to physically verify scroll blocks
     await page.evaluate(() => {
@@ -224,7 +229,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await page.keyboard.press('ArrowDown');
 
     // Assert scroll count remains unchanged after ArrowDown (zero timeout)
-    let endCount = await page.evaluate(() => (window as any).scrollEventCount);
+    const endCount = await page.evaluate(() => (window as any).scrollEventCount);
     expect(endCount).toBe(startCount); // scroll blocked!
 
     lastPrevented = await page.evaluate(() => {
@@ -327,7 +332,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     browser,
     baseURL,
   }) => {
-    const context = await browser.newContext({ hasTouch: true, baseURL });
+    const context = await browser.newContext({
+      hasTouch: true,
+      ...(baseURL ? { baseURL } : {}),
+    });
     const page = await context.newPage();
     const browserFailures: string[] = [];
     const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL, {
@@ -731,6 +739,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await page.addInitScript(() => {
       let constructorCount = 0;
       class ConditionalFailingAudioContext {
+        destination: any;
+        currentTime: number;
+
         constructor() {
           constructorCount++;
           // Only throw for AudioFeedback's instantiation (the very first call on page load)
