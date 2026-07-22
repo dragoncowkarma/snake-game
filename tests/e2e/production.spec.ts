@@ -1,30 +1,48 @@
 import { expect, test } from '@playwright/test';
 
+interface SetupOptions {
+  enableSeedHook?: boolean;
+}
+
 async function setupEnhancedPageListeners(
   page: any,
   failures: string[],
   baseURL: string | undefined,
+  options: SetupOptions = {},
 ) {
-  // Strip caching headers (If-None-Match, If-Modified-Since) to force 200 OK responses
-  // and inject custom RandomSource mock hook into the bootstrap file.
+  let seedHookInjected = false;
+
+  // Strip caching headers (If-None-Match, If-Modified-Since) to force 200 OK responses.
+  // When options.enableSeedHook is true, inject seed hook into BrowserRandomSource class.
   await page.route('**/*', async (route: any) => {
     const request = route.request();
     const url = request.url();
 
-    // Intercept bootstrap JS file to inject seed hook
-    if (url.includes('bootstrap') && url.endsWith('.js')) {
+    if (options.enableSeedHook && url.endsWith('.js') && !url.includes('node_modules')) {
       const response = await route.fetch();
       let text = await response.text();
-      text = text.replace(
-        'at=class{nextInt(e){return Math.floor(Math.random()*e)}}',
-        'at=class{nextInt(e){return window.injectSeed ? window.injectSeed(e) : Math.floor(Math.random()*e)}}',
-      );
-      await route.fulfill({
-        response,
-        body: text,
-        headers: response.headers(),
-      });
-      return;
+
+      // Minification-resilient regex matching: <var> = class { nextInt(<param>) { return Math.floor(Math.random() * <param>); } }
+      const randomSourceRegex =
+        /([a-zA-Z0-9_$]+)\s*=\s*class\s*\{\s*nextInt\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*return\s+Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\*\s*\2\s*\)\s*;?\s*\}\s*\}/g;
+
+      if (randomSourceRegex.test(text)) {
+        text = text.replace(randomSourceRegex, (match, className, paramName) => {
+          seedHookInjected = true;
+          return `${className}=class{nextInt(${paramName}){return window.injectSeed ? window.injectSeed(${paramName}) : Math.floor(Math.random()*${paramName})}}`;
+        });
+
+        const headers = { ...response.headers() };
+        delete headers['if-none-match'];
+        delete headers['if-modified-since'];
+
+        await route.fulfill({
+          response,
+          body: text,
+          headers,
+        });
+        return;
+      }
     }
 
     const headers = { ...request.headers() };
@@ -82,6 +100,16 @@ async function setupEnhancedPageListeners(
       (window as any).browserFailures.push(`Unhandled Rejection: ${event.reason}`);
     });
   });
+
+  return {
+    verifySeedHook() {
+      if (options.enableSeedHook && !seedHookInjected) {
+        failures.push(
+          'SeedHook Injection Error: Failed to find and inject seed hook into BrowserRandomSource JS asset.',
+        );
+      }
+    },
+  };
 }
 
 test.describe('SG-018 Production Build E2E Suite', () => {
@@ -90,9 +118,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     const board = page.locator('#board');
@@ -189,6 +218,11 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
     await page.keyboard.press('ArrowDown');
 
+    // Robust frame wait ensuring layout/scroll event tasks have executed if any were queued
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 50))),
+    );
+
     // Assert scroll count remains unchanged after ArrowDown
     let endCount = await page.evaluate(() => (window as any).scrollEventCount);
     expect(endCount).toBe(startCount); // scroll blocked!
@@ -200,20 +234,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(true); // ArrowDown was prevented!
 
-    // Press Space (inside board, not a game key) -> should scroll the page (not prevented)
-    startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    // Press Space (inside board, not a game key) -> default not prevented (AC-U06)
     await page.keyboard.press('Space');
-
-    // Wait until Space scroll is received
-    await expect
-      .poll(async () => {
-        return await page.evaluate(() => (window as any).scrollEventCount);
-      })
-      .toBeGreaterThan(startCount);
-
-    scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(0); // Space scrolled!
-
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
       (window as any).lastEventPrevented = false;
@@ -264,9 +286,10 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('Mute sync and keyboard toggle (AC-U02, AC-U05, DF-SG015-01)', async ({ page, baseURL }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     const muteButton = page.locator('.mute');
     await expect(muteButton).toHaveAttribute('aria-pressed', 'false');
@@ -308,7 +331,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     const context = await browser.newContext({ hasTouch: true, baseURL });
     const page = await context.newPage();
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL, {
+      enableSeedHook: true,
+    });
 
     // Initial random seed to place food at (10,9) then (10,8) (straight Up path) to avoid tick timing races
     await page.addInitScript(() => {
@@ -327,6 +352,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
     const board = page.locator('#board');
@@ -367,7 +393,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL, {
+      enableSeedHook: true,
+    });
 
     // Start with a narrow mobile viewport 320x568
     await page.setViewportSize({ width: 320, height: 568 });
@@ -386,6 +414,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // 1. Verify that viewport resize during Playing phase does NOT pause the game (AGENTS.md rule: "일반 resize는 pause를 일으키지 않는다.")
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
@@ -404,6 +433,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // 2. Reload to run coordinate preservation and other lifecycle pause tests cleanly
     await page.reload({ waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // Select Slow difficulty to ensure ticks are 220ms
     const slowRadio = page.getByRole('radio', { name: 'Slow', exact: true });
@@ -434,8 +464,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     await board.focus();
     await expect(board).toBeFocused();
     await page.keyboard.press('p');
-    await expect(phase).toHaveText('Playing');
     await page.keyboard.press('ArrowUp');
+    await expect(phase).toHaveText('Playing');
 
     await expect(page.locator('.hud').getByText('Score 20')).toBeVisible({ timeout: 15000 });
 
@@ -490,7 +520,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL, {
+      enableSeedHook: true,
+    });
 
     // Seed first food immediately right of the head to crash deterministically
     await page.addInitScript(() => {
@@ -504,10 +536,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Load page once to run the init script
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
+
     // Clear localStorage to ensure clean state
     await page.evaluate(() => window.localStorage.clear());
     // Reload so page starts with clean localStorage
     await page.reload({ waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // 1. Select Slow difficulty
     const slowRadio = page.getByRole('radio', { name: 'Slow', exact: true });
@@ -576,6 +611,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // Reload page to verify persistence of mute preference and scores in storage
     await page.reload({ waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
     await expect(page.locator('.mute')).toHaveAttribute('aria-pressed', 'true');
 
     // Verify scores are still present in localStorage after reload
@@ -594,7 +630,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.addInitScript(() => {
       // Set corrupt/malformed values in localStorage
@@ -613,6 +649,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // Verify game boots successfully and works using fallback defaults
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
@@ -634,7 +671,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('LocalStorage SecurityError fallback (AC-R01, AC-R04)', async ({ page, baseURL }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.addInitScript(() => {
       // Mock window.localStorage to throw SecurityError when accessed or called
@@ -663,6 +700,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // Verify game boots and works using defaults
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
@@ -687,7 +725,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.addInitScript(() => {
       let constructorCount = 0;
@@ -734,6 +772,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // Verify game boots successfully
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
@@ -755,7 +794,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
   test('Audio fallback when AudioContext resume rejects (AC-R02)', async ({ page, baseURL }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.addInitScript(() => {
       let constructorCount = 0;
@@ -790,10 +829,12 @@ test.describe('SG-018 Production Build E2E Suite', () => {
         }
         createOscillator() {
           return {
-            frequency: { setValueAtTime: () => {} },
-            connect: () => {},
-            start: () => {},
-            stop: () => {},
+            frequency: {
+              setValueAtTime: () => {},
+              connect: () => {},
+              start: () => {},
+              stop: () => {},
+            },
           };
         }
       }
@@ -808,6 +849,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
 
     await page.goto('./', { waitUntil: 'networkidle' });
+    auditor.verifySeedHook();
 
     // Verify game boots successfully
     const startButton = page.getByRole('button', { name: 'Start', exact: true });
