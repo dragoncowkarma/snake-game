@@ -1,0 +1,186 @@
+id: SG-019
+spec_version: "1.0-plan"
+task_revision: 1
+status: in-progress
+approved_by: human-user
+approved_at: "2026-07-23T08:07:03Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human explicitly accepted the SG-017 review-evidence exception and instructed
+  Codex to complete SG-018 review/reconciliation, then create, approve, claim, and
+  execute SG-019 revision 1 from the resulting local main SHA. SG-018 reconciliation
+  completed as local main 74fe266702053bdab44718466cd5f7a99d1035fc.
+  This approval covers only integration-boundary auditing, minimal fixes within the
+  exact paths below, full clean verification, and an H2 playtest-ready production
+  build. It does not approve public-contract or product-meaning changes, new
+  dependencies, remote push, GitHub Pages deployment, or the H2 human verdict.
+owner: codex
+model: "Codex GPT-5 runtime"
+reasoning_or_workload: high
+routing_deviation: >-
+  docs/TASKS.md names Codex 5.6 Sol / very high. This environment identifies the
+  active runtime as Codex GPT-5; no unsupported model identity is inferred.
+reviewers:
+  - Claude Opus 4.8 high
+depends_on:
+  - SG-016
+  - SG-017
+  - SG-018
+predecessor_evidence:
+  - docs/coordination/tasks/SG-016.yaml
+  - docs/coordination/handoffs/SG-016.md
+  - docs/coordination/tasks/SG-017.yaml
+  - docs/coordination/handoffs/SG-017.md
+  - docs/coordination/tasks/SG-018.yaml
+  - docs/coordination/handoffs/SG-018.md
+base_sha: 74fe266702053bdab44718466cd5f7a99d1035fc
+branch: agent/codex/SG-019-feature-integration
+allowed_paths:
+  - src/game/**
+  - src/ui/**
+  - src/adapters/**
+  - src/styles.css
+  - tests/unit/**
+  - tests/e2e/**
+  - docs/coordination/tasks/SG-019.yaml
+  - docs/coordination/handoffs/SG-019.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/domain/**
+  - src/config/**
+  - src/main.ts
+  - index.html
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - tooling.config.ts
+  - tsconfig.json
+  - eslint.config.js
+  - .github/**
+  - public/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/tasks/SG-001.yaml
+  - docs/coordination/tasks/SG-002.yaml
+  - docs/coordination/tasks/SG-003.yaml
+  - docs/coordination/tasks/SG-004.yaml
+  - docs/coordination/tasks/SG-005.yaml
+  - docs/coordination/tasks/SG-006.yaml
+  - docs/coordination/tasks/SG-007.yaml
+  - docs/coordination/tasks/SG-008.yaml
+  - docs/coordination/tasks/SG-009.yaml
+  - docs/coordination/tasks/SG-010.yaml
+  - docs/coordination/tasks/SG-011.yaml
+  - docs/coordination/tasks/SG-012.yaml
+  - docs/coordination/tasks/SG-013.yaml
+  - docs/coordination/tasks/SG-014.yaml
+  - docs/coordination/tasks/SG-015.yaml
+  - docs/coordination/tasks/SG-016.yaml
+  - docs/coordination/tasks/SG-017.yaml
+  - docs/coordination/tasks/SG-018.yaml
+  - docs/coordination/handoffs/SG-001.md
+  - docs/coordination/handoffs/SG-002.md
+  - docs/coordination/handoffs/SG-003.md
+  - docs/coordination/handoffs/SG-004.md
+  - docs/coordination/handoffs/SG-005.md
+  - docs/coordination/handoffs/SG-006.md
+  - docs/coordination/handoffs/SG-007.md
+  - docs/coordination/handoffs/SG-008.md
+  - docs/coordination/handoffs/SG-009.md
+  - docs/coordination/handoffs/SG-010.md
+  - docs/coordination/handoffs/SG-011.md
+  - docs/coordination/handoffs/SG-012.md
+  - docs/coordination/handoffs/SG-013.md
+  - docs/coordination/handoffs/SG-014.md
+  - docs/coordination/handoffs/SG-015.md
+  - docs/coordination/handoffs/SG-016.md
+  - docs/coordination/handoffs/SG-017.md
+  - docs/coordination/handoffs/SG-018.md
+  - dist/**
+acceptance_ids:
+  - >-
+    SG-019-AC01 / predecessor integrity: SG-016, SG-017, and SG-018 approved task
+    revisions, implementation/review/integration SHAs, handoffs, required checks, and
+    local-main ancestry are reconciled before integration work; the human explicitly
+    accepts SG-017's chat-relayed reviewer-evidence exception.
+  - >-
+    SG-019-AC02 / one-way integration flow: every keyboard, pointer, shell, and
+    lifecycle command follows DOM/InputController/LifecycleController ->
+    ApplicationRouter -> pure simulation -> immutable snapshot/domain events ->
+    Phaser/UI/adapters. UI, selectors, and rendering code do not duplicate domain
+    movement, collision, queue, scoring, or timing rules.
+  - >-
+    SG-019-AC03 / boundary behavior: semantic commands dispatch once, simulation
+    steps publish one snapshot/event sequence, focus transitions remain
+    Start/Resume->board, Pause->Resume, terminal->Restart, Menu->Start, and fixed-step
+    timing preserves pause queue/accumulator clearing and next-step acceleration.
+  - >-
+    SG-019-AC04 / regression evidence: the clean-checkout Node 24/npm 11.18.0
+    verification passes format, lint, strict typecheck, literal unit tests, coverage,
+    production build, root-base Chromium E2E, Pages-subpath Chromium E2E, and
+    whitespace/scope/generated-artifact audits with no warning suppression or test
+    weakening.
+  - >-
+    SG-019-AC05 / H2 candidate: a production artifact is reproducibly buildable for
+    human H2 playtesting of start, death reason, restart, difficulty, pause/resume,
+    mute, and persisted best score. This task prepares evidence but does not claim the
+    human H2 verdict.
+  - AC-G01
+  - AC-G02
+  - AC-G03
+  - AC-G04
+  - AC-G05
+  - AC-G06
+  - AC-G07
+  - AC-G08
+  - AC-G09
+  - AC-G10
+  - AC-L01
+  - AC-L02
+  - AC-L03
+  - AC-U01
+  - AC-U02
+  - AC-U03
+  - AC-U04
+  - AC-U05
+  - AC-U06
+  - AC-U07
+  - AC-U08
+  - AC-U09
+  - AC-R01
+  - AC-R02
+  - AC-R03
+  - AC-R04
+  - AC-R05
+  - AC-R06
+required_commands:
+  - npm ci
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run test:coverage
+  - npm run build
+  - npm run test:e2e
+  - PLAYWRIGHT_BASE_PATH=/snake-game/ npm run test:e2e
+  - npm run verify
+  - git diff --check
+claim: "CLAIM: codex / Codex GPT-5 runtime high / agent/codex/SG-019-feature-integration / 2026-07-23T08:07:03Z"
+claimed_at: "2026-07-23T08:07:03Z"
+handoff: docs/coordination/handoffs/SG-019.md
+status_history:
+  - status: ready
+    at: "2026-07-23T08:07:03Z"
+    by: human-user
+    basis: >-
+      Direct instruction to create, approve, and execute SG-019 revision 1 after
+      accepting the SG-017 evidence exception and completing SG-018 reconciliation.
+  - status: in-progress
+    at: "2026-07-23T08:07:03Z"
+    by: codex
+    basis: >-
+      Claimed on the dedicated branch at exact reconciled local-main base 74fe266
+      before SG-019 implementation or verification changes.

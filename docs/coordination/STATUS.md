@@ -1,17 +1,16 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-23T08:03:41Z
+- 마지막 동기화: 2026-07-23T08:07:03Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 (SG-018 `merged` into `main`)
-- 현재 검증 대기: 없음 — Codex 독립 리뷰가 SG-018 구현 head `f735944`를
-  APPROVE했다. Node 24.14.0/npm 11.18.0 전용 worktree에서 `npm ci`, format, lint,
-  typecheck, 원문 `npm run test`(12 files/128 tests), build, production Chromium
-  E2E(16/16), diff check가 모두 통과했고 fast-forward ancestry를 확인했다.
+- 현재 활성 작업: SG-019 `in-progress` — Codex /
+  `agent/codex/SG-019-feature-integration` / base `74fe266`
+- 현재 검증 대기: SG-019 one-way command/simulation/snapshot/event integration
+  audit와 clean root/Pages-base 전체 verify
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-019 (품질 강화 및 배포 준비)
+- 다음 작업 후보: SG-019 완료와 지정 Claude 리뷰 뒤 H2 사람 플레이테스트
 
 ## H0b 종료 기록
 
