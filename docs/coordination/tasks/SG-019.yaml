@@ -1,7 +1,7 @@
 id: SG-019
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: human-user
 approved_at: "2026-07-23T08:07:03Z"
 approval_gate: direct-human-instruction
@@ -78,6 +78,10 @@ base_sha: 74fe266702053bdab44718466cd5f7a99d1035fc
 branch: agent/codex/SG-019-feature-integration
 implementation_head_sha: 583c7342810d010f47d846bec22c22446b29c523
 head_sha: 583c7342810d010f47d846bec22c22446b29c523
+integration_mode: fast-forward
+integration_base_sha: 74fe266702053bdab44718466cd5f7a99d1035fc
+integrated_main_sha: 8097c94f20973eaf6eff5cdf42af68890cc7f6f0
+integrated_at: "2026-07-23T16:48:18Z"
 allowed_paths:
   - src/game/**
   - src/ui/**
@@ -272,6 +276,15 @@ status_history:
       Clean root verification, focused Pages-base reproduction, exact scope,
       implementation ancestry, and Claude code-review APPROVE remain the completion
       evidence. H2, remote push, and deployment are not approved.
+  - status: merged
+    at: "2026-07-23T16:48:18Z"
+    by: codex
+    basis: >-
+      Clean local main at exact base 74fe266 fast-forwarded without conflict to the
+      verified completion head 8097c94. The actual base-to-main diff contains only
+      the packet-approved SG-019 product, test, and coordination paths; forbidden
+      paths and tracked generated artifacts remain unchanged. H2 remains a separate
+      human gate, and no remote push or deployment was performed.
 first_failure_subtask:
   id: DF-SG019-01
   title: Stabilize the body-focused Space scroll observation in Pages-base production E2E

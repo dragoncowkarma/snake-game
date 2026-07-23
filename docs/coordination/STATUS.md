@@ -1,17 +1,16 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-23T16:45:43Z
+- 마지막 동기화: 2026-07-23T16:48:18Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-019 `verified` — Codex /
-  `agent/codex/SG-019-feature-integration` / implementation `583c734`
-- 현재 검증 대기: 없음. 사람은 `SG-019-AC04`의 display-backed Pages-base 16/16 ×3
-  증거 편차를 SG-019에 한해 수용했다. 역사적 실패와 `DF-SG019-01`은 비차단
-  harness 품질 기록으로 유지한다.
-- 현재 결정 필요: 없음
-- 다음 작업 후보: Codex local main fast-forward → H2 사람 플레이테스트
+- 현재 활성 작업: 없음 — SG-019 local main 통합 완료
+- 현재 검증 대기: H2 사람 플레이테스트. 사람은 `SG-019-AC04`의 display-backed
+  Pages-base 16/16 ×3 증거 편차를 SG-019에 한해 수용했다. 역사적 실패와
+  `DF-SG019-01`은 비차단 harness 품질 기록으로 유지한다.
+- 현재 결정 필요: H2 사람 판정
+- 다음 작업 후보: H2 사람 플레이테스트
 
 ## H0b 종료 기록
 
@@ -54,7 +53,9 @@
   경로가 스크롤을 막지 않음을 입증했다. line 266의 base 재현과 필수 Pages-base
   전체 통과 증거는 없지만, 사람은 2026-07-23T16:45:43Z에 `SG-019-AC04`의 16/16 ×3
   증거 편차를 명시적으로 수용했다. 실패는 PASS로 바꾸지 않고
-  `DF-SG019-01`(medium)을 비차단 후속 기록으로 유지하며 SG-019는 `verified`다.
+  `DF-SG019-01`(medium)을 비차단 후속 기록으로 유지한다. clean local `main`은
+  base `74fe266`에서 verified completion `8097c94`로 충돌 없이 fast-forward됐고
+  SG-019는 `merged`다. 원격 push·배포·H2 판정은 수행하지 않았다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
@@ -104,7 +105,7 @@ Wave 2는 H1 승인으로 완료됐다. 다음 관문은 Wave 3 (SG-016~SG-019) 
 | 0. 계약·캘리브레이션 | complete | H0b 승인; D-001~D-006·공용 계약 accepted; AC 누락 0 |
 | 1. 기반 구축 | complete | SG-005·SG-006·SG-007·SG-008·SG-009 merged; private artifact 경로는 준비됐고 공개 배포는 H3a까지 금지 |
 | 2. 수직 슬라이스 | complete | SG-010~SG-015 merged; H1 승인(2026-07-20 Asia/Seoul); DF-SG015-01(medium)은 SG-016/SG-017 이관 |
-| 3. 통합·기능 완성 | pending | 선행 gate 열림; H2 사람 검토 포함 |
+| 3. 통합·기능 완성 | in-progress | SG-016~019 local main 통합 완료; H2 사람 검토 대기 |
 | 4. 품질 강화 | pending | 교차 브라우저·접근성 |
 | 5. 배포·릴리스 | pending | H3a 공개 배포 승인, H3b 결과 수락 |
 
