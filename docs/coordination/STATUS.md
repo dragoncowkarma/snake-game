@@ -1,7 +1,7 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-23T17:37:00Z
-- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 완료 / Wave 4 진행 중
+- 마지막 동기화: 2026-07-23T17:56:58Z
+- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중 (종료 관문 H2 대기)
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
@@ -56,7 +56,7 @@
   `DF-SG019-01`(medium)을 비차단 후속 기록으로 유지한다. clean local `main`은
   base `74fe266`에서 verified completion `8097c94`로 충돌 없이 fast-forward됐고
   SG-019는 `merged`다. 원격 push·배포·H2 판정은 수행하지 않았다.
-- SG-021: 10년차 아키텍처·UX 관점 최종 diff 감사(Claude Opus 4.8). base `d490ea3`(제품 코드는 `583c734`와 동일). 제품 수정 없이 `docs/coordination/handoffs/SG-021.md`에 리뷰 리포트를 작성. 출시 차단 결함 0건. 발견된 medium 1건(M1: 강제 `Phaser.WEBGL` → `AUTO` 폴백) 및 low 5건은 SG-022로 이관 권고. 승인된 offline packet 부재를 조정 책임자가 생성하여 정합화하고, `main` 병합(fast-forward `67d68a5`)하여 `merged` 상태로 닫았다.
+- SG-021: 10년차 아키텍처·UX 관점 최종 diff 감사(Claude Opus 4.8). base `d490ea3`(제품 코드는 `583c734`와 동일). 제품 수정 없이 `docs/coordination/handoffs/SG-021.md`에 리뷰 리포트를 작성. 출시 차단 결함 0건. 발견된 medium 1건(M1: 강제 `Phaser.WEBGL` → `AUTO` 폴백) 및 low 5건은 SG-022로 이관 권고. 승인된 offline packet 부재를 조정 책임자가 생성하여 정합화하고, 리뷰 head `67d68a5`와 packet·STATUS 동기화를 base `d490ea3`에서 local `main`으로 fast-forward 통합하여 SG-021을 `merged`로 닫았다. 이 task 통합은 Wave 3 종료 관문(H2)과 무관하며 wave 상태를 전진시키지 않는다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
@@ -107,7 +107,7 @@ Wave 2는 H1 승인으로 완료됐다. 다음 관문은 Wave 3 (SG-016~SG-019) 
 | 1. 기반 구축 | complete | SG-005~SG-009 merged; private artifact 경로는 준비됐고 공개 배포는 H3a까지 금지 |
 | 2. 수직 슬라이스 | complete | SG-010~SG-015 merged; H1 승인(2026-07-20 Asia/Seoul); DF-SG015-01(medium)은 SG-016/SG-017 이관 |
 | 3. 통합·기능 완성 | in-progress | SG-016~019 local main 통합 완료; H2 사람 검토 대기 |
-| 4. 품질 강화 | in-progress | SG-021 리뷰 완료, SG-020(교차 브라우저) 및 결함 수정(SG-022) 대기 |
+| 4. 품질 강화 | pending | 착수 관문은 Wave 3 H2 이후; SG-020(독립 QA)·SG-021(아키텍처·UX 리뷰, 완료)이 병렬 선행, SG-022 결함 수정 대기 |
 | 5. 배포·릴리스 | pending | H3a 공개 배포 승인, H3b 결과 수락 |
 
 ## 승인된 기준선
