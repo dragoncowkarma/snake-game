@@ -21,7 +21,16 @@ async function setupEnhancedPageListeners(
     const url = request.url();
 
     if (url.endsWith('.js') && !url.includes('node_modules')) {
-      const response = await route.fetch();
+      let response;
+      try {
+        response = await route.fetch();
+      } catch {
+        const headers = { ...request.headers() };
+        delete headers['if-none-match'];
+        delete headers['if-modified-since'];
+        await route.continue({ headers });
+        return;
+      }
       let text = await response.text();
       let modified = false;
 
@@ -151,6 +160,7 @@ async function setupEnhancedPageListeners(
             );
           }
         }
+        expect(failures).toEqual([]);
       }
     },
     async verifySemanticHook() {
@@ -168,6 +178,7 @@ async function setupEnhancedPageListeners(
           );
         }
       }
+      expect(failures).toEqual([]);
     },
   };
 }
