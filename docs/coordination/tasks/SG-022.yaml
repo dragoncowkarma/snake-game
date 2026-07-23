@@ -1,7 +1,7 @@
 id: SG-022
 spec_version: "1.0-plan"
 task_revision: 1
-status: in-progress
+status: review
 approved_by: human-user
 approved_at: "2026-07-23T18:09:40Z"
 approval_gate: direct-human-instruction
@@ -22,6 +22,7 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-021.md
 base_sha: 611b88c0f7c1816424c161ada8e5cc9b162e438e
 branch: agent/codex/SG-022-webgl-fallback
+implementation_head_sha: 49865f66cc20077008cc5aaa310369220c14e8ee
 allowed_paths:
   - src/game/bootstrap.ts
   - src/game/bootstrap.test.ts
@@ -79,3 +80,10 @@ status_history:
     at: "2026-07-23T18:09:40Z"
     by: codex
     basis: Claimed on the dedicated branch before implementation changes.
+  - status: review
+    at: "2026-07-23T18:26:02Z"
+    by: codex
+    basis: >-
+      The M1-only implementation and co-located regression test are ready for the
+      designated Claude review. The test failed against forced WEBGL, then passed
+      with AUTO; required checks and a clean Chromium E2E rerun passed.
