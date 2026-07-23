@@ -1,0 +1,19 @@
+id: SG-021
+spec_version: 1.0
+task_revision: 1
+status: merged
+approved_by: codex
+approved_at: 2026-07-23T17:30:00Z
+owner: claude
+model: claude-opus-4.8
+reasoning_or_workload: max
+reviewer: antigravity
+depends_on: [SG-019]
+base_sha: d490ea32d8658f29a14c138f640eda164f3908dd
+allowed_paths: ["docs/coordination/handoffs/SG-021.md"]
+forbidden_paths: ["src/**", "tests/**", "index.html", "vite.config.ts", "package.json", "package-lock.json"]
+acceptance_ids: []
+required_commands: ["npm run format:check", "npm run lint", "npm run typecheck", "npm run test", "npm run build"]
+branch: claude/sg-021-task-review-58c8e1
+head_sha: 67d68a55f6d236d340a24d99e573e13e855f9db4
+handoff: docs/coordination/handoffs/SG-021.md
