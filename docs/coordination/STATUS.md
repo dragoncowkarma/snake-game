@@ -1,12 +1,15 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-21T01:16:00Z
+- 마지막 동기화: 2026-07-23T08:03:41Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
 - 현재 활성 작업: 없음 (SG-018 `merged` into `main`)
-- 현재 검증 대기: 없음 — `main` 브랜치에서 SG-018 Playwright E2E 확장 스위트가 `npm run format:check`, `lint`, `typecheck`, `build`, `test:e2e` (16/16 tests)를 100% 통과하여 fast-forward 병합되었다.
+- 현재 검증 대기: 없음 — Codex 독립 리뷰가 SG-018 구현 head `f735944`를
+  APPROVE했다. Node 24.14.0/npm 11.18.0 전용 worktree에서 `npm ci`, format, lint,
+  typecheck, 원문 `npm run test`(12 files/128 tests), build, production Chromium
+  E2E(16/16), diff check가 모두 통과했고 fast-forward ancestry를 확인했다.
 - 현재 결정 필요: 없음
 - 다음 작업 후보: SG-019 (품질 강화 및 배포 준비)
 
@@ -30,7 +33,13 @@
 - SG-013: 사람이 직접 승인한 축소 범위에서 `src/ui/contracts.ts`의 수동 타입 미러를 실제 `src/domain/index.ts` type-only re-export로 교체하고, 실제 `reset`/`enqueueDirection`/`step` 산출물로 focus 전이와 aria-live 증거를 보강했다. 구현 SHA `3a443185e8f4775fc27032f6ae6638abf8fb3fc7`과 검증 기록 `664cd480739a671d7cc371f964691fe3391f3972`는 지정 Antigravity 독립 리뷰를 통과했다. Codex는 local `main` `cf811f293918a4b7eed38b5cb44c3673950959cb` 위 integration merge `8391960c9fd01315db55053bf7c1d12459f6c702`에서 Node 24 format, lint, typecheck, 101/101 unit, build, Chromium E2E 1/1, scope와 whitespace 검사를 통과시켰다. E2E는 별도 SG-012 preview가 4173을 점유해 uncommitted 4174 치환으로 실행한 뒤 설정을 원복했고 최종 diff는 0이다. 원격 push·공개 배포는 수행하지 않았다. `src/ui/contracts.ts`의 최종 삭제는 3개 `tests/**`와 5개 `src/ui/**` consumer를 함께 바꾸는 후속 cross-owner 정리다.
 - SG-014: production vertical flow implementation SHA `0b00f65d5258f0b21f69d9e6925289a06ae9ee34`는 Start→READY→Right→food/Score 10→wall GAME_OVER→Restart/Score 0을 실제 DOM command와 canvas/DOM snapshot으로 검증한다. Claude review `f520264ac45249b229f6337d7803e27195e46865`와 Antigravity review/remediation `e3dee624b5c1630d89b3f237a338d68e6fd9f606`은 모두 APPROVE했고, Codex가 합성 SHA `995e6469171508e7d99a68102f8d76404625a473`에서 한 줄 assertion-timeout 변경을 리뷰한 뒤 Node 24 current/clean 전체 verify와 root/Pages-base Chromium 2/2를 통과시켰다. verified branch tip `8e2eac0004d5e6b949619faddbf3a0fe962546f5`는 clean local main 위 merge commit `7422812f737bb62ddd458a025a1bfd203f5c5120`으로 통합됐고, completion SHA `62ca854b09b5c3b63852790587bbe102d1918fe5`도 `bcd9d08d5f8818c9d8a3199d9168031b83d7c341`로 병합됐다. 최종 local main의 별도 clean checkout은 Node 24 `npm ci`, 전체 verify 121/121, coverage, build, root/Pages-base Chromium 2/2, scope/whitespace/YAML/ancestry/generated-artifact 감사를 모두 통과했다. 제품 source/config/package/accepted 계약 diff, 추적 생성물, 원격 push·배포는 0건이다.
 - SG-015: independent vertical QA head `qa-review-sg-015`는 320px 레이아웃, 키보드 내비게이션, 포커스 전이, 입력 큐잉(다중 입력), 20회 재시작 동작을 `tests/e2e/qa-audit.spec.ts` E2E 테스트로 검증하였다. 레이아웃 320px scroll audit, 20회 재시작 루프, 다중 입력 큐잉은 성공적으로 PASS하였다. 다만 키보드 단축키 'm'을 통한 음소거 토글 시 UI 버튼 및 쉘의 muted 상태가 업데이트되지 않는 결함 `DF-SG015-01` (Medium)이 감지되어 오프라인 태스크 및 Handoff에 기록하고 local `main` 병합 커밋 `d0388e90472e56c0eb807b6cb14761f25626824e`로 통합되어 status는 `merged` 상태다.
-- SG-018: production dist 대상 Playwright E2E 확장 테스트 스위트 구현 (Antigravity). WASD/Arrow 8개 방향 키, 시맨틱 Command 1:1 디스패치 감시, 터치 D-pad 1:1 검증, document.hidden/window blur 일시정지, 로컬 저장소 fallback, AudioContext 예외 fallback, 320px 스크롤 차단을 `tests/e2e/production.spec.ts`(16개 테스트)로 완벽히 검증. 구현 SHA `f735944da2cb0922f656406b4710a68d454aedf9`, 3회 연속 16/16 PASS로 `main` fast-forward 병합 완료.
+- SG-018: production dist 대상 Playwright E2E 확장 테스트 스위트 구현 (Antigravity).
+  WASD/Arrow 8개 방향 키, semantic Command 1:1, touch D-pad 1:1,
+  document.hidden/window blur/orientation pause, resize 보존, 저장소와 AudioContext
+  실패 fallback, 320px scroll을 검증한다. 구현 SHA `f735944da2cb0922f656406b4710a68d454aedf9`는
+  Antigravity 3회 연속 16/16 PASS 뒤 `main`에 fast-forward됐고, Codex가
+  2026-07-23T08:03:41Z 독립 리뷰 APPROVE와 Node 24/npm 11.18.0 원문 unit 128/128,
+  production Chromium 16/16 재검증으로 packet/handoff 상태를 `merged`로 정합화했다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
