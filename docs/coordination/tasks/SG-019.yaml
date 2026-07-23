@@ -22,6 +22,24 @@ routing_deviation: >-
   active runtime as Codex GPT-5; no unsupported model identity is inferred.
 reviewers:
   - Claude Opus 4.8 high
+review_evidence:
+  platform: Claude
+  model: "Opus 4.8"
+  setting: high
+  status: approved
+  reviewed_range: 74fe266702053bdab44718466cd5f7a99d1035fc..583c7342810d010f47d846bec22c22446b29c523
+  evidence_commit: d52e5ba10face92b760a86838090599e489b5faf
+  recorded_at: "2026-07-23T16:23:13Z"
+  conclusion: >-
+    Code review APPROVE. Environment-independent verification passed. On the
+    reviewer's detached macOS session, production.spec.ts:661 froze in Playing with
+    Score 0 on both base and implementation, with
+    CVDisplayLinkCreateWithCGDisplay CVReturn -6670.
+  integration_interpretation: >-
+    The base reproduction isolates that game-loop freeze from the SG-019 patch and
+    supplies the required cross-platform code review. It does not prove that the
+    earlier production.spec.ts:266 scrollY 40-to-40 failure has the same cause, and
+    it does not replace the packet's required full Pages-base E2E pass.
 depends_on:
   - SG-016
   - SG-017
@@ -198,6 +216,18 @@ status_history:
       deterministic product failure. Per the SG-019 integration instruction, Codex
       stopped after the first full-suite failure, did not weaken or repair the
       test in the integration patch, and returned DF-SG019-01 to Antigravity.
+  - status: blocked
+    at: "2026-07-23T16:29:16Z"
+    by: codex
+    basis: >-
+      Integrated Claude Opus 4.8 code-review APPROVE evidence commit d52e5ba. The
+      reviewer independently reproduced a separate production.spec.ts:661 frozen
+      Phaser loop on base and implementation with CVDisplayLink CVReturn -6670,
+      confirming that symptom is environment-owned rather than an SG-019 regression.
+      The original required Pages-base full-suite failure was at
+      production.spec.ts:266 and only the focused rerun passed, so causal equivalence
+      is not claimed and SG-019 remains blocked pending full-suite evidence or an
+      explicit human exception to SG-019-AC04.
 first_failure_subtask:
   id: DF-SG019-01
   title: Stabilize the body-focused Space scroll observation in Pages-base production E2E
@@ -225,11 +255,24 @@ first_failure_subtask:
     prevScrollY and sending Space, so browser keyboard-scroll animation/focus timing
     can leave no observable additional delta. Product command/default-prevention
     behavior is unchanged.
+  independent_review_observation: >-
+    Claude later observed a different deterministic E2E failure at
+    production.spec.ts:661: both base 74fe266 and implementation 583c734 remained in
+    Playing with Score 0 while the runner logged CVDisplayLinkCreateWithCGDisplay
+    CVReturn -6670. That proves the game-loop freeze is a detached-macOS harness
+    issue, not an SG-019 regression.
+  causal_scope: >-
+    The line 661 CVDisplayLink reproduction and the original line 266 scrollY
+    observation are recorded as distinct symptoms. No evidence yet demonstrates
+    that CVDisplayLink caused the scrollY 40-to-40 failure.
   acceptance: >-
     Without waitForTimeout, sleep, retries, force, or weakened assertions, make the
     pre-Space scroll baseline event-driven and stable; then pass the full Pages-base
     16-test suite three consecutive times and retain root-base behavior.
   suggested_owner_action: >-
-    Reset to a deterministic scroll position and await a real scrollend/stable-frame
-    boundary before the body-focused Space assertion, while continuing to prove
-    physical scroll and preventDefault=false.
+    Reproduce the first failing assertion on a display-backed runner. For line 266,
+    reset to a deterministic scroll position and await an event-driven
+    scrollend/stable-frame boundary while continuing to prove physical scroll and
+    preventDefault=false. For line 661, validate an active display/CVDisplayLink or
+    an approved deterministic E2E harness. Do not add sleep, retry, force, weakened
+    assertions, product-domain duplication, or an unapproved public test seam.
