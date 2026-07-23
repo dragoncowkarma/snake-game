@@ -1,31 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import type { DomainEvent, GameState } from './contracts.ts';
-import {
-  INITIAL_MENU_SNAPSHOT,
-  announcementFor,
-  focusTargetForTransition,
-  translateKeydown,
-} from './state.ts';
+import * as stateModule from './state.ts';
+import { announcementFor, focusTargetForTransition, translateKeydown } from './state.ts';
 
-describe('INITIAL_MENU_SNAPSHOT', () => {
-  it('matches the CONTRACTS.md common reset shape for phase menu', () => {
-    expect(INITIAL_MENU_SNAPSHOT).toEqual({
-      phase: 'menu',
-      snake: [
-        { x: 10, y: 10 },
-        { x: 9, y: 10 },
-        { x: 8, y: 10 },
-      ],
-      direction: 'right',
-      queuedDirections: [],
-      food: null,
-      score: 0,
-      foodsEaten: 0,
-      tickMs: 160,
-      difficulty: 'normal',
-      endReason: null,
-    });
+describe('UI state boundary', () => {
+  it('does not own a duplicate domain GameState snapshot', () => {
+    expect('INITIAL_MENU_SNAPSHOT' in stateModule).toBe(false);
   });
 });
 

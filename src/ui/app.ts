@@ -8,12 +8,7 @@
  */
 import type { Command, DomainEvent, GameState, Phase } from './contracts.ts';
 import { type ShellElements, actionElements, createShell, renderSnapshot } from './render.ts';
-import {
-  INITIAL_MENU_SNAPSHOT,
-  announcementFor,
-  focusTargetForTransition,
-  translateKeydown,
-} from './state.ts';
+import { announcementFor, focusTargetForTransition, translateKeydown } from './state.ts';
 
 /**
  * Presentation-only fields the shell renders alongside a GameState snapshot but that
@@ -98,7 +93,7 @@ export function createGameShell(
   const elements = createShell(root);
   let previousPhase: Phase | null = null;
   let meta: ShellMeta = initialMeta;
-  let lastState: GameState = INITIAL_MENU_SNAPSHOT;
+  let lastState: GameState | null = null;
 
   const cleanups: Array<() => void> = [];
 
@@ -176,10 +171,11 @@ export function createGameShell(
 
   function updateMeta(metaPatch: Partial<ShellMeta>): void {
     meta = { ...meta, ...metaPatch };
-    renderSnapshot(elements, lastState, meta);
-  }
 
-  applySnapshot(INITIAL_MENU_SNAPSHOT, []);
+    if (lastState !== null) {
+      renderSnapshot(elements, lastState, meta);
+    }
+  }
 
   return {
     applySnapshot,

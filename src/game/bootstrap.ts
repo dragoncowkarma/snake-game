@@ -50,7 +50,7 @@ export function mountPhaserGame(
     contextFactory: browserAudioContext(ownerWindow),
     initiallyMuted: preferences.snapshot.muted,
   });
-  const application = new ApplicationRouter(randomSource);
+  const application = new ApplicationRouter(randomSource, preferences.snapshot.lastDifficulty);
   // `dispatch` needs to call back into the shell to feed the audio adapter's
   // authoritative mute state after a `toggleMute` command (CONTRACTS.md section 3
   // keeps mute preference out of GameState, so no snapshot/event reports it), but the

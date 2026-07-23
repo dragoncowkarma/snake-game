@@ -747,6 +747,18 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     );
     expect(highSlowPreserved).toBe('10');
 
+    // Make Slow the persisted selection and give it a distinct best so reload proves
+    // the same preference drives both the simulation snapshot and the rendered UI.
+    await menuButton.click();
+    await slowRadio.click();
+    await page.evaluate(() => {
+      window.localStorage.setItem('snake-game:v1:high-score:slow', '20');
+    });
+    lastDifficulty = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:last-difficulty'),
+    );
+    expect(lastDifficulty).toBe('"slow"');
+
     // Toggle mute
     const muteButton = page.locator('.mute');
     await muteButton.click();
@@ -757,12 +769,18 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Reload page to verify persistence of mute preference and scores in storage
     await page.reload({ waitUntil: 'networkidle' });
     await expect(page.locator('.mute')).toHaveAttribute('aria-pressed', 'true');
+    await expect(slowRadio).toBeChecked();
+    await expect(page.locator('.hud').getByText('Best 20')).toBeVisible();
 
     // Verify scores are still present in localStorage after reload
     const highNormalReloaded = await page.evaluate(() =>
       window.localStorage.getItem('snake-game:v1:high-score:normal'),
     );
     expect(highNormalReloaded).toBe('10');
+    const highSlowReloaded = await page.evaluate(() =>
+      window.localStorage.getItem('snake-game:v1:high-score:slow'),
+    );
+    expect(highSlowReloaded).toBe('20');
 
     const pageFailures = await page.evaluate(() => (window as any).browserFailures || []);
     browserFailures.push(...pageFailures);

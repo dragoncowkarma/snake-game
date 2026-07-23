@@ -1,10 +1,13 @@
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 
 import type { DomainEvent, GameState } from '../domain/index.ts';
+
+import { collisionMarkerFor } from './collision-marker.ts';
 
 export const BOARD_LOGICAL_SIZE = 480;
 export const BOARD_CELL_COUNT = 20;
 export const BOARD_CELL_SIZE = BOARD_LOGICAL_SIZE / BOARD_CELL_COUNT;
+export const COLLISION_HIGHLIGHT_MS = 300;
 
 const COLORS = {
   board: 0x16213a,
@@ -18,12 +21,18 @@ const COLORS = {
 /** Phaser drawing adapter. It consumes domain snapshots and events but never infers rules. */
 export class BoardRenderer {
   private readonly graphics: Phaser.GameObjects.Graphics;
+  private readonly collisionGraphics: Phaser.GameObjects.Graphics;
+  private readonly clock: Phaser.Time.Clock;
+  private collisionClearTimer: Phaser.Time.TimerEvent | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.graphics = scene.add.graphics();
+    this.collisionGraphics = scene.add.graphics();
+    this.clock = scene.time;
   }
 
   render(state: GameState, events: readonly DomainEvent[]): void {
+    this.clearCollisionFeedback();
     this.graphics.clear();
     this.graphics.fillStyle(COLORS.board, 1);
     this.graphics.fillRect(0, 0, BOARD_LOGICAL_SIZE, BOARD_LOGICAL_SIZE);
@@ -44,18 +53,36 @@ export class BoardRenderer {
       this.drawCell(state.food, COLORS.food, 7);
     }
 
-    for (const event of events) {
-      if (event.type === 'gameEnded' && this.isBoardCell(event.attemptedCell)) {
-        const x = event.attemptedCell.x * BOARD_CELL_SIZE + 2;
-        const y = event.attemptedCell.y * BOARD_CELL_SIZE + 2;
+    const gameEnded = events.find((event) => event.type === 'gameEnded');
 
-        this.graphics.lineStyle(3, COLORS.collision, 1);
-        this.graphics.strokeRect(x, y, BOARD_CELL_SIZE - 4, BOARD_CELL_SIZE - 4);
+    if (gameEnded?.type === 'gameEnded') {
+      const marker = collisionMarkerFor(gameEnded, {
+        cellCount: BOARD_CELL_COUNT,
+        cellSize: BOARD_CELL_SIZE,
+        logicalSize: BOARD_LOGICAL_SIZE,
+      });
+
+      if (marker !== null) {
+        this.collisionGraphics.lineStyle(3, COLORS.collision, 1);
+
+        if (marker.kind === 'cell') {
+          this.collisionGraphics.strokeRect(marker.x, marker.y, marker.size, marker.size);
+        } else {
+          this.collisionGraphics.lineBetween(marker.x1, marker.y1, marker.x2, marker.y2);
+        }
+
+        this.collisionClearTimer = this.clock.delayedCall(COLLISION_HIGHLIGHT_MS, () => {
+          this.collisionGraphics.clear();
+          this.collisionClearTimer = null;
+        });
       }
     }
   }
 
   destroy(): void {
+    this.collisionClearTimer?.remove(false);
+    this.collisionClearTimer = null;
+    this.collisionGraphics.destroy();
     this.graphics.destroy();
   }
 
@@ -73,7 +100,9 @@ export class BoardRenderer {
     );
   }
 
-  private isBoardCell(cell: { readonly x: number; readonly y: number }): boolean {
-    return cell.x >= 0 && cell.x < BOARD_CELL_COUNT && cell.y >= 0 && cell.y < BOARD_CELL_COUNT;
+  private clearCollisionFeedback(): void {
+    this.collisionClearTimer?.remove(false);
+    this.collisionClearTimer = null;
+    this.collisionGraphics.clear();
   }
 }

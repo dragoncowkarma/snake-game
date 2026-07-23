@@ -6,34 +6,6 @@
  */
 import type { Command, DomainEvent, GameState, Phase } from './contracts.ts';
 
-const NORMAL_START_TICK_MS = 160;
-
-/**
- * Boot-time snapshot matching CONTRACTS.md section 4 `reset({ phase: 'menu' }, rng)`
- * common shape (length-3 head-first snake, direction 'right', empty queue, zero
- * score/foodsEaten, endReason null, food null for menu). This is a literal constant,
- * not a call into domain logic: no reset()/RNG is invoked, and the domain owns the
- * authoritative implementation once SG-007 lands. Default difficulty 'normal' is an
- * SG-006 UI-only assumption for the pre-selection radio/select state; it carries no
- * product meaning beyond which control is checked before the player chooses.
- */
-export const INITIAL_MENU_SNAPSHOT: GameState = {
-  phase: 'menu',
-  snake: [
-    { x: 10, y: 10 },
-    { x: 9, y: 10 },
-    { x: 8, y: 10 },
-  ],
-  direction: 'right',
-  queuedDirections: [],
-  food: null,
-  score: 0,
-  foodsEaten: 0,
-  tickMs: NORMAL_START_TICK_MS,
-  difficulty: 'normal',
-  endReason: null,
-};
-
 export type FocusTarget = 'board' | 'start' | 'resume' | 'restart' | null;
 
 /**

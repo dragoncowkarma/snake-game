@@ -253,6 +253,9 @@ export function renderSnapshot(
   elements.score.textContent = String(state.score);
   elements.best.textContent = String(Math.max(meta.best, state.score));
   elements.phaseLabel.textContent = PHASE_LABEL[state.phase];
+  for (const input of elements.difficultyInputs) {
+    input.checked = input.value === state.difficulty;
+  }
 
   const isMenu = state.phase === 'menu';
   const isReadyOrPlaying = state.phase === 'ready' || state.phase === 'playing';
