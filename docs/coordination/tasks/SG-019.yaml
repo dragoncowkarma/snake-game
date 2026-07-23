@@ -29,6 +29,8 @@ review_evidence:
   status: approved
   reviewed_range: 74fe266702053bdab44718466cd5f7a99d1035fc..583c7342810d010f47d846bec22c22446b29c523
   evidence_commit: d52e5ba10face92b760a86838090599e489b5faf
+  supplemental_evidence_commit: c20d69be180ca6985c0937af40a17aa55fd0a0f7
+  integrated_supplemental_commit: 3f0a825df9a4a15e4e7848cabac304d1e49e78e1
   recorded_at: "2026-07-23T16:23:13Z"
   conclusion: >-
     Code review APPROVE. Environment-independent verification passed. On the
@@ -37,9 +39,12 @@ review_evidence:
     CVDisplayLinkCreateWithCGDisplay CVReturn -6670.
   integration_interpretation: >-
     The base reproduction isolates that game-loop freeze from the SG-019 patch and
-    supplies the required cross-platform code review. It does not prove that the
-    earlier production.spec.ts:266 scrollY 40-to-40 failure has the same cause, and
-    it does not replace the packet's required full Pages-base E2E pass.
+    supplies the required cross-platform code review. Supplemental code inspection
+    confirms production.spec.ts:266 runs before Start and exercises native body
+    scrolling while InputController does not preventDefault outside the board, so it
+    is mechanically independent of the line 661 Phaser freeze. Line 266 was not
+    reproduced on base, and neither analysis replaces the packet's required full
+    Pages-base E2E pass.
 depends_on:
   - SG-016
   - SG-017
@@ -228,6 +233,17 @@ status_history:
       production.spec.ts:266 and only the focused rerun passed, so causal equivalence
       is not claimed and SG-019 remains blocked pending full-suite evidence or an
       explicit human exception to SG-019-AC04.
+  - status: blocked
+    at: "2026-07-23T16:39:51Z"
+    by: codex
+    basis: >-
+      Integrated Claude supplemental evidence c20d69b as 3f0a825 after resolving
+      only the concurrent handoff insertion point. Code inspection confirms line 266
+      executes before Start and InputController does not preventDefault for
+      off-board Space, making it mechanically independent of the line 661 Phaser
+      loop. This rules out the SG-019 input path as the scroll blocker, but base
+      reproduction was not performed and Pages-base 16/16 remains unproven, so the
+      task stays blocked.
 first_failure_subtask:
   id: DF-SG019-01
   title: Stabilize the body-focused Space scroll observation in Pages-base production E2E
@@ -255,6 +271,13 @@ first_failure_subtask:
     prevScrollY and sending Space, so browser keyboard-scroll animation/focus timing
     can leave no observable additional delta. Product command/default-prevention
     behavior is unchanged.
+  mechanical_analysis: >-
+    The line 266 assertion runs before the test clicks Start and asks a focused
+    document.body on a 5000px page to perform native Space scrolling. InputController
+    attaches preventDefault behavior to board keydown only; its document capture
+    listener stops shell command propagation outside the board without calling
+    preventDefault. The SG-019 product input path therefore does not block this
+    scroll.
   independent_review_observation: >-
     Claude later observed a different deterministic E2E failure at
     production.spec.ts:661: both base 74fe266 and implementation 583c734 remained in
@@ -263,8 +286,10 @@ first_failure_subtask:
     issue, not an SG-019 regression.
   causal_scope: >-
     The line 661 CVDisplayLink reproduction and the original line 266 scrollY
-    observation are recorded as distinct symptoms. No evidence yet demonstrates
-    that CVDisplayLink caused the scrollY 40-to-40 failure.
+    observation are mechanically distinct: the former requires the running Phaser
+    loop, while the latter runs before Start through browser-native scrolling.
+    Line 266 is classified as a browser-harness observation from code inspection plus
+    full-suite-fail/focused-pass behavior; it has not been reproduced on base.
   acceptance: >-
     Without waitForTimeout, sleep, retries, force, or weakened assertions, make the
     pre-Space scroll baseline event-driven and stable; then pass the full Pages-base
