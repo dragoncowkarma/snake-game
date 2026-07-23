@@ -12,6 +12,7 @@ async function setupEnhancedPageListeners(
   options: SetupOptions = {},
 ) {
   let routeInjectedAssetCount = 0;
+  let routeInjectedSemanticHookCount = 0;
 
   // Strip caching headers (If-None-Match, If-Modified-Since) to force 200 OK responses.
   // When options.enableSeedHook is true, inject seed hook into BrowserRandomSource class inside bootstrap chunk.
@@ -42,10 +43,12 @@ async function setupEnhancedPageListeners(
       }
 
       // Minification-resilient regex matching ApplicationRouter.prototype.dispatch
-      const dispatchRegex = /dispatch\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{\s*if\s*\(/;
+      // matches `dispatch(...) {` where body references `this.state.phase`
+      const dispatchRegex = /dispatch\s*\(\s*([a-zA-Z0-9_$]+)\s*\)\s*\{(?=[^}]*this\.state\.phase)/;
       if (dispatchRegex.test(text)) {
         text = text.replace(dispatchRegex, (_match: string, paramName: string) => {
-          return `dispatch(${paramName}){if(typeof window!=="undefined"){window.semanticCommandTrace=window.semanticCommandTrace||[];window.semanticCommandTrace.push(${paramName});}if(`;
+          routeInjectedSemanticHookCount++;
+          return `dispatch(${paramName}){if(typeof window!=="undefined"){window.__semanticHookInjected=true;window.semanticCommandTrace=window.semanticCommandTrace||[];window.semanticCommandTrace.push(${paramName});}`;
         });
         modified = true;
       }
@@ -150,6 +153,22 @@ async function setupEnhancedPageListeners(
         }
       }
     },
+    async verifySemanticHook() {
+      if (routeInjectedSemanticHookCount === 0) {
+        failures.push(
+          'SemanticHook Injection Error: Route interception failed to match ApplicationRouter.dispatch JS asset regex in bootstrap chunk.',
+        );
+      } else {
+        const isExecuted = await page.evaluate(
+          () => (window as any).__semanticHookInjected === true,
+        );
+        if (!isExecuted) {
+          failures.push(
+            'SemanticHook Execution Error: Injected semantic dispatch hook was not executed on current page instance.',
+          );
+        }
+      }
+    },
   };
 }
 
@@ -159,7 +178,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     baseURL,
   }) => {
     const browserFailures: string[] = [];
-    await setupEnhancedPageListeners(page, browserFailures, baseURL);
+    const auditor = await setupEnhancedPageListeners(page, browserFailures, baseURL);
 
     await page.goto('./', { waitUntil: 'networkidle' });
 
@@ -221,20 +240,13 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     });
     expect(lastPrevented).toBe(false);
 
-    // 2. Blur focus to document body & scroll to top -> Press Space -> default not prevented -> page scrolls (AC-U06)
+    // 2. Focus document body -> Press Space -> default not prevented -> page scrolls further (AC-U06)
     await page.evaluate(() => {
-      (document.activeElement as HTMLElement)?.blur();
-      window.scrollTo(0, 0);
+      document.body.tabIndex = -1;
+      document.body.focus();
     });
-    // Settle scrollTo(0,0) event before capturing baseline
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => resolve());
-        }),
-    );
-
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
+    const prevScrollY = await page.evaluate(() => window.scrollY);
     await page.keyboard.press('Space');
 
     await expect
@@ -244,7 +256,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       .toBeGreaterThan(startCount);
 
     scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(0);
+    expect(scrollY).toBeGreaterThan(prevScrollY);
 
     // 3. Start button focused -> Press Space -> triggers click -> Ready
     await startButton.focus();
@@ -346,6 +358,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
         direction: item.expectedDirection,
       });
     }
+
+    // Verify semantic dispatch hook injection and execution
+    await auditor.verifySemanticHook();
 
     // 7. Pause via 'p' -> focus moves to Resume button
     await board.press('p');
@@ -475,8 +490,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     );
     expect(semanticCommands).toEqual([{ type: 'direction', direction: 'up' }]);
 
-    // Verify seed hook execution once food has been spawned
+    // Verify seed hook and semantic hook execution
     await auditor.verifySeedHook();
+    await auditor.verifySemanticHook();
 
     // Wait for the snake to eat both foods along the Up path (reaches score 20)
     const liveStatus = page.locator('#status');
