@@ -98,7 +98,7 @@ export function mountPhaserGame(
   let pendingGameMount: number | null = null;
   const createPhaserGame = (): void => {
     game = new Phaser.Game({
-      type: Phaser.WEBGL,
+      type: Phaser.AUTO,
       backgroundColor: '#16213a',
       pixelArt: true,
       scale: {

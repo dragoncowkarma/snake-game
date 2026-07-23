@@ -1,0 +1,81 @@
+id: SG-022
+spec_version: "1.0-plan"
+task_revision: 1
+status: in-progress
+approved_by: human-user
+approved_at: "2026-07-23T18:09:40Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human approved creation and execution of an offline packet for the SG-021 M1
+  defect after the missing SG-022 task source was reported. This revision is limited
+  to the WebGL renderer fallback and its co-located game-layer regression test; it
+  does not authorize the unrelated SG-021 findings, public-contract changes, new
+  dependencies, remote push, deployment, or an H2 verdict.
+owner: codex
+model: "Codex GPT-5 runtime"
+reasoning_or_workload: high
+reviewer: claude
+depends_on:
+  - SG-021
+predecessor_evidence:
+  - docs/coordination/tasks/SG-021.yaml
+  - docs/coordination/handoffs/SG-021.md
+base_sha: 611b88c0f7c1816424c161ada8e5cc9b162e438e
+branch: agent/codex/SG-022-webgl-fallback
+allowed_paths:
+  - src/game/bootstrap.ts
+  - src/game/bootstrap.test.ts
+  - docs/coordination/tasks/SG-022.yaml
+  - docs/coordination/handoffs/SG-022.md
+forbidden_paths:
+  - src/domain/**
+  - src/ui/**
+  - src/adapters/**
+  - src/config/**
+  - tests/**
+  - src/main.ts
+  - src/styles.css
+  - index.html
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - tooling.config.ts
+  - tsconfig.json
+  - eslint.config.js
+  - .github/**
+  - public/**
+  - dist/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/STATUS.md
+acceptance_ids:
+  - >-
+    SG-022-M1-AC01: mountPhaserGame configures Phaser.AUTO rather than forcing
+    Phaser.WEBGL, so Phaser may select Canvas when WebGL is unavailable.
+  - >-
+    SG-022-M1-AC02: the regression test fails before the production change and
+    passes after it; no unrelated SG-021 finding, dependency, or public contract
+    changes in this task.
+required_commands:
+  - npm run test -- src/game/bootstrap.test.ts
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+  - git diff --check
+claim: "CLAIM: codex / Codex GPT-5 runtime high / agent/codex/SG-022-webgl-fallback / 2026-07-23T18:09:40Z"
+claimed_at: "2026-07-23T18:09:40Z"
+handoff: docs/coordination/handoffs/SG-022.md
+status_history:
+  - status: ready
+    at: "2026-07-23T18:09:40Z"
+    by: human-user
+    basis: Direct approval to create and execute the M1-only offline packet.
+  - status: in-progress
+    at: "2026-07-23T18:09:40Z"
+    by: codex
+    basis: Claimed on the dedicated branch before implementation changes.
