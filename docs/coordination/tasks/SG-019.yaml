@@ -1,7 +1,7 @@
 id: SG-019
 spec_version: "1.0-plan"
 task_revision: 1
-status: in-progress
+status: blocked
 approved_by: human-user
 approved_at: "2026-07-23T08:07:03Z"
 approval_gate: direct-human-instruction
@@ -35,6 +35,8 @@ predecessor_evidence:
   - docs/coordination/handoffs/SG-018.md
 base_sha: 74fe266702053bdab44718466cd5f7a99d1035fc
 branch: agent/codex/SG-019-feature-integration
+implementation_head_sha: 583c7342810d010f47d846bec22c22446b29c523
+head_sha: 583c7342810d010f47d846bec22c22446b29c523
 allowed_paths:
   - src/game/**
   - src/ui/**
@@ -184,3 +186,50 @@ status_history:
     basis: >-
       Claimed on the dedicated branch at exact reconciled local-main base 74fe266
       before SG-019 implementation or verification changes.
+  - status: blocked
+    at: "2026-07-23T08:31:23Z"
+    by: codex
+    basis: >-
+      Clean root-base npm run verify passed completely, but the required clean
+      Pages-base E2E command failed first in the SG-018-owned keyboard/scroll test:
+      after ArrowDown produced scrollY 40, body-focused Space left scrollY at 40
+      instead of increasing. The identical focused Pages-base test passed on the
+      immediate reproduction run, proving a flaky observation boundary rather than a
+      deterministic product failure. Per the SG-019 integration instruction, Codex
+      stopped after the first full-suite failure, did not weaken or repair the
+      test in the integration patch, and returned DF-SG019-01 to Antigravity.
+first_failure_subtask:
+  id: DF-SG019-01
+  title: Stabilize the body-focused Space scroll observation in Pages-base production E2E
+  source_task: SG-018
+  owner: antigravity
+  severity: medium
+  integration_impact: blocker
+  status: ready-for-owner
+  failing_head: 583c7342810d010f47d846bec22c22446b29c523
+  environment: "Node 24.14.0 / npm 11.18.0 / Playwright 1.61.1 Chromium / PLAYWRIGHT_BASE_PATH=/snake-game/"
+  failing_command: "PLAYWRIGHT_BASE_PATH=/snake-game/ npm run test:e2e"
+  failing_test: >-
+    SG-018 Production Build E2E Suite › Keyboard Controls, WASD, Space, and
+    preventDefault scroll prevention (AC-U02, AC-U06)
+  failure: >-
+    tests/e2e/production.spec.ts:266 expected window.scrollY to become greater than
+    prevScrollY 40 after focusing document.body and pressing Space; it remained 40
+    until the 10-second poll timeout.
+  reproduction: >-
+    The full Pages-base suite failed on its first test. The exact same SHA and base
+    path rerun with --grep "Keyboard Controls, WASD, Space" passed 1/1 in 14.7s.
+    Root-base clean npm run verify also passed the same test in its 16/16 run.
+  hypothesis: >-
+    The test waits only for the first ArrowDown scroll event before capturing
+    prevScrollY and sending Space, so browser keyboard-scroll animation/focus timing
+    can leave no observable additional delta. Product command/default-prevention
+    behavior is unchanged.
+  acceptance: >-
+    Without waitForTimeout, sleep, retries, force, or weakened assertions, make the
+    pre-Space scroll baseline event-driven and stable; then pass the full Pages-base
+    16-test suite three consecutive times and retain root-base behavior.
+  suggested_owner_action: >-
+    Reset to a deterministic scroll position and await a real scrollend/stable-frame
+    boundary before the body-focused Space assertion, while continuing to prove
+    physical scroll and preventDefault=false.

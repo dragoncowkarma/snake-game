@@ -1,16 +1,18 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-23T08:07:03Z
+- 마지막 동기화: 2026-07-23T08:31:23Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-019 `in-progress` — Codex /
-  `agent/codex/SG-019-feature-integration` / base `74fe266`
-- 현재 검증 대기: SG-019 one-way command/simulation/snapshot/event integration
-  audit와 clean root/Pages-base 전체 verify
+- 현재 활성 작업: SG-019 `blocked` — Codex /
+  `agent/codex/SG-019-feature-integration` / implementation `583c734`
+- 현재 검증 대기: `DF-SG019-01` — SG-018 소유 keyboard/Space physical-scroll
+  observation을 Antigravity가 sleep/retry 없이 안정화한 뒤 clean Pages-base
+  Chromium 16/16 3회와 SG-019 전체 verify 재실행
 - 현재 결정 필요: 없음
-- 다음 작업 후보: SG-019 완료와 지정 Claude 리뷰 뒤 H2 사람 플레이테스트
+- 다음 작업 후보: Antigravity `DF-SG019-01` → Codex SG-019 재검증 → 지정 Claude
+  리뷰 → H2 사람 플레이테스트
 
 ## H0b 종료 기록
 
@@ -39,6 +41,14 @@
   Antigravity 3회 연속 16/16 PASS 뒤 `main`에 fast-forward됐고, Codex가
   2026-07-23T08:03:41Z 독립 리뷰 APPROVE와 Node 24/npm 11.18.0 원문 unit 128/128,
   production Chromium 16/16 재검증으로 packet/handoff 상태를 `merged`로 정합화했다.
+- SG-019: base `74fe266`에서 persisted lastDifficulty의 router/DOM 복원, UI의
+  중복 초기 GameState와 미사용 dispatch stub 제거, `gameEnded` self-cell/wall-edge
+  300ms overlay를 구현한 head `583c734`. clean root `npm run verify`는 14 files/132
+  unit, coverage, build, Chromium 16/16으로 PASS했다. clean Pages-base 전체 E2E는
+  첫 keyboard/Space scroll assertion이 scrollY 40→40으로 1회 실패했고 동일 focused
+  rerun은 1/1 PASS해 flaky observation 경계로 판정했다. 지시대로 제품 patch에
+  테스트 우회를 넣지 않고 `DF-SG019-01`(medium, integration-blocking)을 SG-018 원
+  소유자 Antigravity에 반환했으며 SG-019는 `blocked`다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
