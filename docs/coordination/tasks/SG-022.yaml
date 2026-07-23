@@ -1,7 +1,7 @@
 id: SG-022
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-23T18:09:40Z"
 approval_gate: direct-human-instruction
@@ -15,6 +15,16 @@ owner: codex
 model: "Codex GPT-5 runtime"
 reasoning_or_workload: high
 reviewer: claude
+review_evidence:
+  reviewer: Claude
+  status: approved
+  reviewed_head: bfc361363ef90de7d8d18c0224e24202baab9cac
+  reviewed_at: "2026-07-23T23:46:33Z"
+  evidence: >-
+    The designated Claude finder review independently reproduced the target test on
+    canonical Node 24: AUTO passed (1/1 and 133 unit tests); a temporary WEBGL
+    reversion failed with the expected renderer mismatch. It approved the minimal
+    fix, clean scope, and handoff evidence.
 depends_on:
   - SG-021
 predecessor_evidence:
@@ -87,3 +97,10 @@ status_history:
       The M1-only implementation and co-located regression test are ready for the
       designated Claude review. The test failed against forced WEBGL, then passed
       with AUTO; required checks and a clean Chromium E2E rerun passed.
+  - status: verified
+    at: "2026-07-23T23:46:33Z"
+    by: codex
+    basis: >-
+      The designated Claude finder review independently reproduced the targeted
+      before/after failure on Node 24 and returned APPROVE. No scope, contract, or
+      dependency finding remains before integration.
