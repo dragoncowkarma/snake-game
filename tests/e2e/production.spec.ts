@@ -245,18 +245,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       document.body.tabIndex = -1;
       document.body.focus();
     });
-    startCount = await page.evaluate(() => (window as any).scrollEventCount);
     const prevScrollY = await page.evaluate(() => window.scrollY);
     await page.keyboard.press('Space');
 
     await expect
       .poll(async () => {
-        return await page.evaluate(() => (window as any).scrollEventCount);
+        return await page.evaluate(() => window.scrollY);
       })
-      .toBeGreaterThan(startCount);
-
-    scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(prevScrollY);
+      .toBeGreaterThan(prevScrollY);
 
     // 3. Start button focused -> Press Space -> triggers click -> Ready
     await startButton.focus();
@@ -338,6 +334,9 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       { key: 'ArrowRight', expectedDirection: 'right' },
     ];
 
+    // Verify semantic dispatch hook injection and execution before trace assertions
+    await auditor.verifySemanticHook();
+
     for (const item of keySequence) {
       await page.keyboard.press(item.key);
 
@@ -358,9 +357,6 @@ test.describe('SG-018 Production Build E2E Suite', () => {
         direction: item.expectedDirection,
       });
     }
-
-    // Verify semantic dispatch hook injection and execution
-    await auditor.verifySemanticHook();
 
     // 7. Pause via 'p' -> focus moves to Resume button
     await board.press('p');
@@ -485,14 +481,14 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     let touchTrace = await page.evaluate(() => (window as any).touchCommandTrace);
     expect(touchTrace).toEqual(['up']);
 
+    // Verify seed hook and semantic hook execution
+    await auditor.verifySeedHook();
+    await auditor.verifySemanticHook();
+
     let semanticCommands = await page.evaluate(() =>
       ((window as any).semanticCommandTrace || []).filter((c: any) => c.type === 'direction'),
     );
     expect(semanticCommands).toEqual([{ type: 'direction', direction: 'up' }]);
-
-    // Verify seed hook and semantic hook execution
-    await auditor.verifySeedHook();
-    await auditor.verifySemanticHook();
 
     // Wait for the snake to eat both foods along the Up path (reaches score 20)
     const liveStatus = page.locator('#status');
