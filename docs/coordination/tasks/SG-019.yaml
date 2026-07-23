@@ -1,7 +1,7 @@
 id: SG-019
 spec_version: "1.0-plan"
 task_revision: 1
-status: blocked
+status: verified
 approved_by: human-user
 approved_at: "2026-07-23T08:07:03Z"
 approval_gate: direct-human-instruction
@@ -45,6 +45,24 @@ review_evidence:
     is mechanically independent of the line 661 Phaser freeze. Line 266 was not
     reproduced on base, and neither analysis replaces the packet's required full
     Pages-base E2E pass.
+verification_deviation:
+  id: SG-019-AC04-PAGES-3X
+  status: accepted
+  accepted_by: human-user
+  accepted_at: "2026-07-23T16:45:43Z"
+  source: direct-human-instruction
+  exact_acceptance: >-
+    사람이 SG-019-AC04의 Pages-base 16/16 ×3 증거 편차를 수용한다.
+  scope: >-
+    Waives only the missing display-backed Pages-base 16/16 three-consecutive-run
+    evidence for SG-019. It does not convert the failed run into PASS, prove the
+    browser-harness hypotheses, approve test weakening, approve H2, or authorize
+    remote push or deployment.
+  retained_evidence: >-
+    Clean root npm run verify passed 16/16. The clean Pages-base suite failed at the
+    pre-Start native-scroll assertion, while the immediate focused rerun passed.
+    Claude code review APPROVED the implementation and isolated its separate line 661
+    freeze to CVDisplayLink on both base and implementation.
 depends_on:
   - SG-016
   - SG-017
@@ -244,14 +262,24 @@ status_history:
       loop. This rules out the SG-019 input path as the scroll blocker, but base
       reproduction was not performed and Pages-base 16/16 remains unproven, so the
       task stays blocked.
+  - status: verified
+    at: "2026-07-23T16:45:43Z"
+    by: human-user
+    basis: >-
+      The human explicitly accepted the SG-019-AC04 Pages-base 16/16 times-three
+      evidence deviation. The historical failed run and unresolved harness symptoms
+      remain recorded; only their SG-019 integration-blocking effect is waived.
+      Clean root verification, focused Pages-base reproduction, exact scope,
+      implementation ancestry, and Claude code-review APPROVE remain the completion
+      evidence. H2, remote push, and deployment are not approved.
 first_failure_subtask:
   id: DF-SG019-01
   title: Stabilize the body-focused Space scroll observation in Pages-base production E2E
   source_task: SG-018
   owner: antigravity
   severity: medium
-  integration_impact: blocker
-  status: ready-for-owner
+  integration_impact: waived-for-SG-019
+  status: accepted-deviation
   failing_head: 583c7342810d010f47d846bec22c22446b29c523
   environment: "Node 24.14.0 / npm 11.18.0 / Playwright 1.61.1 Chromium / PLAYWRIGHT_BASE_PATH=/snake-game/"
   failing_command: "PLAYWRIGHT_BASE_PATH=/snake-game/ npm run test:e2e"
@@ -294,6 +322,11 @@ first_failure_subtask:
     Without waitForTimeout, sleep, retries, force, or weakened assertions, make the
     pre-Space scroll baseline event-driven and stable; then pass the full Pages-base
     16-test suite three consecutive times and retain root-base behavior.
+  disposition: >-
+    The human accepted the missing Pages-base 16/16 times-three evidence for SG-019,
+    so this finding no longer blocks SG-019 local integration. The symptom remains
+    unresolved and may be addressed as a later test-harness quality task without
+    weakening assertions or changing product semantics.
   suggested_owner_action: >-
     Reproduce the first failing assertion on a display-backed runner. For line 266,
     reset to a deterministic scroll position and await an event-driven

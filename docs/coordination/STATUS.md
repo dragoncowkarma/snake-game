@@ -1,21 +1,17 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-23T16:39:51Z
+- 마지막 동기화: 2026-07-23T16:45:43Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-019 `blocked` — Codex /
+- 현재 활성 작업: SG-019 `verified` — Codex /
   `agent/codex/SG-019-feature-integration` / implementation `583c734`
-- 현재 검증 대기: `DF-SG019-01` — Start 전 browser-native line 266
-  keyboard/Space scroll observation과 플레이 중 line 661 CVDisplayLink freeze를
-  구분해 Antigravity가 재현·정합화한 뒤 clean Pages-base Chromium 16/16 3회와
-  SG-019 전체 verify 재실행
-- 현재 결정 필요: Pages-base 필수 증거를 계속 요구하면 display-backed 검증 환경이
-  필요하다. 이를 면제하고 병합하려면 사람이 `SG-019-AC04` 편차를 명시적으로
-  수용해야 한다.
-- 다음 작업 후보: Antigravity `DF-SG019-01` → Codex SG-019 재검증 → H2 사람
-  플레이테스트
+- 현재 검증 대기: 없음. 사람은 `SG-019-AC04`의 display-backed Pages-base 16/16 ×3
+  증거 편차를 SG-019에 한해 수용했다. 역사적 실패와 `DF-SG019-01`은 비차단
+  harness 품질 기록으로 유지한다.
+- 현재 결정 필요: 없음
+- 다음 작업 후보: Codex local main fast-forward → H2 사람 플레이테스트
 
 ## H0b 종료 기록
 
@@ -56,8 +52,9 @@
   266이 Start 전 body 네이티브 스크롤이며 off-board Space에 제품
   `preventDefault()`가 없음을 확인해 두 증상이 기계적으로 별개이고 SG-019 입력
   경로가 스크롤을 막지 않음을 입증했다. line 266의 base 재현과 필수 Pages-base
-  전체 통과 증거는 없으므로, 제품 patch에 우회를 넣지 않은 채 `DF-SG019-01`
-  (medium, integration-blocking)을 Antigravity에 유지하고 SG-019는 `blocked`다.
+  전체 통과 증거는 없지만, 사람은 2026-07-23T16:45:43Z에 `SG-019-AC04`의 16/16 ×3
+  증거 편차를 명시적으로 수용했다. 실패는 PASS로 바꾸지 않고
+  `DF-SG019-01`(medium)을 비차단 후속 기록으로 유지하며 SG-019는 `verified`다.
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
