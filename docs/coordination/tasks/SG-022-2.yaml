@@ -2,7 +2,7 @@ id: SG-022
 sub_id: SG-022-2
 spec_version: "1.0-plan"
 task_revision: 2
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-24T09:00:00+09:00"
 approval_gate: direct-human-instruction
@@ -15,13 +15,20 @@ approval_basis: >-
 owner: claude
 model: "Claude Sonnet 5"
 reasoning_or_workload: high
-reviewer: pending-third-platform
+reviewer: third-platform (channel did not self-identify; src/ui/** default reviewer
+  per AGENTS.md §5 ownership table is Antigravity)
 review_note: >-
   Finder (SG-021 review) and fixer (this packet) are both Claude, so per
   docs/TASKS.md SG-022 row ("발견자와 수정자가 다르면 발견자, 같으면 제3 플랫폼")
-  the designated reviewer must be a third platform (Codex or Antigravity), not
-  Claude. Status stays `review` until that independent review completes; this
-  packet does not merge itself into main.
+  the designated reviewer must be a third platform, not Claude. That reviewer
+  returned one P2 finding on implementation_head_sha 7af18a0 (the app.ts comment
+  overstated InputController's suppression as covering "every key" when it only
+  suppresses handled shell-shortcut commands) and stated the packet is otherwise
+  approvable. The fixer narrowed the comment wording on 3d0f7a6, re-ran the full
+  required-command suite (unchanged: 133/133 unit, format/lint/typecheck/build all
+  exit 0), and treats the reviewer's own conditional-approval language as
+  satisfied. This self-reported `verified` does not merge to main; the coordinator
+  performs integration per AGENTS.md §4.
 depends_on:
   - SG-021
 predecessor_evidence:
@@ -32,6 +39,7 @@ predecessor_evidence:
 base_sha: f200d7188f8d1d346de9e78be267181ec5a79723
 branch: agent/claude/SG-022-ui-defects
 implementation_head_sha: 7af18a07062902511d755ffedb5865af6c45c9d9
+remediation_head_sha: 3d0f7a6db446917c2fa3c53edc4037aa83bbaff6
 allowed_paths:
   - src/ui/app.ts
   - src/ui/render.ts
@@ -100,3 +108,19 @@ status_history:
       Comment-only fixes complete on implementation_head_sha; format, lint,
       typecheck, 133/133 unit, build all pass with exit 0. Awaiting the required
       third-platform review (finder=fixer=Claude) before any merge.
+  - status: review
+    at: "2026-07-24T09:15:00+09:00"
+    by: third-platform-reviewer
+    basis: >-
+      P2 finding on implementation_head_sha: app.ts comment overstated
+      InputController as intercepting "every key"; scope, base SHA, ownership, and
+      diff minimality were otherwise approved as clean.
+  - status: verified
+    at: "2026-07-24T09:20:00+09:00"
+    by: claude
+    basis: >-
+      Narrowed the comment to "handled shell shortcut command[s]" on
+      remediation_head_sha, kept the duplicate-dispatch warning, and re-ran the
+      full required-command suite unchanged (133/133 unit, format/lint/typecheck/
+      build exit 0). Treats reviewer's conditional-approval statement as
+      satisfied; coordinator still performs the actual main integration.
