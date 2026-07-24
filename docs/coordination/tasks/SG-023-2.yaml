@@ -1,0 +1,90 @@
+id: SG-023
+sub_id: SG-023-2
+spec_version: "1.0-plan"
+task_revision: 2
+status: blocked
+approved_by: human-user
+approved_at: "2026-07-24T11:41:00+09:00"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  Same approval chain as SG-020 (this packet's direct predecessor): the human's
+  "Wave 4 종료" instruction was clarified via AskUserQuestion into "resume the
+  blocked work first." SG-023 revision 1 was blocked specifically citing "SG-020
+  결함, H2 대기" and "다중 브라우저/viewport 매트릭스 실행 누락" and "필수 NFR
+  재검증 누락." This revision re-executes exactly the evidence gaps revision 1
+  named, using the SG-020 packet's new automation, and records what changed and
+  what is still genuinely missing.
+owner: claude
+model: "Claude Sonnet 5"
+reasoning_or_workload: high
+reviewer: none-available-this-session
+review_evidence:
+  note: >-
+    Same disclosed deviation as SG-020: no separate independent model/platform
+    was available in this session to review this revision. An independent
+    general-purpose review agent (no prior context) did review the underlying
+    SG-020 test/config additions this revision depends on and found one real
+    defect (playwright.config.ts format:check failure), which was fixed before
+    this revision was written; see docs/coordination/handoffs/SG-020.md.
+depends_on:
+  - SG-020
+  - SG-022
+predecessor_evidence:
+  - docs/coordination/tasks/SG-023.yaml
+  - docs/coordination/handoffs/SG-023.md
+  - docs/coordination/tasks/SG-020.yaml
+  - docs/coordination/handoffs/SG-020.md
+base_sha: 803705193bed4dba09f1ef0a84501d1e9c966b51
+branch: claude/wave-4-completion-f6e9fc
+allowed_paths:
+  - docs/coordination/tasks/SG-023-2.yaml
+  - docs/coordination/handoffs/SG-023-2.md
+forbidden_paths:
+  - src/**
+  - tests/**
+  - package.json
+  - playwright.config.ts
+acceptance_ids:
+  - "CHK-R04 — PASS (unchanged from revision 1: clean npm ci, format/lint/typecheck/test/build all exit 0)"
+  - "CHK-R05 — PASS on Chromium x 5 viewport (zero pageerror/console.error/unhandled rejection/requestfailure/non-2xx asset status across the isolated 85-test Chromium matrix, see SG-020 handoff); NOT independently re-verified on Firefox/WebKit this revision since those engines are blocked (see below)"
+  - "NFR-P03 — PASS (dist gzip sum 364,497 bytes <= 1,000,000; was previously unexecuted, now has SG-020 evidence)"
+  - "NFR-P04 — PASS (HAR capture of a real play session shows 4/4 requests same-origin, zero external; was previously unexecuted)"
+  - "NFR-SEC01 — PASS (automated source + HAR audit; was previously unexecuted)"
+  - "NFR-SEC02 — PASS (automated storage-key audit; was previously unexecuted)"
+  - "NFR-SEC03 — PASS (automated source audit; was previously unexecuted)"
+  - "NFR-SC04 — PASS (unchanged: no lockfile diff this session)"
+  - "NFR-M02 — PASS (unchanged, pre-existing SG-011 test)"
+  - "NFR-M03 — PASS (automated git ls-files audit; was previously unexecuted)"
+  - "ENV-R-C320/C390/C768/C1366/C1920 — PASS (5/5, Chromium x 5 viewport, isolated + warm-rerun confirmed; see SG-020 handoff)"
+  - "ENV-R-F320/F390/F768/F1366/F1920 — BLOCKED (Firefox deterministically fails 2 of production.spec.ts's rapid-keypress tests due to automation-IPC latency exceeding the tests' sub-tick timing assumption; a pre-existing test-suite defect, not a product defect, but it must be fixed before Firefox evidence can be trusted for a release gate)"
+  - "ENV-R-W320/W390/W768/W1366/W1920 — BLOCKED (Playwright's WebKit build requires macOS 13+; this session's host is macOS 12.7.6, a local toolchain constraint resolvable on a newer host/CI, not requiring real hardware)"
+required_commands:
+  - "npm ci"
+  - "npm run verify"
+  - "PLAYWRIGHT_ENGINES=chromium PLAYWRIGHT_VIEWPORTS=320x568,390x844,768x1024,1366x768,1920x1080 npx playwright test"
+claim: "CLAIM: claude / Claude Sonnet 5 high / claude/wave-4-completion-f6e9fc / 2026-07-24T14:15:00+09:00"
+claimed_at: "2026-07-24T14:15:00+09:00"
+handoff: docs/coordination/handoffs/SG-023-2.md
+status_history:
+  - status: ready
+    at: "2026-07-24T11:41:00+09:00"
+    by: human-user
+    basis: Same AskUserQuestion-clarified approval as SG-020.
+  - status: in-progress
+    at: "2026-07-24T14:15:00+09:00"
+    by: claude
+    basis: Started once SG-020's automated evidence became available.
+  - status: blocked
+    at: "2026-07-24T14:20:00+09:00"
+    by: claude
+    basis: >-
+      Materially better evidence than revision 1 (5/15 ENV-R environments now
+      genuinely PASS with warm-rerun confirmation, vs 1/15 unreliable in revision
+      1; all named NFR gaps from revision 1 are now executed and PASS). Still
+      cannot reach a release-candidate PASS/BLOCK verdict: 10/15 ENV-R
+      environments remain unavailable (Firefox blocked on a real but
+      non-product test defect, WebKit blocked on local OS/toolchain), Wave 3's
+      H2 human playtest gate is still pending per STATUS.md, and NFR-P01/P02
+      remain blocked on GAP-06-PERF-DEVICE (no human-approved concrete mobile
+      device on record). The human approval for this revision was for closing
+      the evidence gap, not for a release PASS.

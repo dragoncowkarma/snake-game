@@ -31,6 +31,7 @@ depends_on:
   - SG-019
 base_sha: 803705193bed4dba09f1ef0a84501d1e9c966b51
 branch: claude/wave-4-completion-f6e9fc
+implementation_head_sha: 1c216f80b128761d6ffda0e444e146342becccf0
 allowed_paths:
   - playwright.config.ts
   - tests/unit/sg020-audits.test.ts
