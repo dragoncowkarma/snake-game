@@ -1,0 +1,102 @@
+id: SG-022
+sub_id: SG-022-2
+spec_version: "1.0-plan"
+task_revision: 2
+status: review
+approved_by: human-user
+approved_at: "2026-07-24T09:00:00+09:00"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human approved, in a live chat turn, proceeding on the UI-owned remainder of
+  SG-021's findings (L1, L3) as a second SG-022 sub-packet, scoped to app.ts's dead
+  keydown-listener suppression contract and render.ts/styles.css's stale SG-012
+  placeholder comments. L5 (optional #board aria polish) and L2 (game-owned food
+  pulse) were explicitly excluded from this revision's scope.
+owner: claude
+model: "Claude Sonnet 5"
+reasoning_or_workload: high
+reviewer: pending-third-platform
+review_note: >-
+  Finder (SG-021 review) and fixer (this packet) are both Claude, so per
+  docs/TASKS.md SG-022 row ("발견자와 수정자가 다르면 발견자, 같으면 제3 플랫폼")
+  the designated reviewer must be a third platform (Codex or Antigravity), not
+  Claude. Status stays `review` until that independent review completes; this
+  packet does not merge itself into main.
+depends_on:
+  - SG-021
+predecessor_evidence:
+  - docs/coordination/tasks/SG-021.yaml
+  - docs/coordination/handoffs/SG-021.md
+  - docs/coordination/tasks/SG-022.yaml
+  - docs/coordination/handoffs/SG-022.md
+base_sha: f200d7188f8d1d346de9e78be267181ec5a79723
+branch: agent/claude/SG-022-ui-defects
+implementation_head_sha: 7af18a07062902511d755ffedb5865af6c45c9d9
+allowed_paths:
+  - src/ui/app.ts
+  - src/ui/render.ts
+  - src/styles.css
+  - docs/coordination/tasks/SG-022-2.yaml
+  - docs/coordination/handoffs/SG-022-2.md
+forbidden_paths:
+  - src/domain/**
+  - src/game/**
+  - src/adapters/**
+  - src/config/**
+  - tests/**
+  - src/main.ts
+  - index.html
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - playwright.config.ts
+  - tooling.config.ts
+  - tsconfig.json
+  - eslint.config.js
+  - .github/**
+  - public/**
+  - dist/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-022.yaml
+  - docs/coordination/handoffs/SG-022.md
+acceptance_ids:
+  - >-
+    SG-022-L3-AC01: src/ui/render.ts and src/styles.css no longer describe #board as
+    a future SG-012 placeholder; both state the Phaser adapter mounts its canvas
+    there today.
+  - >-
+    SG-022-L1-AC01: src/ui/app.ts documents, at the keydownListener definition, that
+    InputController suppresses this listener in production and why removing that
+    suppression would double-dispatch.
+  - >-
+    SG-022-L1-AC02/SG-022-L3-AC02 (regression guard): no behavior change — full
+    required-command suite passes unchanged before and after (comment-only diff).
+required_commands:
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - npm run test
+  - npm run build
+claim: "CLAIM: claude / Claude Sonnet 5 high / agent/claude/SG-022-ui-defects / 2026-07-24T09:00:00+09:00"
+claimed_at: "2026-07-24T09:00:00+09:00"
+handoff: docs/coordination/handoffs/SG-022-2.md
+status_history:
+  - status: ready
+    at: "2026-07-24T09:00:00+09:00"
+    by: human-user
+    basis: Direct chat approval for the L1+L3 UI-owned scope, given SG-021's findings.
+  - status: in-progress
+    at: "2026-07-24T09:00:00+09:00"
+    by: claude
+    basis: Claimed on a fresh branch rebased onto main (post SG-021 report, post SG-022 M1).
+  - status: review
+    at: "2026-07-24T09:10:00+09:00"
+    by: claude
+    basis: >-
+      Comment-only fixes complete on implementation_head_sha; format, lint,
+      typecheck, 133/133 unit, build all pass with exit 0. Awaiting the required
+      third-platform review (finder=fixer=Claude) before any merge.
