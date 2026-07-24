@@ -3,7 +3,8 @@
  * game-rule interpretation (what a phase means, when events fire) belongs to the
  * domain; this module only reads the public GameState/DomainEvent shape and writes
  * textContent/attributes. No Phaser or Canvas code lives here — the board element is
- * a plain, accessible placeholder that SG-012 will mount the Phaser canvas into.
+ * a plain, accessible container that the Phaser adapter (src/game/bootstrap.ts)
+ * mounts its canvas into.
  */
 import type { Command, Direction, GameState, Phase } from './contracts.ts';
 

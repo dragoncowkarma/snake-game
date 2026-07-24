@@ -1,7 +1,7 @@
 /*
  * Design tokens and layout for the accessible DOM shell (menu/HUD/status/buttons).
- * The Phaser board itself (SG-012) is out of scope; #board here is a plain,
- * accessible placeholder container. Colors are chosen for >=4.5:1 text contrast and
+ * #board hosts the Phaser-rendered canvas (src/game/bootstrap.ts) and is styled here
+ * as a plain, accessible container. Colors are chosen for >=4.5:1 text contrast and
  * >=3:1 UI-boundary contrast against their own background in both color schemes.
  */
 

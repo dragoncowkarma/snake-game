@@ -133,6 +133,16 @@ export function createGameShell(
     });
   }
 
+  // Standalone fallback only: this listener handles keyboard commands when no
+  // game.InputController is mounted (e.g. this module's own unit tests). In
+  // production, bootstrap.ts always mounts an InputController
+  // (src/game/input-controller.ts), and it intercepts every key before this listener
+  // sees it — its board-focused handler calls stopPropagation() and its document
+  // capture-phase handler calls stopImmediatePropagation() for every other shell
+  // shortcut — so this listener never actually dispatches there. Do not remove either
+  // suppression call in InputController without also retiring or gating this
+  // listener, or keys will dispatch twice (violates AC-U06's one-activation-one-
+  // command contract).
   const keydownListener = (event: KeyboardEvent): void => {
     const command = translateKeydown({
       key: event.key,
