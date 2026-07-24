@@ -1,11 +1,12 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-24T05:20:00Z
+- 마지막 동기화: 2026-07-24T05:35:00Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중 (종료 관문 H2 대기)
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-020(첫 실행) 및 SG-023 revision 2 local 작업 완료, 병합 대기
+- 현재 활성 작업: 없음 — SG-020(첫 실행) 및 SG-023 revision 2를 사람의 "local main으로
+  머지해줘" 지시로 `27c0bec`까지 fast-forward 통합 완료(아래 참조)
 - 현재 검증 대기: H2 사람 플레이테스트. 사람은 `SG-019-AC04`의 display-backed
   Pages-base 16/16 ×3 증거 편차를 SG-019에 한해 수용했다. 역사적 실패와
   `DF-SG019-01`은 비차단 harness 품질 기록으로 유지한다.
@@ -79,11 +80,23 @@
   `playwright.config.ts`의 `format:check` 실패와 원래 1건짜리 reduced-motion
   테스트가 사실상 공허하다는 점을 지적해 둘 다 즉시 수정했고, 그 과정에서
   추가한 CSS 검증 테스트가 Firefox 전용 문자열 포맷 버그를 드러내 함께
-  고쳤다. local `main`에는 아직 병합하지 않았다(`claude/wave-4-completion-f6e9fc`
-  브랜치에만 존재). 원격 push·배포·H2 판정은 수행하지 않았다.
+  고쳤다. 사람의 "local main으로 머지해줘" 지시로 clean local `main`(`8037051`,
+  드리프트 없음 확인)을 `git -C <primary worktree> merge --ff-only
+  claude/wave-4-completion-f6e9fc`로 `27c0bec`까지 fast-forward 통합했다(worktree
+  병합 함정 회피 — linked worktree에서 `git checkout main`을 시도하지 않고 primary
+  worktree 경로를 직접 지정). 병합 뒤 primary에서 재검증: format:check/lint/
+  typecheck/build/`git diff --check` 전부 exit 0. `npm run test`는 primary
+  worktree 루트 아래 중첩된 다른 세션 worktree(`sg-007-review-1773f0`,
+  `sg-013-ui-implementation-bd0257`, `sg-014-review-b643af` 등, 이 merge와 무관)의
+  `spikes/**` 스펙 파일 파싱 실패로 21개 파일이 실패 처리됐지만 로드된
+  675/675 개별 테스트는 전부 통과했다 — SG-022-2가 이미 기록한 것과 동일한
+  기존 환경 아티팩트다. `npm run test:e2e`는 18개 중 1개(`Keyboard Controls...
+  preventDefault`)가 콜드 스타트에서 실패했으나 warm 재실행 2/2 PASS로 이
+  packet이 이미 기록한 산발적 타이밍 취약성임을 재확인했다. 원격 push·배포·
+  H2 판정은 수행하지 않았다.
 - SG-021: 10년차 아키텍처·UX 관점 최종 diff 감사(Claude Opus 4.8). base `d490ea3`(제품 코드는 `583c734`와 동일). 제품 수정 없이 `docs/coordination/handoffs/SG-021.md`에 리뷰 리포트를 작성. 출시 차단 결함 0건. 발견된 medium 1건(M1: 강제 `Phaser.WEBGL` → `AUTO` 폴백) 및 low 5건은 SG-022로 이관 권고. 승인된 offline packet 부재를 조정 책임자가 생성하여 정합화하고, 리뷰 head `67d68a5`와 packet·STATUS 동기화를 base `d490ea3`에서 local `main`으로 fast-forward 통합하여 SG-021을 `merged`로 닫았다. 이 task 통합은 Wave 3 종료 관문(H2)과 무관하며 wave 상태를 전진시키지 않는다.
 - SG-022: SG-021 M1만을 사람 승인 offline packet으로 분리했다. `Phaser.WEBGL` 강제를 `Phaser.AUTO`로 바꾸고 config-level 회귀 테스트를 추가한 구현 `49865f6`은 수정 전 `WEBGL` failure와 수정 후 PASS를 기록했다. 지정 Claude 발견자 리뷰는 canonical Node 24에서 targeted 1/1 및 전체 unit 133/133 PASS, 임시 `WEBGL` revert failure를 독립 재현해 APPROVE했다. Codex는 clean local `main`을 `de98836`으로 fast-forward 통합했고, 구현자 검증의 Chromium E2E 16/16 PASS도 handoff에 기록했다. 원격 push·배포·H2 판정은 수행하지 않았다. SG-021 L1~L5와 SG-020 결함은 이 M1-only packet 범위 밖이다.
-- SG-023: revision 1은 release candidate 전체 회귀 테스트를 수행했으나 선행 작업(SG-020 결함, H2 대기) 차단, 다중 브라우저/viewport 매트릭스 실행 누락, 필수 NFR 재검증 누락으로 인해 `blocked` 판정되었다. 사람 승인은 이 BLOCK 판정 기록에 대한 것이며 릴리스 통과가 아니다. 기록 유지를 위해 패킷과 handoff 문서를 local `main`에 병합했으며 제품 코드 수정은 없다. revision 2(`SG-023-2`, Claude)는 SG-020이 새로 만든 증거로 정확히 그 gap을 재실행했다: NFR-P03/P04/SEC01-03/M03 6개가 미실행→PASS로, ENV-R 매트릭스가 1/15(신뢰 불가)→5/15(Chromium, 격리·warm 재확인)로 개선됐다. 여전히 Firefox 5개(테스트 결함, 제품 결함 아님)와 WebKit 5개(로컬 macOS 12 툴체인 제약)가 막혀 있고 H2와 NFR-P01/P02(GAP-06-PERF-DEVICE)도 미충족이라 `blocked`를 유지한다 — revision 2도 release 통과 승인이 아니라 개선된 BLOCK 판정 기록이다. local `main`에는 아직 병합하지 않았다.
+- SG-023: revision 1은 release candidate 전체 회귀 테스트를 수행했으나 선행 작업(SG-020 결함, H2 대기) 차단, 다중 브라우저/viewport 매트릭스 실행 누락, 필수 NFR 재검증 누락으로 인해 `blocked` 판정되었다. 사람 승인은 이 BLOCK 판정 기록에 대한 것이며 릴리스 통과가 아니다. 기록 유지를 위해 패킷과 handoff 문서를 local `main`에 병합했으며 제품 코드 수정은 없다. revision 2(`SG-023-2`, Claude)는 SG-020이 새로 만든 증거로 정확히 그 gap을 재실행했다: NFR-P03/P04/SEC01-03/M03 6개가 미실행→PASS로, ENV-R 매트릭스가 1/15(신뢰 불가)→5/15(Chromium, 격리·warm 재확인)로 개선됐다. 여전히 Firefox 5개(테스트 결함, 제품 결함 아님)와 WebKit 5개(로컬 macOS 12 툴체인 제약)가 막혀 있고 H2와 NFR-P01/P02(GAP-06-PERF-DEVICE)도 미충족이라 `blocked`를 유지한다 — revision 2도 release 통과 승인이 아니라 개선된 BLOCK 판정 기록이다. SG-020과 함께 local `main` `27c0bec`로 병합 완료(위 SG-020 항목의 병합·재검증 기록 참조).
 - SG-004-DN01: `resolved`. 음식 비중첩과 성장 조건 때문에 유효한 성장-동일-tail 상태는 도달 불가능하다. 계약은 유지하며 AC-G06은 비성장 tail 진입 실행 검증과 도달 불가능성 증명을 결합하고 invalid fixture를 만들지 않는다. 일반 비-tail 자기 충돌은 AC-G07에서 별도로 검증한다.
 - Frozen QA 이력: `docs/coordination/QA_PLAN.md`의 H0b·DN01 대기 및 D-001/D-002 `proposed` 문장은 frozen SG-004 제출 당시 상태다. QA 본문 SHA를 보존하며 현재 판정은 `DECISIONS.md`의 H0b accepted 기록과 이 상태표가 우선한다.
 
