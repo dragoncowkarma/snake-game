@@ -46,6 +46,8 @@ base_sha: f200d7188f8d1d346de9e78be267181ec5a79723
 branch: agent/claude/SG-022-ui-defects
 implementation_head_sha: 7af18a07062902511d755ffedb5865af6c45c9d9
 remediation_head_sha: 3d0f7a6db446917c2fa3c53edc4037aa83bbaff6
+integrated_main_sha: 7ff50f521e437ccd070e0f972493686c1f4a963a
+integrated_at: "2026-07-24T10:31:00+09:00"
 allowed_paths:
   - src/ui/app.ts
   - src/ui/render.ts
@@ -150,3 +152,24 @@ status_history:
       status in 6cd1b0b are correct, no out-of-scope changes/whitespace
       errors/workspace-residual changes. Ready for integration onto base_sha
       f200d71; this review performed no merge and no STATUS.md change.
+  - status: merged
+    at: "2026-07-24T10:31:00+09:00"
+    by: human-user
+    basis: >-
+      Human gave the direct chat instruction "머지" after Codex's APPROVE.
+      Verified local main (primary worktree /Volumes/NO NAME/workspace/snake-game)
+      was clean and exactly at base_sha f200d71 (no drift), then fast-forwarded
+      it to integrated_main_sha via `git -C <primary> merge --ff-only
+      agent/claude/SG-022-ui-defects` (per the worktree-merge-hazard lesson: main
+      is checked out only in the primary worktree, so `git checkout main` inside
+      a linked worktree is unsafe/wrong; `git -C <primary>` avoids that). Re-ran
+      the full required-command suite against merged main:
+      format:check/lint/typecheck/build/`git diff --check` all exit 0, unaffected
+      by the merge. `npm run test` reported 15 failed files but 530/530
+      individual tests passed; the 15 failures are pre-existing Playwright specs
+      inside nested `.claude/worktrees/**` linked worktrees (not created by this
+      merge) that vitest's root-level `--exclude "tests/e2e/**"` glob doesn't
+      reach — a known environmental artifact of running `npm run test` from the
+      primary worktree while other session worktrees are nested under it, not a
+      regression from this diff. No remote push, no STATUS.md change (reserved
+      for the coordinator per AGENTS.md §2).
