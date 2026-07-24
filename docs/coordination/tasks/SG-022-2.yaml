@@ -2,7 +2,7 @@ id: SG-022
 sub_id: SG-022-2
 spec_version: "1.0-plan"
 task_revision: 2
-status: verified
+status: review
 approved_by: human-user
 approved_at: "2026-07-24T09:00:00+09:00"
 approval_gate: direct-human-instruction
@@ -15,20 +15,20 @@ approval_basis: >-
 owner: claude
 model: "Claude Sonnet 5"
 reasoning_or_workload: high
-reviewer: third-platform (channel did not self-identify; src/ui/** default reviewer
-  per AGENTS.md §5 ownership table is Antigravity)
+reviewer: Codex (third platform)
 review_note: >-
   Finder (SG-021 review) and fixer (this packet) are both Claude, so per
   docs/TASKS.md SG-022 row ("발견자와 수정자가 다르면 발견자, 같으면 제3 플랫폼")
-  the designated reviewer must be a third platform, not Claude. That reviewer
-  returned one P2 finding on implementation_head_sha 7af18a0 (the app.ts comment
+  the designated reviewer must be a third platform, not Claude. Codex reviewed
+  implementation_head_sha 7af18a0 and returned one P2 (the app.ts comment
   overstated InputController's suppression as covering "every key" when it only
-  suppresses handled shell-shortcut commands) and stated the packet is otherwise
-  approvable. The fixer narrowed the comment wording on 3d0f7a6, re-ran the full
+  suppresses handled shell-shortcut commands), noting the rest was approvable.
+  The fixer narrowed the comment wording on 3d0f7a6 and re-ran the full
   required-command suite (unchanged: 133/133 unit, format/lint/typecheck/build all
-  exit 0), and treats the reviewer's own conditional-approval language as
-  satisfied. This self-reported `verified` does not merge to main; the coordinator
-  performs integration per AGENTS.md §4.
+  exit 0). Status was briefly self-promoted to `verified` by the fixer, which
+  Codex flagged as incorrect (the fixer cannot self-certify a reviewer's
+  conditional approval) — reverted to `review` pending Codex's explicit APPROVE
+  of remediation_head_sha before this packet moves to integration.
 depends_on:
   - SG-021
 predecessor_evidence:
@@ -110,7 +110,7 @@ status_history:
       third-platform review (finder=fixer=Claude) before any merge.
   - status: review
     at: "2026-07-24T09:15:00+09:00"
-    by: third-platform-reviewer
+    by: codex
     basis: >-
       P2 finding on implementation_head_sha: app.ts comment overstated
       InputController as intercepting "every key"; scope, base SHA, ownership, and
@@ -119,8 +119,19 @@ status_history:
     at: "2026-07-24T09:20:00+09:00"
     by: claude
     basis: >-
-      Narrowed the comment to "handled shell shortcut command[s]" on
-      remediation_head_sha, kept the duplicate-dispatch warning, and re-ran the
+      INCORRECT SELF-PROMOTION, KEPT FOR THE RECORD: narrowed the comment to
+      "handled shell shortcut command[s]" on remediation_head_sha and re-ran the
       full required-command suite unchanged (133/133 unit, format/lint/typecheck/
-      build exit 0). Treats reviewer's conditional-approval statement as
-      satisfied; coordinator still performs the actual main integration.
+      build exit 0), then marked the packet `verified` on the fixer's own reading
+      of Codex's conditional-approval language. Codex corrected this on
+      2026-07-24T09:25:00+09:00: the fixer cannot self-certify a reviewer's
+      approval, and the reviewer field incorrectly said "third-platform
+      (unidentified) / Antigravity-inferred" when the P2 was actually from Codex.
+  - status: review
+    at: "2026-07-24T09:25:00+09:00"
+    by: codex
+    basis: >-
+      Reverted the fixer's premature `verified` self-promotion back to `review`
+      and corrected the reviewer field to Codex. Awaiting Codex's explicit
+      APPROVE of remediation_head_sha 3d0f7a6 before this packet moves to
+      integration.
