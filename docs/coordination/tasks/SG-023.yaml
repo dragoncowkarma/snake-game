@@ -1,0 +1,19 @@
+id: SG-023
+spec_version: 1.0
+task_revision: 1
+status: blocked
+approved_by: human-user
+approved_at: 2026-07-24T11:05:05+09:00
+owner: antigravity
+model: gemini-3.1-pro-high
+reasoning_or_workload: high
+reviewer: codex
+depends_on: [SG-020, SG-022]
+base_sha: a2f6aa50d5aea80e24746b6ab61c87459b09049b
+allowed_paths: ["docs/coordination/handoffs/SG-023.md", "docs/coordination/tasks/SG-023.yaml"]
+forbidden_paths: ["src/**", "tests/**", "package.json"]
+acceptance_ids: ["AC-R04", "AC-R05", "ENV-R-C320", "ENV-R-C390", "ENV-R-C768", "ENV-R-C1366", "ENV-R-C1920", "ENV-R-F320", "ENV-R-F390", "ENV-R-F768", "ENV-R-F1366", "ENV-R-F1920", "ENV-R-W320", "ENV-R-W390", "ENV-R-W768", "ENV-R-W1366", "ENV-R-W1920"]
+required_commands: ["npm ci", "npm run verify"]
+branch: qa-review-sg-023
+head_sha:
+handoff: docs/coordination/handoffs/SG-023.md
