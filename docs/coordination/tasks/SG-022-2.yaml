@@ -2,7 +2,7 @@ id: SG-022
 sub_id: SG-022-2
 spec_version: "1.0-plan"
 task_revision: 2
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-24T09:00:00+09:00"
 approval_gate: direct-human-instruction
@@ -28,7 +28,13 @@ review_note: >-
   exit 0). Status was briefly self-promoted to `verified` by the fixer, which
   Codex flagged as incorrect (the fixer cannot self-certify a reviewer's
   conditional approval) — reverted to `review` pending Codex's explicit APPROVE
-  of remediation_head_sha before this packet moves to integration.
+  of remediation_head_sha. Codex then returned an explicit APPROVE of
+  remediation_head_sha 3d0f7a6db446917c2fa3c53edc4037aa83bbaff6: the L1 wording
+  now accurately describes the suppression scope, reviewer attribution and status
+  in 6cd1b0b are correct, and no out-of-scope changes, whitespace errors, or
+  workspace-residual changes were found. Codex explicitly performed no merge and
+  no STATUS.md change in that review — this packet is ready for integration onto
+  base_sha f200d71 but the coordinator still performs that step per AGENTS.md §4.
 depends_on:
   - SG-021
 predecessor_evidence:
@@ -135,3 +141,12 @@ status_history:
       and corrected the reviewer field to Codex. Awaiting Codex's explicit
       APPROVE of remediation_head_sha 3d0f7a6 before this packet moves to
       integration.
+  - status: verified
+    at: "2026-07-24T09:30:00+09:00"
+    by: codex
+    basis: >-
+      Explicit APPROVE of remediation_head_sha 3d0f7a6: L1 wording accurately
+      describes the actual suppression scope, reviewer attribution and review
+      status in 6cd1b0b are correct, no out-of-scope changes/whitespace
+      errors/workspace-residual changes. Ready for integration onto base_sha
+      f200d71; this review performed no merge and no STATUS.md change.
