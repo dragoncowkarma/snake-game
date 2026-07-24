@@ -12,8 +12,8 @@ depends_on: [SG-020, SG-022]
 base_sha: a2f6aa50d5aea80e24746b6ab61c87459b09049b
 allowed_paths: ["docs/coordination/handoffs/SG-023.md", "docs/coordination/tasks/SG-023.yaml"]
 forbidden_paths: ["src/**", "tests/**", "package.json"]
-acceptance_ids: ["AC-R04", "AC-R05", "ENV-R-C320", "ENV-R-C390", "ENV-R-C768", "ENV-R-C1366", "ENV-R-C1920", "ENV-R-F320", "ENV-R-F390", "ENV-R-F768", "ENV-R-F1366", "ENV-R-F1920", "ENV-R-W320", "ENV-R-W390", "ENV-R-W768", "ENV-R-W1366", "ENV-R-W1920"]
+acceptance_ids: ["CHK-R04", "CHK-R05", "NFR-P03", "NFR-P04", "NFR-SEC01", "NFR-SEC02", "NFR-SEC03", "NFR-SC04", "NFR-M02", "NFR-M03", "ENV-R-C320", "ENV-R-C390", "ENV-R-C768", "ENV-R-C1366", "ENV-R-C1920", "ENV-R-F320", "ENV-R-F390", "ENV-R-F768", "ENV-R-F1366", "ENV-R-F1920", "ENV-R-W320", "ENV-R-W390", "ENV-R-W768", "ENV-R-W1366", "ENV-R-W1920"]
 required_commands: ["npm ci", "npm run verify"]
 branch: qa-review-sg-023
-head_sha:
+head_sha: 2ace75b918c1afa467e284b06cb5feb99ddbb4ea
 handoff: docs/coordination/handoffs/SG-023.md
