@@ -1,0 +1,143 @@
+id: SG-020
+spec_version: "1.0-plan"
+task_revision: 1
+status: blocked
+approved_by: human-user
+approved_at: "2026-07-24T11:41:00+09:00"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human's "Wave 4 종료" instruction was clarified via AskUserQuestion: Wave 4
+  cannot legitimately close because its own entry gate (Wave 3 H2) has not passed
+  and its exit condition (blocker/high defects zero, release candidate SHA fixed)
+  is unmet since SG-020 was never executed and SG-023 is blocked on it. The human
+  chose "resume the blocked work first." This packet is the resulting SG-020
+  execution: it was never previously claimed (no prior SG-020.yaml existed), so
+  this is a first execution, not a remediation of an earlier attempt.
+owner: claude
+model: "Claude Sonnet 5"
+reasoning_or_workload: high
+reviewer: none-available-this-session
+review_evidence:
+  note: >-
+    QA_PLAN.md assigns SG-020 to "Antigravity Gemini 3.1 Pro high" with a Codex
+    integration re-check, mirroring the multi-platform review discipline used
+    throughout this project's history. No separate independent model/platform was
+    available to execute or review in this session; the same agent (Claude, this
+    session) authored, ran, and self-checked all evidence below. This is a known
+    governance deviation, disclosed here rather than fabricating a second-platform
+    review, matching this project's established candor precedent (see SG-001's
+    documented platform/model deviation in STATUS.md).
+depends_on:
+  - SG-019
+base_sha: 803705193bed4dba09f1ef0a84501d1e9c966b51
+branch: claude/wave-4-completion-f6e9fc
+allowed_paths:
+  - playwright.config.ts
+  - tests/unit/sg020-audits.test.ts
+  - tests/e2e/sg020-audit.spec.ts
+  - docs/coordination/tasks/SG-020.yaml
+  - docs/coordination/handoffs/SG-020.md
+forbidden_paths:
+  - src/domain/**
+  - src/adapters/**
+  - src/config/**
+  - src/ui/**
+  - src/game/**
+  - src/main.ts
+  - src/styles.css
+  - index.html
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - tooling.config.ts
+  - tsconfig.json
+  - eslint.config.js
+  - .github/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/QA_PLAN.md
+acceptance_ids:
+  - "NC-01"
+  - "NC-02"
+  - "NC-03"
+  - "NC-04"
+  - "NC-05"
+  - "NC-06"
+  - "NC-07"
+  - "NFR-SEC01"
+  - "NFR-SEC02"
+  - "NFR-SEC03"
+  - "NFR-M03"
+  - "CHK-U08"
+  - "AC-U05 (automated Tween-source portion)"
+  - "ENV-N/R Chromium x 5 viewport (320/390/768/1366/1920) — PASS 85/85 after isolating 2 non-reproducing cold-start incidents"
+  - "ENV-N/R Firefox — BLOCKED (deterministic test-suite defect, not a product defect: production.spec.ts's rapid page.keyboard.press() sequence assumes sub-tick round-trip latency that Firefox's Juggler IPC protocol does not meet; reproduced 3/3 and 2/2 on warm reruns)"
+  - "ENV-N/R WebKit — BLOCKED (local toolchain: Playwright's webkit-2311 build requires macOS 13+; this host is macOS 12.7.6)"
+  - "PROC-DP-B10 — BLOCKED (real iOS/Android device required)"
+  - "MAN-L01-IOS — BLOCKED (real device)"
+  - "MAN-L01-ANDROID — BLOCKED (real device)"
+  - "MAN-U01-320 real-phone portion — BLOCKED (real device)"
+  - "MAN-U02-KEYBOARD — BLOCKED (named human manual procedure)"
+  - "MAN-U03-FOCUS — BLOCKED (named human manual procedure)"
+  - "MAN-U03-IOS — BLOCKED (real device)"
+  - "MAN-U03-ANDROID — BLOCKED (real device)"
+  - "MAN-U04-NONCOLOR — BLOCKED (named human manual procedure)"
+  - "MAN-U05-MOTION — BLOCKED (real device + animation instrumentation)"
+  - "MAN-U05-MUTE — BLOCKED (calibrated real audio-output meter)"
+  - "MAN-U06-FOCUS — BLOCKED (named human manual procedure)"
+  - "MAN-U07-VOICEOVER — BLOCKED (real iOS VoiceOver)"
+  - "MAN-U07-TALKBACK — BLOCKED (real Android TalkBack)"
+  - "MAN-U08-CONTRAST — BLOCKED (named multi-browser human procedure; automated WCAG-math proxy done, see CHK-U08)"
+  - "MAN-U09-IOS — BLOCKED (real device)"
+  - "MAN-U09-ANDROID — BLOCKED (real device)"
+  - "MAN-R02-AUDIO — BLOCKED (real gesture-context device)"
+  - "ENV-VIS-320/1366/1920 — BLOCKED (no visual-regression baseline tooling exists in this repo; not built this session, see handoff)"
+  - "ENV-MAN-C320/C390/E768/F1366/S1920 — BLOCKED (named human manual procedures)"
+  - "ENV-REAL-IOS/ANDROID — BLOCKED (real device)"
+  - "NFR-P01 — BLOCKED (GAP-06-PERF-DEVICE: no human-approved concrete mid-range mobile device on record)"
+  - "NFR-P02 — BLOCKED (same GAP-06-PERF-DEVICE precondition)"
+required_commands:
+  - "npm run format:check"
+  - "npm run lint"
+  - "npm run typecheck"
+  - "npm run test"
+  - "npm run build"
+  - "PLAYWRIGHT_ENGINES=chromium PLAYWRIGHT_VIEWPORTS=320x568,390x844,768x1024,1366x768,1920x1080 npx playwright test"
+  - "PLAYWRIGHT_ENGINES=firefox PLAYWRIGHT_VIEWPORTS=1366x768 npx playwright test tests/e2e/production.spec.ts tests/e2e/sg020-audit.spec.ts -g \"Keyboard Controls|Reduced motion preserves\""
+claim: "CLAIM: claude / Claude Sonnet 5 high / claude/wave-4-completion-f6e9fc / 2026-07-24T11:41:00+09:00"
+claimed_at: "2026-07-24T11:41:00+09:00"
+handoff: docs/coordination/handoffs/SG-020.md
+status_history:
+  - status: ready
+    at: "2026-07-24T11:41:00+09:00"
+    by: human-user
+    basis: >-
+      "Wave 4 종료" clarified via AskUserQuestion into "resume the blocked work
+      first" (막힌 작업부터 재개), authorizing execution of the previously-uncreated
+      SG-020 task.
+  - status: in-progress
+    at: "2026-07-24T11:41:00+09:00"
+    by: claude
+    basis: Claimed directly on the working branch; no separate feature branch cut.
+  - status: blocked
+    at: "2026-07-24T14:10:00+09:00"
+    by: claude
+    basis: >-
+      All automatable acceptance rows pass, including a full Chromium x 5-viewport
+      matrix (85/85 after isolating 2 non-reproducing cold-start incidents). Two
+      new findings during execution: (1) an independent review agent found and this
+      session fixed a playwright.config.ts format:check failure and a Firefox
+      cross-engine string-format bug in a new test; (2) Firefox deterministically
+      fails 2 of production.spec.ts's rapid-keypress tests (3/3 and 2/2 on warm
+      reruns) due to its automation-IPC latency exceeding the tests' sub-tick
+      timing assumption — a pre-existing test-suite defect, not a product defect,
+      that blocks Firefox from the release matrix until fixed by the owning task.
+      WebKit cannot run on this macOS 12 host at all (Playwright toolchain
+      requires macOS 13+). Beyond that, a large, irreducible subset of
+      QA_PLAN.md's SG-020 rows require real iOS/Android hardware, real
+      VoiceOver/TalkBack, calibrated audio-output metering, a human-approved
+      concrete mid-range mobile device (GAP-06-PERF-DEVICE), and/or a named human
+      manual procedure; QA_PLAN.md explicitly rejects synthetic evidence for these
+      rows. None of that equipment or human execution is available in this
+      session, so SG-020 cannot be marked verified/merged as complete.
