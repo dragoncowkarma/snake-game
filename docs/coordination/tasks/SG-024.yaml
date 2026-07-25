@@ -1,7 +1,7 @@
 id: SG-024
 spec_version: "1.0-plan"
 task_revision: 1
-status: review
+status: verified
 approved_by: human-user
 approved_at: "2026-07-25T10:24:21Z"
 approval_gate: direct-human-instruction
@@ -85,6 +85,18 @@ required_environment:
 handoff: docs/coordination/handoffs/SG-024.md
 head_sha: 613b4d61f8f6f7d3f2f360d7f85a969742569622
 review_ready_at: "2026-07-25T10:35:00Z"
+verified_at: "2026-07-25T10:46:46Z"
+independent_review:
+  reviewer: "Claude / Antigravity (human-supplied independent review)"
+  verdict: APPROVED
+  received_at: "2026-07-25T10:46:46Z"
+  evidence: docs/coordination/handoffs/SG-024.md
+  summary: >-
+    The reviewer inspected the checked-out branch, task packet, handoff, workflow,
+    quality workflow, README, recent history, and clean git state. It approved all
+    five acceptance criteria: manual exact-SHA H3a gate, least-privilege job split,
+    Pages base/artifact provenance, full action SHA pins with unchanged PR quality,
+    and the bounded known-good SHA rollback runbook. No actionable finding remained.
 status_history:
   - status: ready
     at: "2026-07-25T10:24:21Z"
@@ -101,3 +113,10 @@ status_history:
       The implementation commit passed clean Node 24 installation, full verify,
       Pages-base production E2E, YAML/Bash syntax, action-release SHA, and static
       least-privilege/SHA-gate audits. H3a and remote dispatch remain out of scope.
+  - status: verified
+    at: "2026-07-25T10:46:46Z"
+    by: codex-integrator
+    basis: >-
+      The human supplied Claude / Antigravity independent-review APPROVED verdict
+      after an AC-by-AC inspection. No actionable finding, scope exception, or
+      verification failure remained; ready for local main integration.

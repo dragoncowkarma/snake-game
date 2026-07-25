@@ -6,8 +6,8 @@
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
 - 현재 활성 작업: SG-024 — `613b4d6`의 H3a-gated Pages release workflow와 bounded
-  rollback runbook은 검증을 마치고 Claude 독립 리뷰 대기다. 사람은 이 구현을
-  승인했지만 H3a 공개 승인과 workflow dispatch는 여전히 금지된다.
+  rollback runbook은 Claude / Antigravity 독립 APPROVED를 받아 local main 통합 대기다.
+  사람은 이 구현을 승인했지만 H3a 공개 승인과 workflow dispatch는 여전히 금지된다.
 - 현재 검증 대기: H2 사람 플레이테스트. 사람은 `SG-019-AC04`의 display-backed
   Pages-base 16/16 ×3 증거 편차를 SG-019에 한해 수용했다. 역사적 실패와
   `DF-SG019-01`은 비차단 harness 품질 기록으로 유지한다.
