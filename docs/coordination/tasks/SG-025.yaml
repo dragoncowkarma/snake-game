@@ -1,6 +1,6 @@
 task_id: SG-025
 revision: 1
-status: review-ready
+status: merged
 title: 사용자 README, 로컬 실행/테스트/배포/롤백, 접근성 범위, 라이선스
 priority: P1
 wave: 5
@@ -72,3 +72,7 @@ status_history:
       implementation_head_sha: e288c3a98b2524b3c1dbc2a0e845418f1448b8f8 (handoff added).
       Subsequent coordination-only commits do not affect content; run `git log` for
       current branch tip.
+  - status: merged
+    at: "2026-07-26T00:51:43Z"
+    agent: Codex
+    note: "SG-025 verified and merged to local main (36b7379)."

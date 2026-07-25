@@ -1,0 +1,47 @@
+task_id: SG-028
+revision: 1
+status: blocked
+title: SG-028 Release Candidate 재검토
+priority: P1
+wave: 5
+
+approved_by: human-user
+approved_at: "2026-07-26T00:51:43Z"
+
+assigned_to: Claude
+model_setting: "Claude / Opus 4.7"
+base_sha: "bcd9d08d5f8818c9d8a3199d9168031b83d7c341"
+
+prerequisites:
+  - SG-023
+  - SG-024
+  - SG-025
+
+allowed_paths:
+  - docs/coordination/tasks/SG-028.yaml
+  - docs/coordination/handoffs/SG-028.md
+  - docs/coordination/STATUS.md
+
+forbidden_paths:
+  - src/**
+  - tests/**
+  - .github/**
+
+acceptance_criteria:
+  - id: SG-028-AC01
+    description: "RC state review against AC-U01~U09, README commands, Pages workflow, and public artifact consistency."
+
+reviewer: "Codex"
+
+claim: "CLAIM: Claude / Claude Opus 4.7 / claude/sg-028-rc-review-79f6bc / 2026-07-26T00:51:43Z"
+
+status_history:
+  - status: ready
+    at: "2026-07-26T00:51:43Z"
+  - status: in-progress
+    at: "2026-07-26T00:51:43Z"
+    agent: Claude
+  - status: blocked
+    at: "2026-07-26T00:51:43Z"
+    agent: Claude
+    note: "BLOCK — 조건부 승인 없음. H3a 공개 배포 승인 불가 (B1, B2, B3, B4). B2, B3, B4는 Codex 정합화로 해소 중."
