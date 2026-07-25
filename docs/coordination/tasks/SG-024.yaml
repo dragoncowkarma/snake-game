@@ -1,0 +1,94 @@
+id: SG-024
+spec_version: "1.0-plan"
+task_revision: 1
+status: in-progress
+approved_by: human-user
+approved_at: "2026-07-25T10:24:21Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human directly approved proceeding with SG-024 after the preflight reported
+  that no packet existed. This authorizes only the bounded release-workflow and
+  rollback-runbook implementation below, including a deploy-job token limited to
+  pages: write and id-token: write. It does not grant H3a, authorize a workflow
+  dispatch, publish a Pages site, push a branch, or change any product contract.
+owner: codex
+model: "GPT-5 Codex runtime"
+reasoning_or_workload: high
+reviewer: Claude / high
+depends_on:
+  - SG-009
+predecessor_evidence:
+  - docs/coordination/tasks/SG-009.yaml
+  - docs/coordination/handoffs/SG-009.md
+base_sha: ceeb18a947eef548941f2399290e725b29f9727e
+branch: agent/codex/SG-024-pages-release
+claim: "CLAIM: Codex / GPT-5 Codex runtime high / agent/codex/SG-024-pages-release / 2026-07-25T10:24:21Z"
+claimed_at: "2026-07-25T10:24:21Z"
+allowed_paths:
+  - .github/workflows/pages-release.yml
+  - README.md
+  - docs/coordination/STATUS.md
+  - docs/coordination/tasks/SG-024.yaml
+  - docs/coordination/handoffs/SG-024.md
+forbidden_paths:
+  - .github/workflows/quality.yml
+  - src/**
+  - tests/**
+  - package.json
+  - package-lock.json
+  - tooling.config.ts
+  - vite.config.ts
+  - dist/**
+  - gh-pages/**
+  - all paths not explicitly listed in allowed_paths
+acceptance_criteria:
+  - id: SG-024-AC01
+    text: >-
+      The release workflow is workflow_dispatch only and requires release_sha. It
+      rejects any non-40-hex input, rejects a missing or malformed
+      H3A_APPROVED_RELEASE_SHA Actions variable, and rejects a value that differs
+      from that H3a approval before checkout. It checks out only that input SHA,
+      never a branch or main, then proves git rev-parse HEAD equals it.
+  - id: SG-024-AC02
+    text: >-
+      The build job has only contents: read and pages: read. It invokes
+      configure-pages with id pages, normalizes its base_path to / or /<repo>/,
+      supplies the normalized value to Vite --base, records the verified source SHA
+      in dist/release.json, and uploads only dist as the Pages artifact.
+  - id: SG-024-AC03
+    text: >-
+      After clean npm ci and npm run verify succeed, the deploy job alone needs the
+      build job and has only pages: write and id-token: write. It uses the
+      github-pages environment and non-cancelling Pages concurrency. No deploy is
+      triggered by this packet and no gh-pages branch or dist commit is created.
+  - id: SG-024-AC04
+    text: >-
+      Every action is pinned to the full SHA of the current official release
+      guidance with its release noted in a comment. The existing PR quality
+      workflow remains contents: read only and calls no Pages API.
+  - id: SG-024-AC05
+    text: >-
+      The README supplies a bounded, human-approved rollback/redeploy runbook that
+      reuses a recorded known-good SHA through the same H3a gate and does not use
+      branch deployment, artifact commits, or an unbounded retry loop.
+required_commands:
+  - git diff --check
+  - npm ci
+  - npm run verify
+  - npm run build -- --base /snake-game/
+  - PLAYWRIGHT_BASE_PATH=/snake-game/ PLAYWRIGHT_USE_EXISTING_BUILD=1 npm run test:e2e
+  - ruby -e "require 'yaml'; YAML.load_file('.github/workflows/pages-release.yml')"
+  - workflow static-policy check for trigger, SHA gate, job permissions, action pins, artifact path, and no branch checkout
+required_environment:
+  node: "24.x"
+  deployment: "H3a remains absent; do not dispatch"
+handoff: docs/coordination/handoffs/SG-024.md
+status_history:
+  - status: ready
+    at: "2026-07-25T10:24:21Z"
+    by: human-user
+    basis: Direct approval to proceed with the SG-024 packet after preflight.
+  - status: in-progress
+    at: "2026-07-25T10:24:21Z"
+    by: codex
+    basis: Claim recorded on the required dedicated branch after SG-009 ancestry check.

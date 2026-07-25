@@ -1,0 +1,152 @@
+name: Release GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: H3a-approved 40-character source commit SHA to release
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Verify and package approved release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      base_path: ${{ steps.normalize_base.outputs.base_path }}
+      source_sha: ${{ steps.verify_checkout.outputs.source_sha }}
+    steps:
+      - name: Validate H3a approval and release SHA
+        id: h3a_gate
+        env:
+          H3A_APPROVED_RELEASE_SHA: ${{ vars.H3A_APPROVED_RELEASE_SHA }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          normalize_sha() {
+            printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+          }
+
+          release_sha="$(normalize_sha "$RELEASE_SHA")"
+          approved_sha="$(normalize_sha "$H3A_APPROVED_RELEASE_SHA")"
+          sha_pattern='^[0-9a-f]{40}$'
+
+          if [[ ! "$release_sha" =~ $sha_pattern ]]; then
+            echo 'release_sha must be a 40-character hexadecimal commit SHA.' >&2
+            exit 1
+          fi
+
+          if [[ ! "$approved_sha" =~ $sha_pattern ]]; then
+            echo 'H3A_APPROVED_RELEASE_SHA must contain the H3a-approved 40-character SHA.' >&2
+            exit 1
+          fi
+
+          if [[ "$release_sha" != "$approved_sha" ]]; then
+            echo 'release_sha does not match the H3a-approved release SHA.' >&2
+            exit 1
+          fi
+
+          printf 'release_sha=%s\n' "$release_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the approved source SHA
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ steps.h3a_gate.outputs.release_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify checked-out source SHA
+        id: verify_checkout
+        env:
+          RELEASE_SHA: ${{ steps.h3a_gate.outputs.release_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          if [[ "$source_sha" != "$RELEASE_SHA" ]]; then
+            echo 'Checked-out source SHA differs from release_sha.' >&2
+            exit 1
+          fi
+          printf 'source_sha=%s\n' "$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run the complete verification suite
+        run: npm run verify
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Normalize the Pages base path
+        id: normalize_base
+        env:
+          RAW_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_path="${RAW_BASE_PATH#/}"
+          base_path="${base_path%/}"
+          if [[ -z "$base_path" ]]; then
+            base_path='/'
+          else
+            base_path="/$base_path/"
+          fi
+
+          if [[ "$base_path" != '/' && ! "$base_path" =~ ^/[A-Za-z0-9._-]+/$ ]]; then
+            echo "configure-pages returned an unsupported base path: $RAW_BASE_PATH" >&2
+            exit 1
+          fi
+
+          printf 'base_path=%s\n' "$base_path" >> "$GITHUB_OUTPUT"
+
+      - name: Build for the Pages base path
+        env:
+          BASE_PATH: ${{ steps.normalize_base.outputs.base_path }}
+        run: npm run build -- --base "$BASE_PATH"
+
+      - name: Record verified release source
+        env:
+          SOURCE_SHA: ${{ steps.verify_checkout.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/index.html
+          printf '{\n  "source_sha": "%s"\n}\n' "$SOURCE_SHA" > dist/release.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy approved Pages artifact
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
