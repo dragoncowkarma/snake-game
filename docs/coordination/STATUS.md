@@ -5,8 +5,8 @@
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: SG-024 — Codex가 `agent/codex/SG-024-pages-release`에서 H3a-gated
-  Pages release workflow와 bounded rollback runbook을 구현 중이다. 사람은 이 구현을
+- 현재 활성 작업: SG-024 — `613b4d6`의 H3a-gated Pages release workflow와 bounded
+  rollback runbook은 검증을 마치고 Claude 독립 리뷰 대기다. 사람은 이 구현을
   승인했지만 H3a 공개 승인과 workflow dispatch는 여전히 금지된다.
 - 현재 검증 대기: H2 사람 플레이테스트. 사람은 `SG-019-AC04`의 display-backed
   Pages-base 16/16 ×3 증거 편차를 SG-019에 한해 수용했다. 역사적 실패와
