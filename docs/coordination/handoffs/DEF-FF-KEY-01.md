@@ -5,7 +5,7 @@
 - 담당 AI / 모델 / 설정: Antigravity / Gemini 3.5 Flash high
 - 명세 버전 / task packet revision: 1.0-plan / revision 1
 - 기준 SHA(`base_sha`): `23770958c710b4a8b4941fc11153c14be9d4eca1`
-- 브랜치 / 결과 SHA(`head_sha`): `agent/antigravity/DEF-FF-KEY-01-firefox-keypress` / `90fbd571be2a704a4ae669be29339396e98b0f20`
+- 브랜치 / 결과 SHA(`head_sha`): `agent/antigravity/DEF-FF-KEY-01-firefox-keypress` / `a436bf63c0cb9dddfa50b64f5f9570583e823e24`
 - 연결 Issue / PR: `docs/coordination/tasks/DEF-FF-KEY-01.yaml`
 - 승인자 / 승인 시각: human-user / `2026-07-26T01:30:00Z`
 - 상태: `review-ready`
