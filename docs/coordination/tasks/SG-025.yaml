@@ -1,6 +1,6 @@
 task_id: SG-025
 revision: 1
-status: in-progress
+status: review-ready
 title: 사용자 README, 로컬 실행/테스트/배포/롤백, 접근성 범위, 라이선스
 priority: P1
 wave: 5
@@ -63,3 +63,7 @@ status_history:
   - status: in-progress
     at: "2026-07-25T00:00:00Z"
     agent: Claude
+  - status: review-ready
+    at: "2026-07-25T00:00:00Z"
+    agent: Claude
+    note: "README rewrite and handoff committed. Codex review PASS (P2 metadata fixes applied)."
