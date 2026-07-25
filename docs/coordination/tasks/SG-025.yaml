@@ -1,0 +1,65 @@
+task_id: SG-025
+revision: 1
+status: in-progress
+title: 사용자 README, 로컬 실행/테스트/배포/롤백, 접근성 범위, 라이선스
+priority: P1
+wave: 5
+
+approved_by: human-user
+approved_at: "2026-07-25T00:00:00Z"
+
+assigned_to: Claude
+model_setting: "Claude Sonnet 4.6 / 중간; 형식만 Haiku 4.5 / 낮음"
+
+prerequisites:
+  - SG-023
+  - SG-024
+
+allowed_paths:
+  - README.md
+  - docs/coordination/tasks/SG-025.yaml
+  - docs/coordination/handoffs/SG-025.md
+  - docs/coordination/STATUS.md
+
+forbidden_paths:
+  - src/**
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+
+acceptance_criteria:
+  - id: SG-025-AC01
+    description: "로컬 실행 명령(npm ci, npm run dev, npm run verify)이 Node.js 24 clean checkout에서 실제 동작하고 README와 일치한다."
+  - id: SG-025-AC02
+    description: "Pages production preview 명령이 README에 기록되고 실제 동작한다."
+  - id: SG-025-AC03
+    description: "Pages 배포 절차(GitHub Settings, H3A_APPROVED_RELEASE_SHA variable, dispatch, 검증, rollback)가 정확히 기술된다."
+  - id: SG-025-AC04
+    description: "게임 조작(키보드 방향키/WASD, 터치 버튼, pause/resume/restart/mute)이 구현된 계약 그대로 기술된다."
+  - id: SG-025-AC05
+    description: "두 난이도(Slow/Normal), 로컬 최고 점수(localStorage), 음소거가 기술된다."
+  - id: SG-025-AC06
+    description: "접근성 제공 범위(키보드 전체 흐름, 포커스 전이, 스크린리더 상태 알림, 터치 44px, reduced-motion, 색상 외 구분)와 한계(완전한 비시각적 동등 플레이 미제공)가 명확히 기술된다."
+  - id: SG-025-AC07
+    description: "온라인 랭킹, 완전 오프라인(PWA), 완전한 비시각적 플레이를 제공하지 않는다고 명시한다."
+  - id: SG-025-AC08
+    description: "MIT 라이선스 및 런타임(Phaser 4.2.1)/개발 의존성 고지가 포함된다."
+  - id: SG-025-AC09
+    description: "다른 AI가 README만 읽고 clean checkout에서 실행·검증·배포 절차를 재현할 수 있다."
+
+required_commands:
+  - npm ci
+  - npm run verify
+
+reviewer: "Codex 5.5 / 중간"
+
+claim: "CLAIM: Claude / Claude Sonnet 4.6 / claude/product-docs-responsibility-e22342 / 2026-07-25T00:00:00Z"
+
+status_history:
+  - status: ready
+    at: "2026-07-25T00:00:00Z"
+    note: "SG-024 merged to local main (8f828bb). SG-025 packet created and claimed."
+  - status: in-progress
+    at: "2026-07-25T00:00:00Z"
+    agent: Claude
