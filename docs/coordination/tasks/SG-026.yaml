@@ -1,0 +1,73 @@
+id: SG-026
+spec_version: "1.0-plan"
+task_revision: 1
+status: blocked
+approved_by: human-user
+approved_at: "2026-07-26T07:05:16Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human user approved proceeding with SG-026. Local preview build (--base /snake-game/)
+  and 18/18 E2E passed, but public GitHub Pages deployment verification remains blocked
+  until GitHub Actions workflow dispatch runs and supplies page_url.
+owner: antigravity
+model: "Gemini 3.5 Flash (Medium)"
+reasoning_or_workload: medium
+reviewer: codex
+depends_on:
+  - H3a
+  - SG-024
+  - SG-025
+  - SG-028
+predecessor_evidence:
+  - docs/coordination/tasks/SG-024.yaml
+  - docs/coordination/tasks/SG-025.yaml
+  - docs/coordination/tasks/SG-028.yaml
+base_sha: 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
+branch: qa-review-sg-026-release
+claim: "CLAIM: Antigravity / Gemini 3.5 Flash (Medium) / qa-review-sg-026-release / 2026-07-26T07:05:16Z"
+claimed_at: "2026-07-26T07:05:16Z"
+allowed_paths:
+  - docs/coordination/tasks/SG-026.yaml
+  - docs/coordination/handoffs/SG-026.md
+  - docs/coordination/STATUS.md
+forbidden_paths:
+  - src/**
+  - tests/**
+  - .github/**
+  - package.json
+  - package-lock.json
+  - dist/**
+  - all paths not explicitly listed in allowed_paths
+acceptance_criteria:
+  - id: SG-026-AC01
+    text: >-
+      H3a human approval and 40-character release SHA recorded; Actions-emitted page_url
+      and ${page_url}/release.json source_sha verified via bounded-retry fetch matching H3a SHA.
+  - id: SG-026-AC02
+    text: >-
+      Deployed public site returns HTML/JS/CSS/favicon 200, 0 failed requests, and 0 console errors;
+      short flow (start -> move -> pause/resume -> game over/restart) and mobile viewport layout PASS.
+required_commands:
+  - git status
+  - npm run build -- --base /snake-game/
+  - PLAYWRIGHT_BASE_PATH=/snake-game/ PLAYWRIGHT_USE_EXISTING_BUILD=1 npm run test:e2e
+required_environment:
+  node: "24.x"
+handoff: docs/coordination/handoffs/SG-026.md
+head_sha: 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
+status_history:
+  - status: ready
+    at: "2026-07-26T07:05:16Z"
+    by: human-user
+    basis: Direct approval to proceed with SG-026 packet.
+  - status: in_progress
+    at: "2026-07-26T07:05:16Z"
+    by: antigravity
+    basis: Claim recorded on dedicated branch after human approval.
+  - status: blocked
+    at: "2026-07-26T07:44:07Z"
+    by: antigravity
+    basis: >-
+      Review finding: status reverted to blocked. Local preview build (--base /snake-game/)
+      and 18/18 Playwright E2E passed as preview evidence, but public Pages URL deployment
+      verification remains blocked until Actions workflow dispatch outputs actual page_url.
