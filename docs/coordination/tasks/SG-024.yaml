@@ -1,7 +1,7 @@
 id: SG-024
 spec_version: "1.0-plan"
 task_revision: 1
-status: verified
+status: merged
 approved_by: human-user
 approved_at: "2026-07-25T10:24:21Z"
 approval_gate: direct-human-instruction
@@ -86,6 +86,8 @@ handoff: docs/coordination/handoffs/SG-024.md
 head_sha: 613b4d61f8f6f7d3f2f360d7f85a969742569622
 review_ready_at: "2026-07-25T10:35:00Z"
 verified_at: "2026-07-25T10:46:46Z"
+merged_at: "2026-07-25T10:48:27Z"
+merge_commit: 8f828bb65a17c34087b1e5748e76a1838b198046
 independent_review:
   reviewer: "Claude / Antigravity (human-supplied independent review)"
   verdict: APPROVED
@@ -120,3 +122,10 @@ status_history:
       The human supplied Claude / Antigravity independent-review APPROVED verdict
       after an AC-by-AC inspection. No actionable finding, scope exception, or
       verification failure remained; ready for local main integration.
+  - status: merged
+    at: "2026-07-25T10:48:27Z"
+    by: codex-integrator
+    basis: >-
+      Clean local main integrated the independently approved branch with merge
+      commit 8f828bb65a17c34087b1e5748e76a1838b198046. No remote push, dispatch,
+      Pages API call, or public deployment was performed.
