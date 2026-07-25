@@ -1,0 +1,120 @@
+id: DEF-FF-KEY-01
+spec_version: "1.0-plan"
+task_revision: 1
+status: ready
+approved_by: human-user
+approved_at: "2026-07-26T01:30:00Z"
+approval_gate: direct-human-instruction
+approval_basis: >-
+  The human directed creation of a defect packet for the Firefox rapid-keypress
+  test failures identified in the SG-020 handoff and re-flagged by the SG-028
+  BLOCK verdict (B1). Scope is limited to two Playwright test files under
+  tests/e2e/ and does not authorize product code changes, contract changes, new
+  dependencies, remote push, deployment, or an H2 verdict. This packet unblocks
+  the ENV-R Firefox row of SG-023's browser matrix, but SG-023 verified
+  redecision still additionally requires ENV-WEBKIT-01 and GAP-06-PERF-DEVICE.
+owner: antigravity
+model: "Gemini 3.5 Flash high"
+reasoning_or_workload: medium
+reviewer: codex
+depends_on:
+  - SG-020
+  - SG-022
+  - SG-025
+predecessor_evidence:
+  - docs/coordination/handoffs/SG-020.md
+  - docs/coordination/tasks/SG-028.yaml
+  - docs/coordination/handoffs/SG-028.md
+base_sha: 0fb827c
+branch: agent/antigravity/DEF-FF-KEY-01-firefox-keypress
+allowed_paths:
+  - tests/e2e/production.spec.ts
+  - tests/e2e/sg020-audit.spec.ts
+  - docs/coordination/tasks/DEF-FF-KEY-01.yaml
+  - docs/coordination/handoffs/DEF-FF-KEY-01.md
+forbidden_paths:
+  - src/**
+  - tests/unit/**
+  - tests/e2e/production.spec.ts.snapshot
+  - playwright.config.ts
+  - package.json
+  - package-lock.json
+  - vite.config.ts
+  - tsconfig.json
+  - eslint.config.js
+  - tooling.config.ts
+  - .github/**
+  - public/**
+  - dist/**
+  - docs/DEVELOPMENT_PLAN.md
+  - docs/TASKS.md
+  - docs/coordination/CONTRACTS.md
+  - docs/coordination/DECISIONS.md
+  - README.md
+acceptance_ids:
+  - >-
+    DEF-FF-KEY-01-AC01: production.spec.ts `Keyboard Controls, WASD, Space, and
+    preventDefault scroll prevention` passes 3/3 consecutive runs on Firefox
+    1366x768 with no product source code changed.
+  - >-
+    DEF-FF-KEY-01-AC02: sg020-audit.spec.ts `Reduced motion preserves outline/
+    text/score` passes 3/3 consecutive runs on Firefox 1366x768 with no product
+    source code changed.
+  - >-
+    DEF-FF-KEY-01-AC03: both tests continue to pass 3/3 consecutive runs on
+    Chromium 1366x768 (no regression in the previously green engine).
+  - >-
+    DEF-FF-KEY-01-AC04: the fix uses only deterministic per-key waits (explicit
+    tick-boundary awaits or request/response sequencing) and does not introduce
+    `waitForTimeout` or hard sleeps; no product code, playwright.config.ts,
+    package.json, or CI workflow is modified.
+required_commands:
+  - >-
+    PLAYWRIGHT_ENGINES=firefox PLAYWRIGHT_VIEWPORTS=1366x768 npx playwright test
+    tests/e2e/production.spec.ts tests/e2e/sg020-audit.spec.ts -g "Keyboard
+    Controls|Reduced motion preserves"
+  - >-
+    PLAYWRIGHT_ENGINES=chromium PLAYWRIGHT_VIEWPORTS=1366x768 npx playwright
+    test tests/e2e/production.spec.ts tests/e2e/sg020-audit.spec.ts -g
+    "Keyboard Controls|Reduced motion preserves"
+  - npm run format:check
+  - npm run lint
+  - npm run typecheck
+  - git diff --check
+defect_context:
+  origin_handoff: docs/coordination/handoffs/SG-020.md
+  origin_lines: "38, 63-64, 70, 74"
+  root_cause: >-
+    Firefox Juggler keyboard IPC round-trip latency is systematically larger
+    than Chromium's, so eight consecutive `page.keyboard.press()` calls span
+    more real time than the 160ms sim tick and an extra tick is silently
+    consumed between presses. The two tests were written assuming Chromium-like
+    sub-tick timing, so extra ticks change the recorded direction and the
+    scroll/mute assertions fail deterministically (3/3 on Firefox, 5/5 pass on
+    Chromium warm reruns).
+  product_impact: >-
+    None. Repeated Chromium 5-viewport reruns and manual play sessions have
+    produced no user-visible input regression. This is a test-harness defect,
+    not a product defect. `production.spec.ts`'s intent (native key handling
+    parity + preventDefault scroll behavior) is unchanged; only the harness must
+    stop assuming a specific IPC latency ceiling.
+severity: high
+release_blocker_for:
+  - SG-023 revision 3 (ENV-R Firefox row unlockable only after this defect
+    passes 3/3 on Firefox)
+handoff: docs/coordination/handoffs/DEF-FF-KEY-01.md
+claim: null
+claimed_at: null
+status_history:
+  - status: proposed
+    at: "2026-07-26T01:15:00Z"
+    by: claude
+    basis: >-
+      Drafted inside SG-028 STATUS.md as `DEF-FF-KEY-01 (proposed)` after the
+      SG-028 BLOCK verdict identified B1's Firefox test-defect gap.
+  - status: ready
+    at: "2026-07-26T01:30:00Z"
+    by: human-user
+    basis: >-
+      Direct approval to promote the STATUS draft into a standalone offline
+      packet for Antigravity to claim.
