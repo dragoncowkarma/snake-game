@@ -62,10 +62,10 @@ test.describe('SG-020 Wave 4 automated release audit', () => {
     const score = page.locator('.hud__line').first().locator('span').nth(1);
 
     await startButton.click();
-    await expect(phase).toHaveText('Ready');
-
-    await board.press('ArrowUp');
-    await board.press('ArrowLeft');
+    await expect(board).toBeFocused();
+    await page.keyboard.press('ArrowUp');
+    await expect(phase).toHaveText('Playing');
+    await page.keyboard.press('ArrowLeft');
 
     // Text/score feedback (AC-U05's non-Tween information channel) still updates
     // under prefers-reduced-motion.

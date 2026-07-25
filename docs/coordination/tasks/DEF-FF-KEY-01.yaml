@@ -1,7 +1,7 @@
 id: DEF-FF-KEY-01
 spec_version: "1.0-plan"
 task_revision: 1
-status: ready
+status: review
 approved_by: human-user
 approved_at: "2026-07-26T01:30:00Z"
 approval_gate: direct-human-instruction
@@ -103,8 +103,8 @@ release_blocker_for:
   - SG-023 revision 3 (ENV-R Firefox row unlockable only after this defect
     passes 3/3 on Firefox)
 handoff: docs/coordination/handoffs/DEF-FF-KEY-01.md
-claim: null
-claimed_at: null
+claim: "CLAIM: antigravity / Gemini 3.5 Flash high / agent/antigravity/DEF-FF-KEY-01-firefox-keypress / 2026-07-26T01:35:00Z"
+claimed_at: "2026-07-26T01:35:00Z"
 status_history:
   - status: proposed
     at: "2026-07-26T01:15:00Z"
@@ -118,3 +118,13 @@ status_history:
     basis: >-
       Direct approval to promote the STATUS draft into a standalone offline
       packet for Antigravity to claim.
+  - status: in-progress
+    at: "2026-07-26T01:35:00Z"
+    by: antigravity
+    basis: >-
+      Claimed by Antigravity on dedicated branch agent/antigravity/DEF-FF-KEY-01-firefox-keypress.
+  - status: review
+    at: "2026-07-26T02:55:00Z"
+    by: antigravity
+    basis: >-
+      Implemented deterministic waits and verified 3/3 consecutive passes on Firefox and Chromium.

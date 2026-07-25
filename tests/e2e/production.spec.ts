@@ -241,7 +241,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       })
       .toBeGreaterThan(startCount);
 
-    let scrollY = await page.evaluate(() => window.scrollY);
+    const scrollY = await page.evaluate(() => window.scrollY);
     expect(scrollY).toBeGreaterThan(0);
 
     let lastPrevented = await page.evaluate(() => {
@@ -253,8 +253,8 @@ test.describe('SG-018 Production Build E2E Suite', () => {
 
     // 2. Focus document body -> Press Space -> default not prevented -> page scrolls further (AC-U06)
     await page.evaluate(() => {
-      document.body.tabIndex = -1;
-      document.body.focus();
+      document.body.removeAttribute('tabindex');
+      window.focus();
     });
     const prevScrollY = await page.evaluate(() => window.scrollY);
     await page.keyboard.press('Space');
@@ -311,6 +311,7 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     expect(lastPrevented).toBe(true); // ArrowDown was prevented!
 
     // Press Space (inside board, not a game key) -> physically scrolls page & default not prevented (AC-U06)
+    const scrollYBeforeSpace = await page.evaluate(() => window.scrollY);
     startCount = await page.evaluate(() => (window as any).scrollEventCount);
     await page.keyboard.press('Space');
 
@@ -320,8 +321,11 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       })
       .toBeGreaterThan(startCount);
 
-    scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(0); // Space physically scrolled window!
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => window.scrollY);
+      })
+      .toBeGreaterThan(scrollYBeforeSpace); // Space physically scrolled window!
 
     lastPrevented = await page.evaluate(() => {
       const val = (window as any).lastEventPrevented;
@@ -348,6 +352,20 @@ test.describe('SG-018 Production Build E2E Suite', () => {
     // Verify semantic dispatch hook injection and execution before trace assertions
     await auditor.verifySemanticHook();
 
+    // Turn right first so the first key 'w' (up) is perpendicular to current direction 'down'
+    await page.keyboard.press('d');
+    await expect
+      .poll(async () => {
+        return await page.evaluate(() => {
+          const trace = (window as any).semanticCommandTrace || [];
+          return trace[trace.length - 1];
+        });
+      })
+      .toEqual({
+        type: 'direction',
+        direction: 'right',
+      });
+
     for (const item of keySequence) {
       await page.keyboard.press(item.key);
 
@@ -359,14 +377,17 @@ test.describe('SG-018 Production Build E2E Suite', () => {
       expect(lastPrevented).toBe(true); // preventDefault verified!
 
       // Verify exact semantic direction command dispatched to ApplicationRouter
-      const lastCommand = await page.evaluate(() => {
-        const trace = (window as any).semanticCommandTrace || [];
-        return trace[trace.length - 1];
-      });
-      expect(lastCommand).toEqual({
-        type: 'direction',
-        direction: item.expectedDirection,
-      });
+      await expect
+        .poll(async () => {
+          return await page.evaluate(() => {
+            const trace = (window as any).semanticCommandTrace || [];
+            return trace[trace.length - 1];
+          });
+        })
+        .toEqual({
+          type: 'direction',
+          direction: item.expectedDirection,
+        });
     }
 
     // 7. Pause via 'p' -> focus moves to Resume button
