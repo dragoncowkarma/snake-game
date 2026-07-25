@@ -1,12 +1,12 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-26T01:15:00Z
+- 마지막 동기화: 2026-07-25T22:00:13Z
 - 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 통합 완료(H2 사람 판정 대기) / Wave 4 사람 지시로 선행 진행(SG-023 `blocked` 유지) / Wave 5 SG-024·SG-025 merged, SG-028 `blocked` (H3a 미승인)
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
-- 현재 활성 작업: 없음 — SG-024(8f828bb)와 SG-025(36b7379)가 local main에 통합됐다.
-  SG-028(RC 재검토)은 Wave 4 관문 미충족으로 BLOCK 상태다. H3a 공개 승인과 workflow dispatch는 여전히 금지된다.
+- 현재 활성 작업: 없음 — DEF-FF-KEY-01 구현 `a436bf6`과 handoff `a8d35a8`가 Codex 리뷰 승인 뒤 local `main`에 fast-forward 통합됐다.
+  Firefox·Chromium 대상 테스트 3/3 증거가 기록됐지만, SG-028(RC 재검토)은 Wave 4 관문 미충족으로 BLOCK 상태다. H3a 공개 승인과 workflow dispatch는 여전히 금지된다.
 - 현재 검증 대기: H2 사람 플레이테스트. 사람은 `SG-019-AC04`의 display-backed
   Pages-base 16/16 ×3 증거 편차를 SG-019에 한해 수용했다. 역사적 실패와
   `DF-SG019-01`은 비차단 harness 품질 기록으로 유지한다.
@@ -14,16 +14,10 @@
   착수 관문(Wave 3 H2)도 종료 조건(blocker/high 0·RC SHA 고정)도 충족하지
   않아 AskUserQuestion으로 명확화한 결과 "막힌 작업부터 재개"로 좁혀졌다 —
   Wave 4 자체의 종료 판정은 아직 내려지지 않았다.
-- 다음 작업 후보(SG-028 B1 해소 경로, Codex 조정 책임자가 실 packet으로 승격):
-  - **DEF-FF-KEY-01 (proposed, 코드 작업)**: `tests/e2e/production.spec.ts`의
-    `Keyboard Controls...preventDefault`, `tests/e2e/sg020-audit.spec.ts`의
-    `Reduced motion preserves...` 두 rapid-keypress 테스트에 Firefox Juggler IPC
-    지연을 흡수하는 결정론적 대기(각 `page.keyboard.press` 사이 명시적 tick 경계
-    대기)를 추가한다. 근거 SG-020 handoff line 38, 63-64. 소유자 Antigravity(테스트
-    파일), 리뷰어 Codex. 검증 명령
-    `PLAYWRIGHT_ENGINES=firefox PLAYWRIGHT_VIEWPORTS=1366x768 npx playwright test
-    tests/e2e/production.spec.ts tests/e2e/sg020-audit.spec.ts -g "Keyboard
-    Controls|Reduced motion preserves"` 3/3 PASS. 제품 코드는 건드리지 않는다.
+- 다음 작업 후보(SG-028 B1 해소 경로):
+  - **SG-023 revision 3 (재검증)**: DEF-FF-KEY-01로 ENV-R Firefox rapid-keypress
+    결함이 해소됐다. WebKit 환경과 GAP-06-PERF-DEVICE, H2 사람 판정의 차단 상태를
+    함께 반영해 RC 검증 상태를 재판정한다.
   - **ENV-WEBKIT-01 (blocked-external, 환경 의존)**: WebKit 5-viewport 매트릭스
     실행은 Playwright toolchain이 macOS 13+ 요구. 로컬 호스트가 macOS 12.7.6이라
     이 환경에서 실행 불가. Codex 조정 책임자가 (a) macOS 13+ CI runner 또는
