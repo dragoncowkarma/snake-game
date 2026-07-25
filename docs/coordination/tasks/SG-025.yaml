@@ -66,4 +66,9 @@ status_history:
   - status: review-ready
     at: "2026-07-25T00:00:00Z"
     agent: Claude
-    note: "README rewrite and handoff committed. Codex review PASS (P2 metadata fixes applied)."
+    note: >
+      README rewrite and handoff committed. Codex review round 1 PASS (P2 SHA/status
+      fixes applied in 6d8c098). Codex review round 2 PASS (reproduction step clarified
+      in 820fbe3). Final branch tip: 820fbe3a139b70daaa5994a32851c822ff2aecbc.
+      handoff file records implementation_head_sha e288c3a and coordination chain;
+      subsequent coordination-only commits are expected and do not affect content.
