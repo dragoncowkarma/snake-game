@@ -14,9 +14,31 @@
   착수 관문(Wave 3 H2)도 종료 조건(blocker/high 0·RC SHA 고정)도 충족하지
   않아 AskUserQuestion으로 명확화한 결과 "막힌 작업부터 재개"로 좁혀졌다 —
   Wave 4 자체의 종료 판정은 아직 내려지지 않았다.
-- 다음 작업 후보: (1) Firefox rapid-keypress 테스트 결함 수정(SG-020 handoff
-  참조, 제품 결함 아님) (2) macOS 13+/CI에서 WebKit 5-viewport 재실행 (3) H2
-  사람 플레이테스트 (4) GAP-06-PERF-DEVICE 기기 승인
+- 다음 작업 후보(SG-028 B1 해소 경로, Codex 조정 책임자가 실 packet으로 승격):
+  - **DEF-FF-KEY-01 (proposed, 코드 작업)**: `tests/e2e/production.spec.ts`의
+    `Keyboard Controls...preventDefault`, `tests/e2e/sg020-audit.spec.ts`의
+    `Reduced motion preserves...` 두 rapid-keypress 테스트에 Firefox Juggler IPC
+    지연을 흡수하는 결정론적 대기(각 `page.keyboard.press` 사이 명시적 tick 경계
+    대기)를 추가한다. 근거 SG-020 handoff line 38, 63-64. 소유자 Antigravity(테스트
+    파일), 리뷰어 Codex. 검증 명령
+    `PLAYWRIGHT_ENGINES=firefox PLAYWRIGHT_VIEWPORTS=1366x768 npx playwright test
+    tests/e2e/production.spec.ts tests/e2e/sg020-audit.spec.ts -g "Keyboard
+    Controls|Reduced motion preserves"` 3/3 PASS. 제품 코드는 건드리지 않는다.
+  - **ENV-WEBKIT-01 (blocked-external, 환경 의존)**: WebKit 5-viewport 매트릭스
+    실행은 Playwright toolchain이 macOS 13+ 요구. 로컬 호스트가 macOS 12.7.6이라
+    이 환경에서 실행 불가. Codex 조정 책임자가 (a) macOS 13+ CI runner 또는
+    (b) 사람이 소유한 macOS 13+ 기기 접근을 준비해야 SG-023 ENV-R WebKit 5/5
+    행을 채울 수 있다. 코드 작업 없음.
+  - **GAP-06-PERF-DEVICE (blocked-external, 사람 의존)**: NFR-P01/P02 60fps
+    모바일 목표는 실기기 iOS/Android 각 1대 이상에서 사람 승인이 필요. Antigravity
+    QA 소유이나 기기 대여/제공은 사람 결정.
+  - **H2 사람 플레이테스트 (blocked-external, 사람 판정)**: DEVELOPMENT_PLAN
+    section 8 `H2` 관문. 위 3개 packet과 무관하게 Wave 3 exit gate로 별도 판정
+    필요.
+  - 위 4개 중 DEF-FF-KEY-01이 처리되고 ENV-WEBKIT-01·GAP-06이 사람 승인/환경
+    준비로 unblock된 뒤에만 Antigravity가 SG-023 revision 3을 실행해 `verified`
+    재판정을 시도할 수 있다. 이후 사람 H2 승인이 나면 조정 책임자가 SG-028
+    revision 2 packet을 승격해 Claude가 RC 재검토를 수행한다.
 
 ## H0b 종료 기록
 
