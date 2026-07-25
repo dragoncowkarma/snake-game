@@ -1,7 +1,7 @@
 # 프로젝트 상태
 
-- 마지막 동기화: 2026-07-26T00:51:43Z
-- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 진행 중 (종료 관문 H2 대기)
+- 마지막 동기화: 2026-07-26T01:15:00Z
+- 단계: Wave 0 완료 / H0b 승인 완료 / Wave 1 기반 구축 완료 / Wave 2 수직 슬라이스 완료 / H1 승인 완료 / Wave 3 통합 완료(H2 사람 판정 대기) / Wave 4 사람 지시로 선행 진행(SG-023 `blocked` 유지) / Wave 5 SG-024·SG-025 merged, SG-028 `blocked` (H3a 미승인)
 - 목표 릴리스: MVP 1.0
 - 예상 공개 URL: `https://dragoncowkarma.github.io/snake-game/`
 - 조정 책임자: Codex
@@ -150,8 +150,8 @@ Wave 2는 H1 승인으로 완료됐다. 다음 관문은 Wave 3 (SG-016~SG-019) 
 | 1. 기반 구축 | complete | SG-005~SG-009 merged; private artifact 경로는 준비됐고 공개 배포는 H3a까지 금지 |
 | 2. 수직 슬라이스 | complete | SG-010~SG-015 merged; H1 승인(2026-07-20 Asia/Seoul); DF-SG015-01(medium)은 SG-016/SG-017 이관 |
 | 3. 통합·기능 완성 | in-progress | SG-016~019 local main 통합 완료; H2 사람 검토 대기 |
-| 4. 품질 강화 | pending | 착수 관문(Wave 3 H2)이 아직 안 열렸음에도 사람 승인으로 선행 진행; SG-020 첫 실행(Chromium 5-viewport PASS, Firefox 테스트 결함으로 blocked, WebKit 로컬 OS 제약으로 blocked, 실기기 행 전부 blocked)·SG-021(완료)·SG-022 M1 merged·SG-023 revision 2(NFR 6개 신규 PASS, ENV-R 5/15, 여전히 blocked). Wave 4 종료 조건(blocker/high 0, RC SHA 고정, 사람의 medium 확인) 미충족 |
-| 5. 배포·릴리스 | pending | H3a 공개 배포 승인, H3b 결과 수락 |
+| 4. 품질 강화 | in-progress (blocked) | 착수 관문(Wave 3 H2)이 아직 안 열렸음에도 사람 승인으로 선행 진행; SG-020 첫 실행(Chromium 5-viewport PASS, Firefox 테스트 결함으로 blocked, WebKit 로컬 OS 제약으로 blocked, 실기기 행 전부 blocked)·SG-021(완료)·SG-022 M1 merged·SG-023 revision 2(NFR 6개 신규 PASS, ENV-R 5/15, 여전히 blocked). Wave 4 종료 조건(blocker/high 0, RC SHA 고정, 사람의 medium 확인) 미충족 |
+| 5. 배포·릴리스 | in-progress (blocked) | SG-024(Pages release workflow) `8f828bb` merged; SG-025(README) `36b7379` merged; SG-028(RC 재검토) `blocked` — B1(Wave 4/5 관문 미충족) 해소 필요, B2/B3/B4는 정합화로 해소; H3a 공개 배포 승인 및 H3b 결과 수락 미수행 |
 
 ## 승인된 기준선
 
