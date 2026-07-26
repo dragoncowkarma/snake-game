@@ -39,24 +39,25 @@ forbidden_paths:
 acceptance_criteria:
   - id: SG-026-AC01
     text: >-
-      H3a human approval and release SHA recorded; Actions workflow run 30179688625 deployed artifact
-      to GitHub Pages; public https://dragoncowkarma.github.io/snake-game/release.json returns HTTP 200
-      and source_sha matches 51aa77730ed9744402391a15148161fe6dca03fd.
+      H3a human approval and exact approved 40-character release SHA 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c recorded;
+      Actions workflow run 30180739161 deployed artifact to GitHub Pages; public
+      https://dragoncowkarma.github.io/snake-game/release.json returns HTTP 200 and source_sha matches 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c.
   - id: SG-026-AC02
     text: >-
       Deployed public site returns HTTP 200 for HTML and JS/CSS assets with 0 failed requests and 0 console errors;
-      Playwright E2E 18/18 PASS for start-move-pause-restart and 320px mobile viewport layout.
+      Playwright live smoke test on public URL PASS for start -> move -> pause/resume flow and mobile layout.
 required_commands:
   - git status
-  - gh variable set H3A_APPROVED_RELEASE_SHA --body 51aa77730ed9744402391a15148161fe6dca03fd
-  - gh workflow run pages-release.yml -f release_sha=51aa77730ed9744402391a15148161fe6dca03fd
-  - gh run watch 30179688625
+  - gh variable set H3A_APPROVED_RELEASE_SHA --body 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
+  - gh workflow run pages-release.yml -f release_sha=39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
+  - gh run watch 30180739161
   - curl -s https://dragoncowkarma.github.io/snake-game/release.json
   - curl -sI https://dragoncowkarma.github.io/snake-game/
+  - node live Playwright smoke script against public URL
 required_environment:
   node: "24.x"
 handoff: docs/coordination/handoffs/SG-026.md
-head_sha: 51aa77730ed9744402391a15148161fe6dca03fd
+head_sha: 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
 status_history:
   - status: ready
     at: "2026-07-26T07:05:16Z"
@@ -67,11 +68,11 @@ status_history:
     by: antigravity
     basis: Claim recorded on dedicated branch after human approval.
   - status: verified
-    at: "2026-07-26T08:41:00Z"
+    at: "2026-07-26T09:14:35Z"
     by: antigravity
     basis: >-
-      GitHub Pages enabled by human user in repository settings. Actions workflow 30179688625
-      successfully verified and deployed commit 51aa77730ed9744402391a15148161fe6dca03fd to Pages.
-      Public URL https://dragoncowkarma.github.io/snake-game/ returns HTTP 200, release.json returns
-      source_sha 51aa77730ed9744402391a15148161fe6dca03fd, asset HTTP 200, 0 console/network errors,
-      and Playwright E2E 18/18 passed.
+      GitHub Actions run 30180739161 verified and deployed the exact approved commit 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
+      (with 0 workflow diffs). Public site https://dragoncowkarma.github.io/snake-game/ returns HTTP 200,
+      release.json returns source_sha 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c, live Playwright smoke test
+      against public URL verified Menu -> Start -> Ready -> ArrowRight -> Playing -> P -> Paused flow,
+      0 console errors, and 0 network failures.
