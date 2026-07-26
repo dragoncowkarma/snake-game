@@ -45,7 +45,8 @@ acceptance_criteria:
   - id: SG-026-AC02
     text: >-
       Deployed public site returns HTTP 200 for HTML and JS/CSS assets with 0 failed requests and 0 console errors;
-      Playwright live smoke test on public URL PASS for start -> move -> pause/resume flow and mobile layout.
+      exhaustive Playwright live smoke test on public URL PASS for Menu -> Start -> Ready -> ArrowRight -> Playing ->
+      Pause -> Resume -> Wall Collision -> Game Over -> Restart flow and 320x568 mobile viewport D-pad layout.
 required_commands:
   - git status
   - gh variable set H3A_APPROVED_RELEASE_SHA --body 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
@@ -53,7 +54,7 @@ required_commands:
   - gh run watch 30180739161
   - curl -s https://dragoncowkarma.github.io/snake-game/release.json
   - curl -sI https://dragoncowkarma.github.io/snake-game/
-  - node live Playwright smoke script against public URL
+  - node exhaustive Playwright live smoke test against public URL
 required_environment:
   node: "24.x"
 handoff: docs/coordination/handoffs/SG-026.md
@@ -68,11 +69,11 @@ status_history:
     by: antigravity
     basis: Claim recorded on dedicated branch after human approval.
   - status: verified
-    at: "2026-07-26T09:14:35Z"
+    at: "2026-07-26T09:23:41Z"
     by: antigravity
     basis: >-
       GitHub Actions run 30180739161 verified and deployed the exact approved commit 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c
-      (with 0 workflow diffs). Public site https://dragoncowkarma.github.io/snake-game/ returns HTTP 200,
-      release.json returns source_sha 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c, live Playwright smoke test
-      against public URL verified Menu -> Start -> Ready -> ArrowRight -> Playing -> P -> Paused flow,
-      0 console errors, and 0 network failures.
+      to Pages. Public site https://dragoncowkarma.github.io/snake-game/ returns HTTP 200, release.json returns
+      source_sha 39884cbca3350ddc0c2d53908c7d6d57f5ba0f4c. Exhaustive live Playwright smoke test verified complete flow
+      (Menu -> Ready -> Playing -> Paused -> Resume Playing -> Game Over -> Restart Ready), 320x568 mobile viewport D-pad
+      visibility (up/down/left/right 4/4 true, scrollWidth 320 <= clientWidth 320), 0 console errors, and 0 network failures.
